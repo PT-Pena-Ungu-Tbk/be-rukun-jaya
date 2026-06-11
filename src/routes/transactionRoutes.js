@@ -1,12 +1,11 @@
 // src/routes/transactionRoutes.js
 const express = require('express');
 const router = express.Router();
-const { calculateVipDiscount } = require('../controllers/transactionController');
+const { checkout, returnItem } = require('../controllers/transactionController');
+const { verifyToken } = require('../middlewares/authMiddleware');
 
-// TODO: Nanti tambahkan authMiddleware (verifyToken) di sini agar route aman
-// router.post('/calculate-discount', verifyToken, calculateVipDiscount);
-
-// Endpoint API untuk menghitung diskon VIP
-router.post('/calculate-discount', calculateVipDiscount);
+// Endpoint wajib menggunakan verifyToken untuk memastikan Kasir/Owner sudah login
+router.post('/checkout', verifyToken, checkout);
+router.post('/return', verifyToken, returnItem);
 
 module.exports = router;
