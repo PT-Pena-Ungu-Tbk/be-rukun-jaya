@@ -20,10 +20,12 @@ app.use(express.json());
 // Import file router yang sudah kamu buat
 const authRoutes = require('./routes/authRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
+const memberRoutes = require('./routes/memberRoutes');
 
 // Daftarkan Base Route sesuai Standar Kontrak API (/api/v1)
 app.use('/api/v1/auth', authRoutes); 
 app.use('/api/v1/transactions', transactionRoutes);
+app.use('/api/v1/members', memberRoutes);
 
 // Endpoint bawaan dari Ulil
 app.get('/', (req, res) => {
