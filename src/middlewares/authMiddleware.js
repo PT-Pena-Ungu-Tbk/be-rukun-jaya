@@ -1,7 +1,7 @@
 // src/middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
-// Kunci rahasia untuk membaca token (Nanti Ulil/kamu bisa pindahkan ini ke file .env)
+// Secret key untuk membaca token
 const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
 
 // 1. Middleware untuk mengekstrak dan memverifikasi Token JWT
