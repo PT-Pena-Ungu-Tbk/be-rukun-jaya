@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
     if (!token) {
         return res.status(401).json({
             status: 'error',
-            message: 'Akses Ditolak: Anda belum login (Token tidak ditemukan)'
+            message: 'Akses Ditolak: Anda belum login'
         });
     }
 
