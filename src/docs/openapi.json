@@ -1,0 +1,113 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Sistem Kasir Toko Rukun Jaya",
+    "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk PT. Pena Ungu Tbk.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Development Server Lokal"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Masukkan token JWT tanpa kata 'Bearer'"
+      }
+    }
+  },
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Autentikasi Pengguna",
+        "description": "Memvalidasi kredensial pengguna dan menghasilkan token akses JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "owner@toko-rukunjaya.com" },
+                  "password": { "type": "string", "example": "password_rahasia" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login Berhasil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "success",
+                  "data": {
+                    "token": "eyJhbGciOiJIUzI1Ni...",
+                    "user": { "id": "uuid", "name": "Ci Ailing", "role": "OWNER" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "summary": "Ambil Daftar Produk",
+        "description": "Mengambil seluruh data produk dengan dukungan pencarian nama/SKU dan filter stok menipis.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "search", "in": "query", "schema": { "type": "string" }, "description": "Cari berdasarkan nama atau SKU" },
+          { "name": "low_stock", "in": "query", "schema": { "type": "boolean" }, "description": "Filter stok <= batas minimum" }
+        ],
+        "responses": {
+          "200": { "description": "Daftar produk berhasil ditarik" }
+        }
+      }
+    },
+    "/transactions/checkout": {
+      "post": {
+        "summary": "Finalisasi Transaksi Penjualan (POS)",
+        "description": "Memproses isi keranjang belanja, memotong stok real-time, kalkulasi PPN 11%, dan potongan diskon VIP.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "member_id": { "type": "string", "nullable": true },
+                  "discount_type": { "type": "string", "enum": ["NOMINAL", "PERCENTAGE"] },
+                  "discount_value": { "type": "number" },
+                  "cash_paid": { "type": "number" },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "product_id": { "type": "string" },
+                        "quantity": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Transaksi sukses disimpan dan stok diperbarui" }
+        }
+      }
+    }
+  }
+}
