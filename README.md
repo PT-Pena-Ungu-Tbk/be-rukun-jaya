@@ -8,7 +8,7 @@ Repository ini berisi layanan backend untuk **Sistem Kasir Toko Rukun Jaya**. Ap
 
 * **Framework**: Express.js
 * **File utama**: `src/app.js`
-* **Port default**: `3000`
+* **Port default**: `5000`
 * **Endpoint utama**:
   * `GET /` - Menampilkan respons sederhana "Hello World!"
 
