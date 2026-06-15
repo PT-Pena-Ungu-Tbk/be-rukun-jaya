@@ -1,71 +1,96 @@
-﻿# 🧾 Backend Rukun Jaya - Express API
+# 🧾 Backend Rukun Jaya - Sistem Kasir & Manajemen Inventaris
 
-Repository ini berisi layanan backend untuk **Sistem Kasir Toko Rukun Jaya**. Aplikasi dibuat menggunakan **Express.js** dan menyediakan API dasar yang dapat dihubungkan dengan Frontend dan Database.
+Backend API untuk **Sistem Kasir Toko Rukun Jaya** milik PT. Pena Ungu Tbk. Aplikasi ini dibangun menggunakan **Node.js, Express.js, Prisma ORM, dan PostgreSQL** dengan standar keamanan JWT.
 
 ---
 
-### 🧩 Ringkasan
+## 🧩 Fitur Utama
+* **Otentikasi & RBAC (Role-Based Access Control)**: Pengaturan hak akses untuk peran `OWNER` dan `CASHIER`.
+* **Manajemen Produk**: Sistem inventaris dengan fitur filter stok minimum (*low stock*) dan pembaruan massal (*bulk update*).
+* **Transaksi POS**: Checkout barang, pemotongan stok real-time, potongan diskon VIP, dan perhitungan otomatis PPN 11%.
+* **Klaim Garansi (Retur)**: Pemrosesan barang cacat dengan pencatatan *Audit Log* ketat.
+* **Laporan Finansial**: Agregasi pendapatan dan metrik jumlah transaksi.
+* **Audit Log**: Pencatatan riwayat aktivitas transaksional yang sensitif.
+* **Scalar OpenAPI Docs**: Antarmuka interaktif UI untuk mengeksplorasi dokumentasi dan skema API.
 
+---
+
+## 🛠️ Tech Stack
 * **Framework**: Express.js
-* **File utama**: `src/app.js`
-* **Port default**: `5000`
-* **Endpoint utama**:
-  * `GET /` - Menampilkan respons sederhana "Hello World!"
+* **Database**: PostgreSQL
+* **ORM**: Prisma Client (`@prisma/client`) dengan adapter `@prisma/adapter-pg`
+* **Keamanan**: `bcrypt` (hashing) & `jsonwebtoken` (JWT Bearer Token)
+* **Dokumentasi API**: Scalar (`@scalar/express-api-reference`)
 
 ---
 
-### 🛠️ Prasyarat
+## 🚀 Panduan Menjalankan Secara Lokal
 
-Sebelum menjalankan backend ini, pastikan:
-* Node.js sudah terpasang jika ingin menjalankan secara lokal.
-* Jika menggunakan environment Docker Compose, cukup jalankan dari `infra-rukun-jaya`.
+### 1. Prasyarat
+- Node.js (Minimal v18)
+- Database PostgreSQL berjalan di port 5432 (secara lokal atau melalui Docker).
 
----
-
-### 🚀 Menjalankan Backend Secara Lokal
-
-1. Buka terminal di `be-rukun-jaya`.
-2. Jalankan:
+### 2. Instalasi Dependensi
+Jalankan perintah ini untuk menginstal seluruh modul yang diperlukan:
 ```bash
-node src/app.js
-```
-3. Buka `http://localhost:3000` di browser untuk memastikan server berjalan.
-
----
-
-### 🌐 Integrasi Dengan `infra-rukun-jaya`
-
-Jika repository ini dijalankan sebagai bagian dari workspace multi-repo, backend biasanya akan di-orchestrasi melalui `infra-rukun-jaya`.
-
-Pastikan struktur folder workspace sudah benar:
-
-```text
-📁 rukun-jaya-workspace/
- ┣ 📁 be-rukun-jaya/
- ┣ 📁 fe-rukun-jaya/
- ┗ 📁 infra-rukun-jaya/
+npm install
 ```
 
-Kemudian jalankan Docker Compose dari folder `infra-rukun-jaya`:
+### 3. Konfigurasi Environment (File `.env`)
+Pastikan Anda memiliki file `.env` yang dikonfigurasi di *root* folder backend ini. Contohnya:
+```env
+PORT=5000
+DATABASE_URL="postgresql://postgres:password@localhost:5432/rukun_jaya?schema=public"
+JWT_SECRET="rahasia_toko_rukun_jaya_123"
+```
+
+### 4. Setup Database & Prisma
+Lakukan penyelarasan skema, _generate_ Prisma Client, lalu masukkan data awal (_seeding_):
 ```bash
-docker compose up
+npx prisma generate
+npx prisma db push
+node prisma/seed.js`
 ```
+*Catatan: Menjalankan skrip seed akan menyiapkan kredensial default untuk pengujian:*
+- **Owner**: `owner@toko-rukunjaya.com` | Pass: `password_rahasia`
+- **Kasir**: `kasir@toko-rukunjaya.com` | Pass: `password_rahasia`
+
+### 5. Menjalankan Server
+Jalankan aplikasi dengan script `dev`:
+```bash
+npm run dev
+```
+Server akan berjalan di `http://localhost:5000`.
 
 ---
 
-### 📌 Catatan
+## 📚 Dokumentasi API (Scalar UI)
+Anda bisa langsung melihat daftar dan spesifikasi API secara visual interaktif dengan membuka tautan berikut di browser sesaat setelah server berjalan:
+👉 **[http://localhost:5000/docs](http://localhost:5000/docs)**
 
-* Saat ini `package.json` belum memiliki script `start`, jadi jalankan langsung melalui `node src/app.js`.
-* Jika ingin menambahkan route baru, modifikasi file `src/app.js` dan restart server.
+Dokumentasi API mencakup seluruh *routes*, parameter, *payload* dan *response schema*, seperti:
+- `POST /api/v1/auth/login`
+- `GET /api/v1/products`
+- `PUT /api/v1/products/bulk-update`
+- `POST /api/v1/transactions/checkout`
+- `POST /api/v1/transactions/return`
+- `GET /api/v1/reports/financial`
+- *dll.*
 
 ---
 
-### 📎 Struktur Folder Sederhana
+## 📎 Struktur Direktori Backend
 
 ```text
 be-rukun-jaya/
+ ┣ 📂 prisma/               # Skema Database Prisma & Skrip Seed
  ┣ 📂 src/
- ┃ ┗ 📄 app.js
- ┣ 📄 package.json
- ┗ 📄 README.md
+ ┃ ┣ 📂 controllers/        # Logika Bisnis (Auth, Transaksi, Produk, dll)
+ ┃ ┣ 📂 docs/               # Definisi Skema OpenAPI (openapi.json)
+ ┃ ┣ 📂 middlewares/        # Proteksi JWT & Pengecekan Peran Akses (RBAC)
+ ┃ ┣ 📂 routes/             # Konfigurasi Rute URL Express
+ ┃ ┣ 📂 utils/              # Pengaturan Instance Prisma Client
+ ┃ ┗ 📄 app.js              # Entry-point Utama Aplikasi Server
+ ┣ 📄 package.json          # Manajemen Skrip dan Dependensi NPM
+ ┗ 📄 README.md             # Panduan Utama Repository Ini
 ```
