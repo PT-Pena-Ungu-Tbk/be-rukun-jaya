@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middlewares/authMiddleware');
+const { verifyToken, isOwner } = require('../middlewares/authMiddleware');
 const {
   createProduct,
   getProducts,
@@ -12,9 +12,9 @@ const {
 
 router.get('/', verifyToken, getProducts);
 router.get('/:id', verifyToken, getProductById);
-router.post('/', verifyToken, createProduct);
-router.put('/:id', verifyToken, updateProduct);
-router.delete('/:id', verifyToken, deleteProduct);
-router.put('/bulk', verifyToken, bulkUpdateProducts);
+router.put('/bulk-update', verifyToken, isOwner, bulkUpdateProducts);
+router.post('/', verifyToken, isOwner, createProduct);
+router.put('/:id', verifyToken, isOwner, updateProduct);
+router.delete('/:id', verifyToken, isOwner, deleteProduct);
 
 module.exports = router;
