@@ -1,15 +1,16 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const express = require('express');
-const { apiReference } = require('@scalar/express-api-reference');
-const openApiSpec = require('./docs/openapi.json');
+import express, { Request, Response } from 'express';
+import { apiReference } from '@scalar/express-api-reference';
+import openApiSpec from './docs/openapi.json';
 
-const authRoutes = require('./routes/authRoutes');
-const transactionRoutes = require('./routes/transactionRoutes');
-const memberRoutes = require('./routes/memberRoutes');
-const productRoutes = require('./routes/productRoutes');
-const reportRoutes = require('./routes/reportRoutes');
-const auditRoutes = require('./routes/auditRoutes');
+import authRoutes from './routes/authRoutes';
+import transactionRoutes from './routes/transactionRoutes';
+import memberRoutes from './routes/memberRoutes';
+import productRoutes from './routes/productRoutes';
+import reportRoutes from './routes/reportRoutes';
+import auditRoutes from './routes/auditRoutes';
 
 const app = express();
 
@@ -29,7 +30,7 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/audit-logs', auditRoutes);
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
