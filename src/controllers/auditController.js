@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaClient');
 
 const getAuditLogs = async (req, res) => {
   try {
@@ -36,7 +35,7 @@ const getAuditLogs = async (req, res) => {
       }
     }
 
-    const auditLogs = await prisma.auditLogs.findMany({
+    const auditLogs = await prisma.auditLog.findMany({
       where,
       orderBy: { created_at: 'desc' },
       take: Number(limit),
@@ -55,7 +54,7 @@ const getAuditLogs = async (req, res) => {
 const getAuditLogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const auditLog = await prisma.auditLogs.findUnique({
+    const auditLog = await prisma.auditLog.findUnique({
       where: { id },
     });
 
