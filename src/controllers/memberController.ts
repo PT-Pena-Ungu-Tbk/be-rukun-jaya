@@ -1,7 +1,8 @@
+import { Request, Response, NextFunction } from 'express';
 // src/controllers/memberController.js
-const prisma = require('../utils/prismaClient');
+import prisma from '../utils/prismaClient';
 
-const verifyMember = async (req, res) => {
+const verifyMember = async (req: Request, res: Response) => {
     try {
         // Mengambil nomor HP dari query parameter (contoh: /verify?phone=08123456789)
         const { phone } = req.query;
@@ -47,6 +48,6 @@ const verifyMember = async (req, res) => {
     }
 };
 
-module.exports = {
+export { 
     verifyMember
-};
+ };

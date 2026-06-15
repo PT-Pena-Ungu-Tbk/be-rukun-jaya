@@ -1,15 +1,16 @@
+import { Request, Response, NextFunction } from 'express';
 // src/controllers/transactionController.js
-const prisma = require('../utils/prismaClient');
+import prisma from '../utils/prismaClient';
 
 // 1. LOGIKA CHECKOUT TRANSAKSI
-const checkout = async (req, res) => {
+const checkout = async (req: Request, res: Response) => {
     // Menerima data dari request Frontend
     const { items, member_id, discount_type, discount_value, cash_paid } = req.body;
     const userId = req.user.id; // Diambil dari token JWT
 
     try {
         // Menggunakan Interactive Transaction agar jika ada 1 proses gagal, semuanya otomatis dibatalkan (rollback)
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: any) => {
             let subtotal = 0;
             const orderDetails = [];
 
@@ -117,7 +118,7 @@ const checkout = async (req, res) => {
             }
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Checkout Error:", error.message);
         return res.status(400).json({
             status: "error",
@@ -127,12 +128,12 @@ const checkout = async (req, res) => {
 };
 
 // 2. LOGIKA RETUR BARANG CACAT
-const returnItem = async (req, res) => {
+const returnItem = async (req: Request, res: Response) => {
     const { transaction_id, product_id, quantity_returned } = req.body;
     const userId = req.user.id;
 
     try {
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: any) => {
             const defectiveProduct = await tx.product.findUnique({ where: { id: product_id } });
 
             if (!defectiveProduct) {
@@ -177,7 +178,7 @@ const returnItem = async (req, res) => {
             data: result
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Return Error:", error.message);
         return res.status(400).json({
             status: "error",
@@ -186,7 +187,7 @@ const returnItem = async (req, res) => {
     }
 };
 
-module.exports = {
+export { 
     checkout,
     returnItem
-};
+ };

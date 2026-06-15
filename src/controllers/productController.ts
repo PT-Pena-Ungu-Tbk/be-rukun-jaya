@@ -1,7 +1,8 @@
-const { Prisma } = require('@prisma/client');
-const prisma = require('../utils/prismaClient');
+import { Request, Response, NextFunction } from 'express';
+const Prisma: any = {};
+import prisma from '../utils/prismaClient';
 
-const createProduct = async (req, res) => {
+const createProduct = async (req: Request, res: Response) => {
   try {
     const {
       sku_code,
@@ -48,7 +49,7 @@ const createProduct = async (req, res) => {
   }
 };
 
-const getProducts = async (req, res) => {
+const getProducts = async (req: Request, res: Response) => {
   try {
     const { low_stock, search, categoryId, supplierId, page = 1, limit = 50 } = req.query;
 
@@ -67,7 +68,7 @@ const getProducts = async (req, res) => {
       return res.status(200).json({ status: 'success', data: products });
     }
 
-    const filters = {};
+    const filters: any = {};
     if (search) {
       filters.OR = [
         { name: { contains: search, mode: 'insensitive' } },
@@ -94,7 +95,7 @@ const getProducts = async (req, res) => {
   }
 };
 
-const getProductById = async (req, res) => {
+const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const product = await prisma.product.findUnique({
@@ -118,7 +119,7 @@ const getProductById = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updates = req.body;
@@ -142,7 +143,7 @@ const updateProduct = async (req, res) => {
   }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     await prisma.product.delete({ where: { id } });
@@ -156,7 +157,7 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const bulkUpdateProducts = async (req, res) => {
+const bulkUpdateProducts = async (req: Request, res: Response) => {
   try {
     const { updates } = req.body;
 
@@ -188,11 +189,11 @@ const bulkUpdateProducts = async (req, res) => {
   }
 };
 
-module.exports = {
+export { 
   createProduct,
   getProducts,
   getProductById,
   updateProduct,
   deleteProduct,
   bulkUpdateProducts,
-};
+ };

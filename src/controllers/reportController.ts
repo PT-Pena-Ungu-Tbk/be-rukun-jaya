@@ -1,10 +1,11 @@
-const prisma = require('../utils/prismaClient');
+import { Request, Response, NextFunction } from 'express';
+import prisma from '../utils/prismaClient';
 
-const getFinancialReport = async (req, res) => {
+const getFinancialReport = async (req: Request, res: Response) => {
   try {
     const { startDate, endDate } = req.query;
-    const end = endDate ? new Date(endDate) : new Date();
-    const start = startDate ? new Date(startDate) : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const end = endDate ? new Date(endDate as string) : new Date();
+    const start = startDate ? new Date(startDate as string) : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
       return res.status(400).json({
@@ -16,7 +17,7 @@ const getFinancialReport = async (req, res) => {
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
 
-    const transactionWhere = {
+    const transactionWhere: any = {
       created_at: {
         gte: start,
         lte: end,
@@ -51,7 +52,7 @@ const getFinancialReport = async (req, res) => {
       take: 5,
     });
 
-    const productIds = topProductsAggregation.map((item) => item.product_id);
+    const productIds = topProductsAggregation.map((item: any) => item.product_id);
     const products = await prisma.product.findMany({
       where: {
         id: {
@@ -60,10 +61,10 @@ const getFinancialReport = async (req, res) => {
       },
     });
 
-    const productMap = new Map(products.map((product) => [product.id, product]));
+    const productMap = new Map(products.map((product: any) => [product.id, product]));
 
-    const topProducts = topProductsAggregation.map((item) => {
-      const product = productMap.get(item.product_id);
+    const topProducts = topProductsAggregation.map((item: any) => {
+      const product = productMap.get(item.product_id) as any;
       return {
         product_id: item.product_id,
         sku_code: product?.sku_code || null,
@@ -94,6 +95,6 @@ const getFinancialReport = async (req, res) => {
   }
 };
 
-module.exports = {
+export { 
   getFinancialReport,
 };
