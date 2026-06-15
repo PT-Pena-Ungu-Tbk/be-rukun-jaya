@@ -1,9 +1,7 @@
 // src/controllers/authController.js
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prismaClient');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
 
 const login = async (req, res) => {
@@ -12,7 +10,7 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         // 2. Cari user di database berdasarkan email
-        const user = await prisma.users.findFirst({
+        const user = await prisma.user.findFirst({
             where: { email: email }
         });
 

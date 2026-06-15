@@ -42,7 +42,7 @@ const isOwner = (req, res, next) => {
     const userRole = req.user?.role;
 
     // Jika yang mencoba mengakses bukan Owner, langsung lempar status 403 Forbidden
-    if (userRole !== 'Owner') {
+    if (userRole !== 'OWNER') {
         return res.status(403).json({
             status: 'error',
             message: 'Akses Ditolak / 403 Forbidden: Halaman ini khusus Pemilik Toko'
