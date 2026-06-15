@@ -1,5 +1,5 @@
-const prisma = require('../src/utils/prismaClient');
-const bcrypt = require('bcrypt');
+import prisma from '../src/utils/prismaClient';
+import bcrypt from 'bcrypt';
 
 async function main() {
   console.log('Membersihkan database lama... 🧹');
