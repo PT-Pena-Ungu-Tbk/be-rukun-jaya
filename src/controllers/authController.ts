@@ -1,10 +1,11 @@
+import { Request, Response, NextFunction } from 'express';
 // src/controllers/authController.js
-const prisma = require('../utils/prismaClient');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import prisma from '../utils/prismaClient';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
     try {
         // 1. Ekstraksi email dan password dari request body Frontend
         const { email, password } = req.body;
@@ -65,6 +66,6 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = {
+export { 
     login
-};
+ };

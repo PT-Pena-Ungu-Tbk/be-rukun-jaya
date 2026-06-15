@@ -1,11 +1,12 @@
+import { Request, Response, NextFunction } from 'express';
 // src/middlewares/authMiddleware.js
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 // Secret key untuk membaca token
 const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
 
 // 1. Middleware untuk mengekstrak dan memverifikasi Token JWT
-const verifyToken = (req, res, next) => {
+const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     // Klien (Frontend) biasanya mengirim token di header dengan format: "Bearer <token_acak>"
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -37,7 +38,7 @@ const verifyToken = (req, res, next) => {
 };
 
 // 2. Middleware khusus untuk memblokir Kasir (Mewujudkan Acceptance Criteria AC-05)
-const isOwner = (req, res, next) => {
+const isOwner = (req: Request, res: Response, next: NextFunction) => {
     // Mengecek 'role' dari payload token yang sudah diekstrak oleh verifyToken di atas
     const userRole = req.user?.role;
 
@@ -53,7 +54,7 @@ const isOwner = (req, res, next) => {
     next();
 };
 
-module.exports = {
+export { 
     verifyToken,
     isOwner
-};
+ };

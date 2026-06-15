@@ -1,9 +1,10 @@
-const prisma = require('../utils/prismaClient');
+import { Request, Response, NextFunction } from 'express';
+import prisma from '../utils/prismaClient';
 
-const getAuditLogs = async (req, res) => {
+const getAuditLogs = async (req: Request, res: Response) => {
   try {
-    const { userId, action, tableName, startDate, endDate, limit = 100 } = req.query;
-    const where = {};
+    const {  userId, action, tableName, startDate, endDate, limit = 100  } = req.query as any;
+    const where: any = {};
 
     if (userId) where.user_id = userId;
     if (action) where.action = action;
@@ -51,7 +52,7 @@ const getAuditLogs = async (req, res) => {
   }
 };
 
-const getAuditLogById = async (req, res) => {
+const getAuditLogById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const auditLog = await prisma.auditLog.findUnique({
@@ -75,7 +76,7 @@ const getAuditLogById = async (req, res) => {
   }
 };
 
-module.exports = {
+export { 
   getAuditLogs,
   getAuditLogById,
-};
+ };
