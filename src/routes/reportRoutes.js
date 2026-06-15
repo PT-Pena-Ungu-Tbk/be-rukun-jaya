@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { verifyToken } = require('../middlewares/authMiddleware');
+const { verifyToken, isOwner } = require('../middlewares/authMiddleware');
 const { getFinancialReport } = require('../controllers/reportController');
 
-router.get('/financial', verifyToken, getFinancialReport);
+router.get('/financial', verifyToken, isOwner, getFinancialReport);
 
 module.exports = router;

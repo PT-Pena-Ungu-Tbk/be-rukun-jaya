@@ -1,6 +1,5 @@
 // src/controllers/memberController.js
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaClient');
 
 const verifyMember = async (req, res) => {
     try {
@@ -16,7 +15,7 @@ const verifyMember = async (req, res) => {
         }
 
         // Mencari data pelanggan di database berdasarkan nomor HP
-        const member = await prisma.members.findFirst({
+        const member = await prisma.member.findFirst({
             where: { phone_number: phone }
         });
 

@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../utils/prismaClient');
 
 const getFinancialReport = async (req, res) => {
   try {
@@ -24,14 +23,14 @@ const getFinancialReport = async (req, res) => {
       },
     };
 
-    const revenueResult = await prisma.transactions.aggregate({
+    const revenueResult = await prisma.transaction.aggregate({
       where: transactionWhere,
       _sum: {
         grand_total: true,
       },
     });
 
-    const successfulTransactionCount = await prisma.transactions.count({
+    const successfulTransactionCount = await prisma.transaction.count({
       where: transactionWhere,
     });
 
@@ -53,7 +52,7 @@ const getFinancialReport = async (req, res) => {
     });
 
     const productIds = topProductsAggregation.map((item) => item.product_id);
-    const products = await prisma.products.findMany({
+    const products = await prisma.product.findMany({
       where: {
         id: {
           in: productIds,
