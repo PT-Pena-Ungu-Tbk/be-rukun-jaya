@@ -11,6 +11,7 @@ import memberRoutes from './routes/memberRoutes';
 import productRoutes from './routes/productRoutes';
 import reportRoutes from './routes/reportRoutes';
 import auditRoutes from './routes/auditRoutes';
+import employeeRoutes from './routes/employeeRoutes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/v1/members', memberRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/audit-logs', auditRoutes);
+app.use('/api/v1/employees', employeeRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
