@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-const Prisma: any = {};
+import { Prisma } from '@prisma/client';
 import prisma from '../utils/prismaClient';
 
 const createProduct = async (req: Request, res: Response) => {
@@ -97,7 +97,7 @@ const getProducts = async (req: Request, res: Response) => {
 
 const getProductById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const product = await prisma.product.findUnique({
       where: { id },
     });
@@ -121,7 +121,7 @@ const getProductById = async (req: Request, res: Response) => {
 
 const updateProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const updates = req.body;
 
     const product = await prisma.product.update({
@@ -145,7 +145,7 @@ const updateProduct = async (req: Request, res: Response) => {
 
 const deleteProduct = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     await prisma.product.delete({ where: { id } });
     return res.status(200).json({ status: 'success', message: 'Produk berhasil dihapus.' });
   } catch (error) {
