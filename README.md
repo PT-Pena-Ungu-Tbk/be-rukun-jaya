@@ -4,14 +4,13 @@ Backend API untuk **Sistem Kasir Toko Rukun Jaya** milik PT. Pena Ungu Tbk. Apli
 
 ---
 
-## 🧩 Fitur Utama
-* **Otentikasi & RBAC (Role-Based Access Control)**: Pengaturan hak akses untuk peran `OWNER` dan `CASHIER`.
-* **Manajemen Produk**: Sistem inventaris dengan fitur filter stok minimum (*low stock*) dan pembaruan massal (*bulk update*).
-* **Transaksi POS**: Checkout barang, pemotongan stok real-time, potongan diskon VIP, dan perhitungan otomatis PPN 11%.
-* **Klaim Garansi (Retur)**: Pemrosesan barang cacat dengan pencatatan *Audit Log* ketat.
-* **Laporan Finansial**: Agregasi pendapatan dan metrik jumlah transaksi.
-* **Audit Log**: Pencatatan riwayat aktivitas transaksional yang sensitif.
-* **Scalar OpenAPI Docs**: Antarmuka interaktif UI untuk mengeksplorasi dokumentasi dan skema API.
+### 🧩 Ringkasan
+
+* **Framework**: Express.js
+* **File utama**: `src/app.js`
+* **Port default**: `5000`
+* **Endpoint utama**:
+  * `GET /` - Menampilkan respons sederhana "Hello World!"
 
 ---
 
