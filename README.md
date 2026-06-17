@@ -1,80 +1,123 @@
 # 🧾 Backend Rukun Jaya - Sistem Kasir & Manajemen Inventaris
 
-Backend API untuk **Sistem Kasir Toko Rukun Jaya** milik PT. Pena Ungu Tbk. Aplikasi ini dibangun menggunakan **Node.js, Express.js, Prisma ORM, dan PostgreSQL** dengan standar keamanan JWT.
+Backend API untuk **Sistem Kasir Toko Bangunan Rukun Jaya** milik PT. Pena Ungu Tbk. Aplikasi ini dibangun menggunakan **TypeScript, Express.js (v5), Prisma ORM, dan PostgreSQL** dengan standar keamanan JWT serta proteksi infrastruktur yang siap dideploy menggunakan **Docker**.
 
 ---
 
-### 🧩 Ringkasan
-
-* **Framework**: Express.js
-* **File utama**: `src/app.js`
-* **Port default**: `5000`
-* **Endpoint utama**:
-  * `GET /` - Menampilkan respons sederhana "Hello World!"
+## 🧩 Fitur Utama
+* **Otentikasi & RBAC (Role-Based Access Control)**: Pengaturan hak akses granular untuk peran `OWNER`, `ADMIN`, dan `KASIR`.
+* **Manajemen Karyawan (Employee Management)**: CRUD data karyawan yang aman, terlindungi oleh validasi strict TypeScript, enkripsi password menggunakan `bcrypt`, dan hanya dapat diakses oleh user ber-role `OWNER`.
+* **Manajemen Produk**: Sistem inventaris dengan fitur filter stok minimum (*low stock*) dan pembaruan massal (*bulk update*).
+* **Transaksi POS**: Checkout barang, pemotongan stok real-time, potongan diskon VIP/Member, dan perhitungan otomatis PPN 11%.
+* **Klaim Garansi (Retur)**: Pemrosesan barang cacat dengan pencatatan *Audit Log* ketat.
+* **Laporan Finansial**: Agregasi pendapatan dan metrik jumlah transaksi.
+* **Audit Log**: Pencatatan riwayat aktivitas transaksional yang sensitif.
+* **API Security Middleware**:
+  - **CORS**: Pengaturan whitelist origin domain (ke frontend Vercel di prod / wildcard di dev).
+  - **Helmet**: Keamanan HTTP response headers untuk perlindungan terhadap serangan web umum.
+  - **Express Rate Limit**: Pembatasan request (maks 100 request/15 menit per IP) untuk menghindari brute-force dan DoS.
+* **Scalar OpenAPI Docs**: Dokumentasi interaktif visual untuk eksplorasi dan testing endpoint API secara langsung.
 
 ---
 
 ## 🛠️ Tech Stack
-* **Framework**: Express.js
+* **Language**: TypeScript
+* **Framework**: Express.js (v5)
 * **Database**: PostgreSQL
-* **ORM**: Prisma Client (`@prisma/client`) dengan adapter `@prisma/adapter-pg`
-* **Keamanan**: `bcrypt` (hashing) & `jsonwebtoken` (JWT Bearer Token)
-* **Dokumentasi API**: Scalar (`@scalar/express-api-reference`)
+* **ORM**: Prisma Client dengan adapter PostgreSQL
+* **Security & Auth**: `bcrypt` (hashing), `jsonwebtoken` (JWT Bearer Token), `helmet`, `cors`, `express-rate-limit`
+* **Docker**: Alpine-based Node.js runtime environment
+* **API Docs**: Scalar (`@scalar/express-api-reference`)
 
 ---
 
-## 🚀 Panduan Menjalankan Secara Lokal
+## 🚀 Panduan Menjalankan Secara Lokal (Development)
 
 ### 1. Prasyarat
-- Node.js (Minimal v18)
-- Database PostgreSQL berjalan di port 5432 (secara lokal atau melalui Docker).
+- Node.js (Minimal v18, direkomendasikan v20+)
+- PostgreSQL yang aktif (lokal atau via Docker)
 
 ### 2. Instalasi Dependensi
-Jalankan perintah ini untuk menginstal seluruh modul yang diperlukan:
+Jalankan perintah berikut pada root folder backend:
 ```bash
 npm install
 ```
 
 ### 3. Konfigurasi Environment (File `.env`)
-Pastikan Anda memiliki file `.env` yang dikonfigurasi di *root* folder backend ini. Contohnya:
+Salin file `.env.example` ke `.env` dan sesuaikan nilainya:
 ```env
 PORT=5000
-DATABASE_URL="postgresql://postgres:password@localhost:5432/rukun_jaya?schema=public"
-JWT_SECRET="rahasia_toko_rukun_jaya_123"
+DATABASE_URL="postgresql://postgres:password_rahasia@localhost:5432/rukun_jaya_db?schema=public"
+JWT_SECRET="rahasia_super_aman"
+NODE_ENV="development"
 ```
 
-### 4. Setup Database & Prisma
-Lakukan penyelarasan skema, _generate_ Prisma Client, lalu masukkan data awal (_seeding_):
+### 4. Sinkronisasi Database & Seeding
+Jalankan migrasi database, buat client Prisma, lalu masukkan data awal (seed):
 ```bash
+# Jalankan migrasi database ke lokal
+npx prisma migrate dev
+
+# Generate Prisma Client
 npx prisma generate
-npx prisma db push
-node prisma/seed.js`
+
+# Jalankan Seeding Data Awal
+npx prisma db seed
 ```
-*Catatan: Menjalankan skrip seed akan menyiapkan kredensial default untuk pengujian:*
+
+*Catatan: Akun bawaan hasil seeding untuk keperluan testing:*
 - **Owner**: `owner@toko-rukunjaya.com` | Pass: `password_rahasia`
 - **Kasir**: `kasir@toko-rukunjaya.com` | Pass: `password_rahasia`
 
-### 5. Menjalankan Server
-Jalankan aplikasi dengan script `dev`:
+### 5. Menjalankan Server Dev
+Jalankan aplikasi menggunakan nodemon di lingkungan lokal:
 ```bash
 npm run dev
 ```
-Server akan berjalan di `http://localhost:5000`.
+Server akan berjalan di **`http://localhost:5000`**.
+
+---
+
+## 🐳 Menjalankan Menggunakan Docker
+
+Anda bisa mengemas dan menjalankan aplikasi backend secara mandiri menggunakan Dockerfile yang sudah disediakan.
+
+### 1. Build Docker Image
+Jalankan perintah ini dari folder root backend:
+```bash
+docker build -t be-rukun-jaya .
+```
+
+### 2. Jalankan Container
+Jalankan container dengan melewatkan file `.env` lokal Anda:
+```bash
+docker run -d -p 5000:5000 --env-file .env --name rukun-jaya-backend be-rukun-jaya
+```
 
 ---
 
 ## 📚 Dokumentasi API (Scalar UI)
-Anda bisa langsung melihat daftar dan spesifikasi API secara visual interaktif dengan membuka tautan berikut di browser sesaat setelah server berjalan:
+Saat server berjalan, Anda dapat mengakses visualisasi dokumentasi API lengkap, payload schema, parameter, dan melakukan test endpoint secara interaktif melalui:
 👉 **[http://localhost:5000/docs](http://localhost:5000/docs)**
 
-Dokumentasi API mencakup seluruh *routes*, parameter, *payload* dan *response schema*, seperti:
-- `POST /api/v1/auth/login`
-- `GET /api/v1/products`
-- `PUT /api/v1/products/bulk-update`
-- `POST /api/v1/transactions/checkout`
-- `POST /api/v1/transactions/return`
-- `GET /api/v1/reports/financial`
-- *dll.*
+### Endpoint Utama yang Tersedia:
+* **Autentikasi (`/api/v1/auth`)**:
+  - `POST /login` - Login pengguna untuk mendapatkan JWT token.
+* **Manajemen Karyawan (`/api/v1/employees`)** *(Khusus Owner)*:
+  - `GET /` - Dapatkan semua karyawan.
+  - `POST /` - Tambahkan karyawan baru.
+  - `PUT /:id` - Edit data karyawan (termasuk reset password/role).
+  - `DELETE /:id` - Hapus data karyawan.
+* **Manajemen Produk (`/api/v1/products`)**:
+  - `GET /` - List produk dengan pencarian dan filter stok minimum (*low-stock*).
+  - `PUT /bulk-update` - Update stok massal.
+* **Transaksi POS (`/api/v1/transactions`)**:
+  - `POST /checkout` - Transaksi kasir (potong stok, perhitungan diskon member, PPN 11%).
+  - `POST /return` - Perubahan status barang cacat (klaim garansi & log audit).
+* **Laporan Finansial (`/api/v1/reports`)**:
+  - `GET /financial` - Agregasi total pemasukan dan volume transaksi.
+* **Audit Logs (`/api/v1/audit-logs`)**:
+  - `GET /` - Log aktivitas audit sistem.
 
 ---
 
@@ -82,14 +125,20 @@ Dokumentasi API mencakup seluruh *routes*, parameter, *payload* dan *response sc
 
 ```text
 be-rukun-jaya/
- ┣ 📂 prisma/               # Skema Database Prisma & Skrip Seed
+ ┣ 📂 prisma/               # Skema Database Prisma (schema.prisma) & Skrip Seed (seed.ts)
  ┣ 📂 src/
- ┃ ┣ 📂 controllers/        # Logika Bisnis (Auth, Transaksi, Produk, dll)
- ┃ ┣ 📂 docs/               # Definisi Skema OpenAPI (openapi.json)
- ┃ ┣ 📂 middlewares/        # Proteksi JWT & Pengecekan Peran Akses (RBAC)
- ┃ ┣ 📂 routes/             # Konfigurasi Rute URL Express
- ┃ ┣ 📂 utils/              # Pengaturan Instance Prisma Client
- ┃ ┗ 📄 app.js              # Entry-point Utama Aplikasi Server
- ┣ 📄 package.json          # Manajemen Skrip dan Dependensi NPM
- ┗ 📄 README.md             # Panduan Utama Repository Ini
+ ┃ ┣ 📂 config/             # Folder konfigurasi tambahan (opsional)
+ ┃ ┣ 📂 controllers/        # Pengendali Logika Bisnis (Auth, Karyawan, POS, dll)
+ ┃ ┣ 📂 docs/               # Spesifikasi OpenAPI (openapi.json)
+ ┃ ┣ 📂 middlewares/        # Proteksi JWT Auth & Otorisasi RBAC
+ ┃ ┣ 📂 routes/             # Pemetaan endpoint URL Express
+ ┃ ┣ 📂 services/           # Logika layanan terpisah (opsional)
+ ┃ ┣ 📂 types/              # Deklarasi Type/Interface TypeScript kustom
+ ┃ ┣ 📂 utils/              # Helper Global (PrismaClient, AppError, Validator)
+ ┃ ┗ 📄 app.ts              # Entry-point Utama Server Express.js
+ ┣ 📄 .dockerignore         # Mengabaikan file tidak penting saat build Docker
+ ┣ 📄 Dockerfile            # Langkah-langkah build image Docker
+ ┣ 📄 package.json          # Manajemen skrip build & dependencies NPM
+ ┣ 📄 tsconfig.json         # Konfigurasi Compiler TypeScript
+ ┗ 📄 README.md             # Panduan Dokumentasi Repository (File ini)
 ```
