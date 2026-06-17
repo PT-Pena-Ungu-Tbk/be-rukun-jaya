@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "API Sistem Kasir Toko Rukun Jaya",
-    "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk PT. Pena Ungu Tbk.",
+    "title": "API Sistem Kasir Toko Bangunan Rukun Jaya",
+    "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk Toko Bangunan Rukun Jaya.",
     "version": "1.0.0"
   },
   "servers": [
@@ -17,7 +17,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Masukkan token JWT tanpa kata 'Bearer'"
+        "description": "Masukkan token JWT"
       }
     }
   },
@@ -25,7 +25,6 @@
     "/auth/login": {
       "post": {
         "summary": "Autentikasi Pengguna",
-        "description": "Memvalidasi kredensial pengguna dan menghasilkan token akses JWT.",
         "requestBody": {
           "required": true,
           "content": {
@@ -42,41 +41,176 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Login Berhasil",
-            "content": {
-              "application/json": {
-                "example": {
-                  "status": "success",
-                  "data": {
-                    "token": "eyJhbGciOiJIUzI1Ni...",
-                    "user": { "id": "uuid", "name": "Ci Ailing", "role": "OWNER" }
-                  }
+          "200": { "description": "Login Berhasil" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/employees": {
+      "get": {
+        "summary": "Ambil Daftar Karyawan",
+        "security": [{"BearerAuth": []}],
+        "responses": {
+          "200": { "description": "Daftar karyawan berhasil diambil" },
+          "401": { "description": "Tidak memiliki otorisasi" },
+          "403": { "description": "Role CASHIER ditolak akses" }
+        }
+      },
+      "post": {
+        "summary": "Tambah Karyawan",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "role"],
+                "properties": {
+                  "name": { "type": "string", "example": "Budi Santoso" },
+                  "email": { "type": "string", "example": "[EMAIL_ADDRESS]" },
+                  "password": { "type": "string", "example": "password123" },
+                  "role": {"type": "string", "enum": ["CASHIER"]}
                 }
               }
             }
           }
+        },
+        "responses": {
+          "201": { "description": "Karyawan berhasil ditambahkan" },
+          "401": { "description": "Anda tidak memiliki akses untuk menambahkan karyawan" },
+          "403": { "description": "Role CASHIER ditolak akses" },
+          "409": { "description": "Email sudah terdaftar" }
+        }
+      }
+    },
+    "/employees/{id}": {
+      "put": {
+        "summary": "Update Data Karyawan",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Budi Santoso Edit" },
+                  "email": { "type": "string", "example": "budi.edit@example.com" },
+                  "password": { "type": "string", "example": "newpassword123" },
+                  "role": { "type": "string", "enum": ["CASHIER", "OWNER"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Data karyawan berhasil diubah" },
+          "401": { "description": "Tidak memiliki otorisasi" },
+          "403": { "description": "Role CASHIER ditolak akses" },
+          "404": { "description": "Data tidak ditemukan" }
+        }
+      },
+      "delete": {
+        "summary": "Hapus Karyawan",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Karyawan berhasil dihapus" },
+          "401": { "description": "Tidak memiliki otorisasi" },
+          "403": { "description": "Role CASHIER ditolak akses" },
+          "404": { "description": "Data tidak ditemukan" }
         }
       }
     },
     "/products": {
       "get": {
         "summary": "Ambil Daftar Produk",
-        "description": "Mengambil seluruh data produk dengan dukungan pencarian nama/SKU dan filter stok menipis.",
         "security": [{ "BearerAuth": [] }],
         "parameters": [
-          { "name": "search", "in": "query", "schema": { "type": "string" }, "description": "Cari berdasarkan nama atau SKU" },
-          { "name": "low_stock", "in": "query", "schema": { "type": "boolean" }, "description": "Filter stok <= batas minimum" }
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "low_stock", "in": "query", "schema": { "type": "boolean" } }
         ],
         "responses": {
-          "200": { "description": "Daftar produk berhasil ditarik" }
+          "200": { "description": "Daftar produk ditarik" }
+        }
+      },
+      "post": {
+        "summary": "Tambah Master Data Produk",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sku_code": { "type": "string", "example": "PIP-WV-AW12" },
+                  "name": { "type": "string", "example": "Pipa Wavin AW 1/2 inch" },
+                  "category_id": { "type": "string", "format": "uuid" },
+                  "supplier_id": { "type": "string", "format": "uuid" },
+                  "buy_price": { "type": "number", "example": 28000 },
+                  "sell_price": { "type": "number", "example": 32000 },
+                  "current_stock": { "type": "integer", "example": 120 },
+                  "min_stock": { "type": "integer", "example": 50 },
+                  "rack_location": { "type": "string", "example": "R-C3-12" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Produk berhasil ditambah" } }
+      }
+    },
+    "/products/bulk-update": {
+      "put": {
+        "summary": "Bulk Update Stok Barang",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "updates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string", "format": "uuid" },
+                        "new_stock": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Update massal sukses" } }
+      }
+    },
+    "/members/verify": {
+      "get": {
+        "summary": "Verifikasi Status Member VIP",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "phone", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Member ditemukan" },
+          "404": { "description": "Member tidak ditemukan" }
         }
       }
     },
     "/transactions/checkout": {
       "post": {
         "summary": "Finalisasi Transaksi Penjualan (POS)",
-        "description": "Memproses isi keranjang belanja, memotong stok real-time, kalkulasi PPN 11%, dan potongan diskon VIP.",
         "security": [{ "BearerAuth": [] }],
         "requestBody": {
           "required": true,
@@ -94,7 +228,7 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "product_id": { "type": "string" },
+                        "product_id": { "type": "string", "format": "uuid" },
                         "quantity": { "type": "integer" }
                       }
                     }
@@ -104,9 +238,47 @@
             }
           }
         },
-        "responses": {
-          "201": { "description": "Transaksi sukses disimpan dan stok diperbarui" }
-        }
+        "responses": { "201": { "description": "Transaksi sukses" } }
+      }
+    },
+    "/transactions/return": {
+      "post": {
+        "summary": "Retur Barang Cacat (Garansi Toko)",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transaction_id": { "type": "string", "format": "uuid" },
+                  "product_id": { "type": "string", "format": "uuid" },
+                  "quantity_returned": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Retur berhasil" } }
+      }
+    },
+    "/reports/financial": {
+      "get": {
+        "summary": "Laporan Keuangan",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "start_date", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-06-01" } },
+          { "name": "end_date", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-06-30" } }
+        ],
+        "responses": { "200": { "description": "Data Laporan" } }
+      }
+    },
+    "/audit-logs": {
+      "get": {
+        "summary": "Log Audit",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "Daftar Audit Log" } }
       }
     }
   }

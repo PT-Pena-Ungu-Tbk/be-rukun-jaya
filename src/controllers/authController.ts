@@ -1,18 +1,21 @@
+import { Request, Response, NextFunction } from 'express';
 // src/controllers/authController.js
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import prisma from '../utils/prismaClient';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
-const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
+if (!JWT_SECRET) {
+    throw new Error("FATAL ERROR: JWT_SECRET environment variable is not defined");
+}
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
     try {
         // 1. Ekstraksi email dan password dari request body Frontend
         const { email, password } = req.body;
 
         // 2. Cari user di database berdasarkan email
-        const user = await prisma.users.findFirst({
+        const user = await prisma.user.findFirst({
             where: { email: email }
         });
 
@@ -67,6 +70,6 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     login
 };

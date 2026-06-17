@@ -1,9 +1,9 @@
 // src/routes/authRoutes.js
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { login } = require('../controllers/authController');
+import { login  } from '../controllers/authController';
 
 // Mendaftarkan endpoint POST /auth/login
 router.post('/login', login);
 
-module.exports = router;
+export default router;

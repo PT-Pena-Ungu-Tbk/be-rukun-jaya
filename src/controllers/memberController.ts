@@ -1,11 +1,11 @@
+import { Request, Response, NextFunction } from 'express';
 // src/controllers/memberController.js
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+import prisma from '../utils/prismaClient';
 
-const verifyMember = async (req, res) => {
+const verifyMember = async (req: Request, res: Response) => {
     try {
         // Mengambil nomor HP dari query parameter (contoh: /verify?phone=08123456789)
-        const { phone } = req.query;
+        const phone = req.query.phone as string;
 
         // Validasi input
         if (!phone) {
@@ -16,7 +16,7 @@ const verifyMember = async (req, res) => {
         }
 
         // Mencari data pelanggan di database berdasarkan nomor HP
-        const member = await prisma.members.findFirst({
+        const member = await prisma.member.findFirst({
             where: { phone_number: phone }
         });
 
@@ -35,7 +35,9 @@ const verifyMember = async (req, res) => {
                 id: member.id,
                 name: member.name,
                 phone_number: member.phone_number,
-                join_date: member.created_at
+                // Note: The members table does not have a created_at field in the schema,
+                // so we cast to any here to retain compatibility with the expected response format.
+                join_date: (member as any).created_at
             }
         });
 
@@ -48,6 +50,6 @@ const verifyMember = async (req, res) => {
     }
 };
 
-module.exports = {
+export { 
     verifyMember
-};
+ };
