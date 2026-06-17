@@ -54,7 +54,7 @@ const getAuditLogs = async (req: Request, res: Response) => {
 
 const getAuditLogById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const auditLog = await prisma.auditLog.findUnique({
       where: { id },
     });
