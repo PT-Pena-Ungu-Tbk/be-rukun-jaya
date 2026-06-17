@@ -29,7 +29,9 @@ app.use(cors({
 
 app.set('trust proxy', 1); // Wajib untuk Railway/Cloud deployment yang berada di balik reverse proxy
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Dinonaktifkan agar script UI dari Scalar Docs (CDN) tidak terblokir oleh browser
+}));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
