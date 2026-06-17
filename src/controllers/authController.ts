@@ -3,7 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prismaClient';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
+if (!JWT_SECRET) {
+    throw new Error("FATAL ERROR: JWT_SECRET environment variable is not defined");
+}
 
 const login = async (req: Request, res: Response) => {
     try {
@@ -66,6 +70,6 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
-export { 
+export {
     login
- };
+};

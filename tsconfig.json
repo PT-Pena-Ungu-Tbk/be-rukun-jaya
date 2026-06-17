@@ -3,13 +3,21 @@
     "target": "ES2022",
     "module": "CommonJS",
     "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
-  "include": ["src/**/*", "prisma/**/*"]
+  "include": [
+    "src/**/*",
+    "prisma/**/*",
+    "prisma.config.ts"
+  ]
 }

@@ -3,7 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 // Secret key untuk membaca token
-const JWT_SECRET = process.env.JWT_SECRET || 'rahasia_toko_rukun_jaya_123';
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
+if (!JWT_SECRET) {
+    throw new Error("FATAL ERROR: JWT_SECRET environment variable is not defined");
+}
 
 // 1. Middleware untuk mengekstrak dan memverifikasi Token JWT
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
@@ -22,12 +26,12 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     try {
         // Membaca isi token menggunakan kunci rahasia
         const decoded = jwt.verify(token, JWT_SECRET);
-        
+
         // Menyisipkan data pengguna dari dalam token ke request, agar bisa dipakai oleh controller
-        req.user = decoded; 
-        
+        req.user = decoded;
+
         // Jika token valid, izinkan request lewat
-        next(); 
+        next();
     } catch (error) {
         // Jika token sudah expired atau hasil manipulasi orang iseng
         return res.status(403).json({
@@ -49,12 +53,12 @@ const isOwner = (req: Request, res: Response, next: NextFunction) => {
             message: 'Akses Ditolak / 403 Forbidden: Halaman ini khusus Pemilik Toko'
         });
     }
-    
+
     // Jika benar Owner, izinkan lewat
     next();
 };
 
-export { 
+export {
     verifyToken,
     isOwner
- };
+};
