@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
 import prisma from '../utils/prismaClient';
+import { isValidUUID } from '../utils/validator';
 
 const createProduct = async (req: Request, res: Response) => {
   try {
@@ -21,6 +22,13 @@ const createProduct = async (req: Request, res: Response) => {
       return res.status(400).json({
         status: 'error',
         message: 'Field sku_code, name, category_id, supplier_id, buy_price, dan sell_price wajib diisi.',
+      });
+    }
+
+    if (!isValidUUID(category_id) || !isValidUUID(supplier_id)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Format category_id atau supplier_id tidak valid (harus UUID).',
       });
     }
 
@@ -52,6 +60,14 @@ const createProduct = async (req: Request, res: Response) => {
 const getProducts = async (req: Request, res: Response) => {
   try {
     const { low_stock, search, categoryId, supplierId, page = 1, limit = 50 } = req.query;
+
+    if (categoryId && !isValidUUID(categoryId as string)) {
+      return res.status(400).json({ status: 'error', message: 'Format categoryId tidak valid (harus UUID).' });
+    }
+    
+    if (supplierId && !isValidUUID(supplierId as string)) {
+      return res.status(400).json({ status: 'error', message: 'Format supplierId tidak valid (harus UUID).' });
+    }
 
     if (low_stock === 'true') {
       const products = await prisma.$queryRaw`
@@ -98,6 +114,11 @@ const getProducts = async (req: Request, res: Response) => {
 const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
+
+    if (!isValidUUID(id)) {
+      return res.status(400).json({ status: 'error', message: 'Format ID produk tidak valid.' });
+    }
+
     const product = await prisma.product.findUnique({
       where: { id },
     });
@@ -124,6 +145,18 @@ const updateProduct = async (req: Request, res: Response) => {
     const { id } = req.params as { id: string };
     const updates = req.body;
 
+    if (!isValidUUID(id)) {
+      return res.status(400).json({ status: 'error', message: 'Format ID produk tidak valid.' });
+    }
+
+    if (updates.category_id && !isValidUUID(updates.category_id)) {
+      return res.status(400).json({ status: 'error', message: 'Format category_id tidak valid.' });
+    }
+
+    if (updates.supplier_id && !isValidUUID(updates.supplier_id)) {
+      return res.status(400).json({ status: 'error', message: 'Format supplier_id tidak valid.' });
+    }
+
     const product = await prisma.product.update({
       where: { id },
       data: {
@@ -146,6 +179,11 @@ const updateProduct = async (req: Request, res: Response) => {
 const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params as { id: string };
+    
+    if (!isValidUUID(id)) {
+      return res.status(400).json({ status: 'error', message: 'Format ID produk tidak valid.' });
+    }
+
     await prisma.product.delete({ where: { id } });
     return res.status(200).json({ status: 'success', message: 'Produk berhasil dihapus.' });
   } catch (error) {
@@ -166,6 +204,16 @@ const bulkUpdateProducts = async (req: Request, res: Response) => {
         status: 'error',
         message: 'Request body harus berisi array updates.',
       });
+    }
+
+    // Validasi semua ID produk dalam array
+    for (const item of updates) {
+      if (!isValidUUID(item.id)) {
+        return res.status(400).json({
+          status: 'error',
+          message: `Format ID produk tidak valid pada salah satu item: ${item.id}`,
+        });
+      }
     }
 
     const result = await prisma.$transaction(

@@ -19,5 +19,8 @@
     "src/**/*",
     "prisma/**/*",
     "prisma.config.ts"
-  ]
+  ],
+  "ts-node": {
+    "files": true
+  }
 }

@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 // src/controllers/transactionController.js
 import prisma from '../utils/prismaClient';
+import { AppError } from '../utils/AppError';
+import { isValidUUID } from '../utils/validator';
 
 // 1. LOGIKA CHECKOUT TRANSAKSI
 const checkout = async (req: Request, res: Response) => {
@@ -9,6 +11,14 @@ const checkout = async (req: Request, res: Response) => {
     const userId = req.user.id; // Diambil dari token JWT
 
     try {
+        if (member_id && !isValidUUID(member_id)) {
+            throw new AppError("ID Member tidak valid.");
+        }
+
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            throw new AppError("Daftar barang (items) tidak boleh kosong.");
+        }
+
         // Menggunakan Interactive Transaction agar jika ada 1 proses gagal, semuanya otomatis dibatalkan (rollback)
         const result = await prisma.$transaction(async (tx: any) => {
             let subtotal = 0;
@@ -16,17 +26,20 @@ const checkout = async (req: Request, res: Response) => {
 
             // Looping untuk memvalidasi dan memotong stok setiap barang yang dibeli
             for (const item of items) {
+                if (!isValidUUID(item.product_id)) {
+                    throw new AppError(`ID Produk tidak valid pada salah satu item.`);
+                }
                 const product = await tx.product.findUnique({
                     where: { id: item.product_id }
                 });
 
                 if (!product) {
-                    throw new Error(`Produk dengan ID ${item.product_id} tidak ditemukan.`);
+                    throw new AppError(`Produk dengan ID ${item.product_id} tidak ditemukan.`);
                 }
 
                 // Validasi ketat: Stok tidak boleh sampai minus
                 if (product.current_stock < item.quantity) {
-                    throw new Error(`Stok produk '${product.name}' tidak mencukupi. Sisa stok: ${product.current_stock}`);
+                    throw new AppError(`Stok produk '${product.name}' tidak mencukupi. Sisa stok: ${product.current_stock}`);
                 }
 
                 // Kurangi stok aktif (current_stock)
@@ -58,11 +71,11 @@ const checkout = async (req: Request, res: Response) => {
             }
 
             const subtotalAfterDiscount = subtotal - discountAmount;
-            const taxAmount = subtotalAfterDiscount * 0.11; // PPN 11%
+            const taxAmount = subtotalAfterDiscount * 0.11; // PPN 11% Jika terdaftar dalam usaha yang dikenai pajak
             const grandTotal = subtotalAfterDiscount + taxAmount;
             
             if (cash_paid < grandTotal) {
-                throw new Error(`Pembayaran kurang. Total tagihan: ${grandTotal}`);
+                throw new AppError(`Pembayaran kurang. Total tagihan: ${grandTotal}`);
             }
             const changeAmount = cash_paid - grandTotal;
             const invoiceNo = `INV-${Date.now()}`;
@@ -119,10 +132,18 @@ const checkout = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error("Checkout Error:", error.message);
-        return res.status(400).json({
+        console.error("Checkout Error:", error);
+        
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({
+                status: "error",
+                message: error.message
+            });
+        }
+
+        return res.status(500).json({
             status: "error",
-            message: error.message || "Gagal memproses transaksi checkout."
+            message: "Terjadi kesalahan internal saat memproses transaksi checkout."
         });
     }
 };
@@ -133,16 +154,24 @@ const returnItem = async (req: Request, res: Response) => {
     const userId = req.user.id;
 
     try {
+        if (!isValidUUID(transaction_id) || !isValidUUID(product_id)) {
+            throw new AppError("ID Transaksi atau ID Produk tidak valid.");
+        }
+
+        if (!quantity_returned || quantity_returned <= 0) {
+            throw new AppError("Kuantitas retur harus lebih besar dari 0.");
+        }
+
         const result = await prisma.$transaction(async (tx: any) => {
             const defectiveProduct = await tx.product.findUnique({ where: { id: product_id } });
 
             if (!defectiveProduct) {
-                throw new Error("Produk retur tidak valid.");
+                throw new AppError("Produk retur tidak valid.");
             }
 
             // Validasi ketersediaan stok barang pengganti (sama dengan barang yang diretur)
             if (defectiveProduct.current_stock < quantity_returned) {
-                throw new Error(`Stok barang pengganti '${defectiveProduct.name}' tidak mencukupi.`);
+                throw new AppError(`Stok barang pengganti '${defectiveProduct.name}' tidak mencukupi.`);
             }
 
             // Tambahkan kuantitas ke defective_stock dan kurangi current_stock 
@@ -179,10 +208,18 @@ const returnItem = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-        console.error("Return Error:", error.message);
-        return res.status(400).json({
+        console.error("Return Error:", error);
+        
+        if (error instanceof AppError) {
+            return res.status(error.statusCode).json({
+                status: "error",
+                message: error.message
+            });
+        }
+
+        return res.status(500).json({
             status: "error",
-            message: error.message || "Gagal memproses retur garansi barang."
+            message: "Terjadi kesalahan internal saat memproses retur garansi barang."
         });
     }
 };
