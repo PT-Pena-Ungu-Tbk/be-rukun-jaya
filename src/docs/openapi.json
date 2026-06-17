@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "API Sistem Kasir Toko Rukun Jaya",
-    "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk PT. Pena Ungu Tbk.",
+    "title": "API Sistem Kasir Toko Bangunan Rukun Jaya",
+    "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk Toko Bangunan Rukun Jaya.",
     "version": "1.0.0"
   },
   "servers": [
@@ -43,6 +43,87 @@
         "responses": {
           "200": { "description": "Login Berhasil" },
           "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/employees": {
+      "get": {
+        "summary": "Ambil Daftar Karyawan",
+        "security": [{"BearerAuth": []}],
+        "responses": {
+          "200": { "description": "Daftar karyawan berhasil diambil" },
+          "401": { "description": "Tidak memiliki otorisasi" },
+          "403": { "description": "Role CASHIER ditolak akses" }
+        }
+      },
+      "post": {
+        "summary": "Tambah Karyawan",
+        "security": [{"BearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "role"],
+                "properties": {
+                  "name": { "type": "string", "example": "Budi Santoso" },
+                  "email": { "type": "string", "example": "[EMAIL_ADDRESS]" },
+                  "password": { "type": "string", "example": "password123" },
+                  "role": {"type": "string", "enum": ["CASHIER"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Karyawan berhasil ditambahkan" },
+          "401": { "description": "Anda tidak memiliki akses untuk menambahkan karyawan" },
+          "403": { "description": "Role CASHIER ditolak akses" },
+          "409": { "description": "Email sudah terdaftar" }
+        }
+      }
+    },
+    "/employees/{id}": {
+      "put": {
+        "summary": "Update Data Karyawan",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Budi Santoso Edit" },
+                  "email": { "type": "string", "example": "budi.edit@example.com" },
+                  "password": { "type": "string", "example": "newpassword123" },
+                  "role": { "type": "string", "enum": ["CASHIER", "OWNER"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Data karyawan berhasil diubah" },
+          "401": { "description": "Tidak memiliki otorisasi" },
+          "403": { "description": "Role CASHIER ditolak akses" },
+          "404": { "description": "Data tidak ditemukan" }
+        }
+      },
+      "delete": {
+        "summary": "Hapus Karyawan",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Karyawan berhasil dihapus" },
+          "401": { "description": "Tidak memiliki otorisasi" },
+          "403": { "description": "Role CASHIER ditolak akses" },
+          "404": { "description": "Data tidak ditemukan" }
         }
       }
     },
