@@ -27,6 +27,8 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
+app.set('trust proxy', 1); // Wajib untuk Railway/Cloud deployment yang berada di balik reverse proxy
+
 app.use(helmet());
 
 const limiter = rateLimit({
@@ -37,8 +39,14 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.get('/', (req, res) => {
-  res.send('API aman dengan CORS, Helmet, dan Rate Limiting!');
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Welcome to Rukun Jaya POS & Inventory API',
+    version: '1.1.0',
+    documentation: '/docs',
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.use('/docs', apiReference({
