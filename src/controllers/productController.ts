@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
 import prisma from '../utils/prismaClient';
 import { isValidUUID } from '../utils/validator';
+import * as xlsx from 'xlsx';
 
 const createProduct = async (req: Request, res: Response) => {
   try {
@@ -237,6 +238,143 @@ const bulkUpdateProducts = async (req: Request, res: Response) => {
   }
 };
 
+const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
+  try {
+    const { gudang_id } = req.body;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({
+        status: 'error',
+        error_code: 'INVALID_FILE_FORMAT',
+        message: 'File Excel tidak ditemukan.'
+      });
+    }
+
+    if (!gudang_id) {
+      return res.status(400).json({
+        status: 'error',
+        error_code: 'INVALID_REQUEST',
+        message: 'Parameter gudang_id wajib diisi.'
+      });
+    }
+
+    const workbook = xlsx.read(file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data: any[] = xlsx.utils.sheet_to_json(worksheet);
+
+    if (!data || data.length === 0) {
+      return res.status(422).json({
+        status: 'error',
+        error_code: 'TEMPLATE_MISMATCH',
+        message: 'File Excel kosong atau format tidak sesuai.'
+      });
+    }
+
+    const itemIds = data.map(d => d.item_id).filter(Boolean);
+    const existingProducts = await prisma.product.findMany({
+      where: { id: { in: itemIds } }
+    });
+
+    const productMap = new Map();
+    for (const p of existingProducts) {
+      productMap.set(p.id, p);
+    }
+    
+    const prismaUpdates = [];
+    const results = [];
+    let updated_count = 0;
+    let failed_count = 0;
+    let selisih_signifikan = 0;
+
+    for (const row of data) {
+       const itemId = row.item_id;
+       const stokFisikBaru = Number(row.stok_fisik_baru);
+       const kodeRak = row.kode_rak;
+
+       if (!itemId || isNaN(stokFisikBaru)) {
+          failed_count++;
+          results.push({ item_id: itemId || 'UNKNOWN', status: 'FAILED', message: 'Format data tidak valid' });
+          continue;
+       }
+
+       const product = productMap.get(itemId);
+       if (!product) {
+          failed_count++;
+          results.push({ item_id: itemId, status: 'FAILED', message: 'Item tidak ditemukan' });
+          continue;
+       }
+
+       const stokLama = product.current_stock;
+       const selisih = Math.abs(stokFisikBaru - stokLama);
+       
+       if (stokLama > 0 && (selisih / stokLama) > 0.1) {
+          selisih_signifikan++;
+       } else if (stokLama === 0 && stokFisikBaru > 0) {
+          selisih_signifikan++;
+       }
+
+       prismaUpdates.push(prisma.product.update({
+          where: { id: itemId },
+          data: {
+             current_stock: stokFisikBaru,
+             rack_location: kodeRak || product.rack_location
+          }
+       }));
+       
+       updated_count++;
+       results.push({
+          item_id: itemId,
+          status: 'SUCCESS',
+          stok_lama: stokLama,
+          stok_baru: stokFisikBaru,
+          selisih: stokFisikBaru - stokLama
+       });
+    }
+
+    let auditLogId = null;
+    if (prismaUpdates.length > 0) {
+       await prisma.$transaction(prismaUpdates);
+       
+       const user_id = (req as any).user?.id || 'SYSTEM';
+       
+       // Log audit ONLY if User model has this ID, but wait, AuditLog user_id might refer to a strict UUID in DB.
+       // It's safe to just create the AuditLog if we have a valid UUID.
+       if (isValidUUID(user_id)) {
+           const auditLog = await prisma.auditLog.create({
+              data: {
+                 user_id,
+                 action: 'BULK_UPDATE_EXCEL',
+                 table_name: 'products',
+                 record_id: isValidUUID(gudang_id) ? gudang_id : null,
+                 changes_payload: { updated_count, failed_count, selisih_signifikan }
+              }
+           });
+           auditLogId = auditLog.id;
+       }
+    }
+
+    const statusCode = failed_count > 0 && updated_count > 0 ? 207 : (updated_count > 0 ? 200 : 400);
+
+    return res.status(statusCode).json({
+       success: updated_count > 0,
+       updated_count,
+       failed_count,
+       selisih_signifikan,
+       results,
+       audit_log_id: auditLogId
+    });
+
+  } catch (error) {
+    console.error('Upload Excel Bulk Update Error:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Gagal memproses file Excel.',
+    });
+  }
+};
+
 export { 
   createProduct,
   getProducts,
@@ -244,4 +382,5 @@ export {
   updateProduct,
   deleteProduct,
   bulkUpdateProducts,
+  uploadExcelBulkUpdate,
  };
