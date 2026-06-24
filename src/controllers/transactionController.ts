@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prismaClient';
 import { AppError } from '../utils/AppError';
 import { isValidUUID } from '../utils/validator';
+import * as xlsx from 'xlsx';
 
 // 1. LOGIKA CHECKOUT TRANSAKSI
 const checkout = async (req: Request, res: Response) => {
@@ -182,6 +183,7 @@ const returnItem = async (req: Request, res: Response) => {
                     current_stock: defectiveProduct.current_stock - quantity_returned
                 }
             });
+            
 
             // Wajib mencatat ke Audit Log karena memodifikasi data sensitif
             const auditLog = await tx.auditLog.create({
@@ -224,7 +226,85 @@ const returnItem = async (req: Request, res: Response) => {
     }
 };
 
+//3. LOGIKA EKSPOR TRANSAKSI (EXCEL)
+const exportTransactionsExcel = async (req: Request, res: Response) => {
+    try {
+        const { startDate, endDate, status } = req.query as any;
+        const where: any= {};
+
+        //Filter Status
+        if (status && status !== 'all'){
+            where.status = status;
+        }
+
+        //Filter Rentang Tanggal
+        if (startDate || endDate){
+            where.created_at = {};
+            if (startDate) {
+                const start = new Date(startDate);
+                start.setHours(0,0,0,0);
+                where.created_at.gte = start;
+            }
+            if (endDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                where.created_at.lte = end;
+            }
+        }
+
+        const transaction = await prisma.transaction.findMany({
+            where,
+            orderBy: { created_at: 'desc'},
+            include: {
+                details: {
+                    include: {
+                        product: true
+                    }
+                },
+                member: true
+            }
+        })
+        
+        // Format data untuk sheet Excel
+        const excelData = transaction.map((t: any) => ({
+            "ID Transaksi": t.invoice_no,
+            "Tanggal": t.created_at.toISOString().split('T')[0],
+            "Waktu": t.created_at.toISOString().split('T')[1].substring(0, 8),
+            "ID Member": t.member_id || '-',
+            "Kasir ID": t.cashier_id,
+            "Subtotal (IDR)": t.subtotal,
+            "Diskon (IDR)": t.discount_value,
+            "Pajak (IDR)": t.tax_amount,
+            "Grand Total (IDR)": t.grand_total,
+            "Metode Pembayaran": t.payment_method || 'CASH',
+            "Status": t.status || 'SUCCESS'
+        }));
+
+        // Generate Excel Buffer
+        const worksheet = xlsx.utils.json_to_sheet(excelData);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, "Riwayat Transaksi");
+        const excelBuffer = xlsx.write(workbook, { bookType: "xlsx", type: "buffer" });
+
+        // Set Headers dan Kirim File
+        const fileName = `Export_Transaksi_${Date.now()}.xlsx`;
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        
+        return res.send(excelBuffer);
+    }
+    catch (error: any) {
+        console.error("Checkout Error:", error);
+        
+        return res.status(500).json({
+            status: "error",
+            message: "Terjadi kesalahan internal saat memproses transaksi checkout."
+        });
+    }
+};
+
 export { 
     checkout,
-    returnItem
+    returnItem,
+    exportTransactionsExcel
  };
