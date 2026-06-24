@@ -157,3 +157,36 @@ export const deleteEmployee = async (req: Request, res: Response) => {
         res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal saat menghapus data karyawan.' });
     }
 };
+
+export const toggleEmployeeAccess = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.staff_id as string;
+        
+        if (!isValidUUID(id)) {
+            return res.status(400).json({ status: 'error', message: 'Format ID karyawan tidak valid.' });
+        }
+
+        const existingUser = await prisma.user.findUnique({ where: { id } });
+        if (!existingUser) {
+            return res.status(404).json({ status: 'error', message: 'Karyawan tidak ditemukan', error_code: 'STAFF_NOT_FOUND' });
+        }
+
+        if (existingUser.role === 'OWNER') {
+            return res.status(403).json({ status: 'error', message: 'Akun Owner tidak dapat dinonaktifkan', error_code: 'CANNOT_DEACTIVATE_OWNER' });
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: { is_active: !existingUser.is_active }
+        });
+
+        res.status(200).json({
+            staff_id: updatedUser.id,
+            is_active: updatedUser.is_active,
+            message: `Akses karyawan berhasil ${updatedUser.is_active ? 'diaktifkan' : 'dinonaktifkan'}`
+        });
+    } catch (error: any) {
+        console.error("Toggle Employee Access Error:", error);
+        res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal saat mengubah akses karyawan.' });
+    }
+};
