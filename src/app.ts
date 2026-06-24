@@ -12,7 +12,8 @@ import authRoutes from './routes/authRoutes';
 import transactionRoutes from './routes/transactionRoutes';
 import memberRoutes from './routes/memberRoutes';
 import productRoutes from './routes/productRoutes';
-import reportRoutes from './routes/reportRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+import financeRoutes from './routes/financeRoutes';
 import auditRoutes from './routes/auditRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 
@@ -62,7 +63,8 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/members', memberRoutes);
 app.use('/api/v1/products', productRoutes);
-app.use('/api/v1/reports', reportRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/finance', financeRoutes);
 app.use('/api/v1/audit-logs', auditRoutes);
 app.use('/api/v1/employees', employeeRoutes);
 
