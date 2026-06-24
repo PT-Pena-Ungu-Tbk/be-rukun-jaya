@@ -16,6 +16,8 @@ generator client {
 
 enum Role {
   OWNER
+  MANAGER
+  WAREHOUSE_ADMIN 
   CASHIER
 }
 
@@ -29,6 +31,22 @@ enum DiscountType {
   NOMINAL
 }
 
+enum ReturnReason {
+  CACAT_PABRIK
+  SALAH_KIRIM
+  KUALITAS_TIDAK_SESUAI
+  LAINNYA
+}
+
+enum ClaimStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
 // --- MODELS / TABLES ---
 
 model User {
@@ -37,6 +55,7 @@ model User {
   email         String         @unique @db.VarChar(255)
   password_hash String         @db.VarChar(255)
   role          Role
+  refresh_token String?        @db.Text
   created_at    DateTime       @default(now()) @db.Timestamp
   transactions  Transaction[]
   audit_logs    AuditLog[]
@@ -97,6 +116,7 @@ model Product {
   category            Category            @relation(fields: [category_id], references: [id], onDelete: Cascade)
   supplier            Supplier            @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
   transaction_details TransactionDetail[]
+  warranty_claims     WarrantyClaim[]
 
   @@map("products")
 }
@@ -132,6 +152,24 @@ model TransactionDetail {
   product        Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
 
   @@map("transaction_details")
+}
+
+model WarrantyClaim {
+  id                      String        @id @default(uuid())
+  invoice_id              String        @db.VarChar(255)
+  product_id              String        @db.Uuid
+  product                 Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  alasan_retur            ReturnReason
+  qty_diretur             Int           @db.Integer
+  deskripsi_kondisi       String?       @db.Text 
+  status                  ClaimStatus
+  estimasi_nilai_retur    Int
+  stok_berkurang          Boolean       @default(false)
+  created_at              DateTime      @default(now()) @db.Timestamp
+  updated_at              DateTime      @default(now()) @db.Timestamp
+  
+
+  @@map("warranty_claims")
 }
 
 model AuditLog {
