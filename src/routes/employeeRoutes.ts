@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllEmployees, getEmployeeById, createEmployee, updateEmployee, deleteEmployee } from '../controllers/employeeController';
+import { getAllEmployees, getEmployeeById, createEmployee, updateEmployee, deleteEmployee, toggleEmployeeAccess } from '../controllers/employeeController';
 import { verifyToken, isOwner } from '../middlewares/authMiddleware';
 
 const router = express.Router();
@@ -13,5 +13,6 @@ router.get('/:id', getEmployeeById);
 router.post('/', createEmployee);
 router.put('/:id', updateEmployee);
 router.delete('/:id', deleteEmployee);
+router.patch('/:staff_id/toggle-access', toggleEmployeeAccess);
 
 export default router;

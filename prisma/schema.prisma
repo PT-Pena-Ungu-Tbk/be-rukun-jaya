@@ -3,7 +3,6 @@
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
-
 datasource db {
   provider = "postgresql"
 }
@@ -17,7 +16,7 @@ generator client {
 enum Role {
   OWNER
   MANAGER
-  WAREHOUSE_ADMIN 
+  WAREHOUSE_ADMIN
   CASHIER
 }
 
@@ -50,13 +49,14 @@ enum ClaimStatus {
 // --- MODELS / TABLES ---
 
 model User {
-  id            String         @id @default(uuid()) @db.Uuid
-  name          String         @db.VarChar(255)
-  email         String         @unique @db.VarChar(255)
-  password_hash String         @db.VarChar(255)
+  id            String        @id @default(uuid()) @db.Uuid
+  name          String        @db.VarChar(255)
+  email         String        @unique @db.VarChar(255)
+  password_hash String        @db.VarChar(255)
   role          Role
-  refresh_token String?        @db.Text
-  created_at    DateTime       @default(now()) @db.Timestamp
+  is_active     Boolean       @default(true)
+  refresh_token String?       @db.Text
+  created_at    DateTime      @default(now()) @db.Timestamp
   transactions  Transaction[]
   audit_logs    AuditLog[]
 
@@ -68,19 +68,22 @@ model Member {
   phone_number String        @unique @db.VarChar(50)
   name         String        @db.VarChar(255)
   status       MemberStatus  @default(ACTIVE)
+  level        String        @default("Bronze") @db.VarChar(50)
+  poin         Int           @default(0)
+  created_at   DateTime      @default(now()) @db.Timestamp
   transactions Transaction[]
 
   @@map("members")
 }
 
 model Employee {
-  id          String        @id @default(uuid()) @db.Uuid
-  name        String        @db.VarChar(255)
-  email       String        @unique @db.VarChar(255)
-  password_hash String        @db.VarChar(255)
-  role        Role
-  created_at  DateTime      @default(now()) @db.Timestamp
-  
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String   @db.VarChar(255)
+  email         String   @unique @db.VarChar(255)
+  password_hash String   @db.VarChar(255)
+  role          Role
+  created_at    DateTime @default(now()) @db.Timestamp
+
   @@map("employees")
 }
 
@@ -155,19 +158,18 @@ model TransactionDetail {
 }
 
 model WarrantyClaim {
-  id                      String        @id @default(uuid())
-  invoice_id              String        @db.VarChar(255)
-  product_id              String        @db.Uuid
-  product                 Product       @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  alasan_retur            ReturnReason
-  qty_diretur             Int           @db.Integer
-  deskripsi_kondisi       String?       @db.Text 
-  status                  ClaimStatus
-  estimasi_nilai_retur    Int
-  stok_berkurang          Boolean       @default(false)
-  created_at              DateTime      @default(now()) @db.Timestamp
-  updated_at              DateTime      @default(now()) @db.Timestamp
-  
+  id                   String       @id @default(uuid())
+  invoice_id           String       @db.VarChar(255)
+  product_id           String       @db.Uuid
+  product              Product      @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  alasan_retur         ReturnReason
+  qty_diretur          Int          @db.Integer
+  deskripsi_kondisi    String?      @db.Text
+  status               ClaimStatus
+  estimasi_nilai_retur Int
+  stok_berkurang       Boolean      @default(false)
+  created_at           DateTime     @default(now()) @db.Timestamp
+  updated_at           DateTime     @default(now()) @db.Timestamp
 
   @@map("warranty_claims")
 }
