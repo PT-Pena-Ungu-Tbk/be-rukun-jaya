@@ -1,11 +1,11 @@
-// src/routes/transactionRoutes.js
+// src/routes/transactionRoutes.ts
 import express from 'express';
 const router = express.Router();
-import { checkout, returnItem  } from '../controllers/transactionController';
-import { verifyToken  } from '../middlewares/authMiddleware';
+import { checkout, returnItem, getTransactionDetails } from '../controllers/transactionController';
+import { verifyToken, hasRoles } from '../middlewares/authMiddleware';
 
-// Endpoint wajib menggunakan verifyToken untuk memastikan Kasir/Owner sudah login
-router.post('/checkout', verifyToken, checkout);
+router.post('/', verifyToken, hasRoles(['MANAGER', 'CASHIER']), checkout);
+router.get('/:transaction_id', verifyToken, hasRoles(['MANAGER', 'CASHIER', 'OWNER']), getTransactionDetails);
 router.post('/return', verifyToken, returnItem);
 
 export default router;

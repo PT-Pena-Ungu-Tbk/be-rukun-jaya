@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-// src/controllers/authController.js
+// src/controllers/authController.ts
 import prisma from '../utils/prismaClient';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 if (!JWT_SECRET) {
@@ -11,65 +12,194 @@ if (!JWT_SECRET) {
 
 const login = async (req: Request, res: Response) => {
     try {
-        // 1. Ekstraksi email dan password dari request body Frontend
-        const { email, password } = req.body;
+        const { email_or_username, password, remember_me } = req.body;
 
-        // 2. Cari user di database berdasarkan email
+        if (!email_or_username || !password) {
+            return res.status(400).json({
+                success: false,
+                status_code: 400,
+                error_code: "INVALID_REQUEST",
+                message: "email_or_username dan password wajib diisi."
+            });
+        }
+
         const user = await prisma.user.findFirst({
-            where: { email: email }
+            where: {
+                OR: [
+                    { email: email_or_username },
+                    { username: email_or_username }
+                ]
+            }
         });
 
-        // 3. Jika user tidak ditemukan, kembalikan error 401 sesuai API Contract
         if (!user) {
             return res.status(401).json({
-                status: "error",
+                success: false,
+                status_code: 401,
+                error_code: "INVALID_CREDENTIALS",
                 message: "Kredensial yang Anda masukkan salah atau tidak cocok."
             });
         }
 
-        // 4. Bandingkan password input dengan password_hash di database
         const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
-        // Jika password salah, kembalikan pesan error yang persis sama
         if (!isPasswordValid) {
             return res.status(401).json({
-                status: "error",
+                success: false,
+                status_code: 401,
+                error_code: "INVALID_CREDENTIALS",
                 message: "Kredensial yang Anda masukkan salah atau tidak cocok."
             });
         }
 
-        // 5. Jika valid, buatkan Token JWT yang berisi ID dan Role
         const tokenPayload = {
             id: user.id,
             role: user.role
         };
-        // Token diset kedaluwarsa dalam 8 jam (1 shift kerja)
-        const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '8h' });
+        
+        const expiresInSecs = remember_me ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+        const accessToken = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: expiresInSecs });
+        
+        const refreshTokenPayload = { id: user.id, type: 'refresh' };
+        const refreshToken = jwt.sign(refreshTokenPayload, JWT_SECRET, { expiresIn: '30d' });
 
-        // 6. Kembalikan Response Sukses sesuai API Contract
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { refresh_token: refreshToken }
+        });
+
         return res.status(200).json({
-            status: "success",
+            success: true,
+            status_code: 200,
             data: {
-                token: token,
+                access_token: accessToken,
+                token_type: "Bearer",
+                expires_in: expiresInSecs,
+                refresh_token: refreshToken,
                 user: {
                     id: user.id,
-                    name: user.name,
+                    nama_lengkap: user.name,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    // mock permissions array
+                    permissions: ["pos.read", "pos.write"]
                 }
             }
         });
 
     } catch (error) {
-        // Error handling wajib sesuai pedoman pengembangan (Development Guidelines)
         console.error("Error pada proses login:", error);
         return res.status(500).json({
-            status: "error",
+            success: false,
+            status_code: 500,
+            error_code: "INTERNAL_SERVER_ERROR",
             message: "Terjadi kesalahan internal pada server saat memproses autentikasi."
         });
     }
 };
 
+const refreshToken = async (req: Request, res: Response) => {
+    try {
+        const { refresh_token } = req.body;
+        
+        if (!refresh_token) {
+            return res.status(400).json({
+                success: false,
+                status_code: 400,
+                error_code: "INVALID_REQUEST",
+                message: "refresh_token wajib disertakan."
+            });
+        }
+
+        let decoded: any;
+        try {
+            decoded = jwt.verify(refresh_token, JWT_SECRET);
+        } catch (error) {
+            return res.status(401).json({
+                success: false,
+                status_code: 401,
+                error_code: "TOKEN_EXPIRED",
+                message: "Refresh token sudah kadaluarsa atau tidak valid."
+            });
+        }
+
+        const user = await prisma.user.findFirst({
+            where: {
+                id: decoded.id,
+                refresh_token: refresh_token
+            }
+        });
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                status_code: 401,
+                error_code: "TOKEN_INVALID",
+                message: "Refresh token tidak valid atau sudah digunakan."
+            });
+        }
+
+        const tokenPayload = {
+            id: user.id,
+            role: user.role
+        };
+        const expiresInSecs = 24 * 60 * 60;
+        const newAccessToken = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: expiresInSecs });
+
+        return res.status(200).json({
+            success: true,
+            status_code: 200,
+            data: {
+                access_token: newAccessToken,
+                expires_in: expiresInSecs
+            }
+        });
+    } catch (error) {
+        console.error("Error pada proses refresh token:", error);
+        return res.status(500).json({
+            success: false,
+            status_code: 500,
+            error_code: "INTERNAL_SERVER_ERROR",
+            message: "Terjadi kesalahan internal pada server."
+        });
+    }
+};
+
+const logout = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                status_code: 401,
+                error_code: "UNAUTHORIZED",
+                message: "Token tidak valid atau tidak disertakan."
+            });
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { refresh_token: null }
+        });
+
+        return res.status(200).json({
+            success: true,
+            status_code: 200,
+            message: "Logout berhasil. Sesi telah diakhiri."
+        });
+    } catch (error) {
+        console.error("Error pada proses logout:", error);
+        return res.status(500).json({
+            success: false,
+            status_code: 500,
+            error_code: "INTERNAL_SERVER_ERROR",
+            message: "Terjadi kesalahan internal pada server saat logout."
+        });
+    }
+};
+
 export {
-    login
+    login,
+    refreshToken,
+    logout
 };

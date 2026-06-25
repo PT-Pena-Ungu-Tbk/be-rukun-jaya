@@ -9,64 +9,52 @@ if (!JWT_SECRET) {
     throw new Error("FATAL ERROR: JWT_SECRET environment variable is not defined");
 }
 
-// 1. Middleware untuk mengekstrak dan memverifikasi Token JWT
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-    // Klien (Frontend) biasanya mengirim token di header dengan format: "Bearer <token_acak>"
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+export interface AuthRequest extends Request {
+    user?: any;
+}
 
-    // Jika Kasir/Pemilik belum login sama sekali (tidak bawa token)
-    if (!token) {
+// 1. Middleware untuk mengekstrak dan memverifikasi Token JWT
+export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+    const authHeader = req.headers['authorization'];
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
-            status: 'error',
-            message: 'Akses Ditolak: Anda belum login'
+            status: "error",
+            message: "Akses Ditolak. Token tidak disediakan atau format salah."
         });
     }
+
+    const token = authHeader.split(' ')[1];
 
     try {
-        // Membaca isi token menggunakan kunci rahasia
         const decoded = jwt.verify(token, JWT_SECRET);
-
-        // Menyisipkan data pengguna dari dalam token ke request, agar bisa dipakai oleh controller
-        req.user = decoded;
-
-        // Jika token valid, izinkan request lewat
-        next();
+        req.user = decoded; 
+        next(); 
     } catch (error) {
-        // Jika token sudah expired atau hasil manipulasi orang iseng
-        return res.status(403).json({
-            status: 'error',
-            message: 'Akses Ditolak: Sesi Anda tidak valid atau sudah kedaluwarsa'
+        return res.status(401).json({
+            status: "error",
+            message: "Akses Ditolak. Token tidak valid atau sudah kedaluwarsa."
         });
     }
 };
 
-// 2. Middleware khusus untuk memblokir Kasir (Mewujudkan Acceptance Criteria AC-05)
-const isOwner = (req: Request, res: Response, next: NextFunction) => {
-    // Mengecek 'role' dari payload token yang sudah diekstrak oleh verifyToken di atas
-    const userRole = req.user?.role;
-
-    // Jika yang mencoba mengakses bukan Owner, langsung lempar status 403 Forbidden
-    if (userRole !== 'OWNER') {
-        return res.status(403).json({
-            status: 'error',
-            message: 'Akses Ditolak / 403 Forbidden: Halaman ini khusus Pemilik Toko'
-        });
-    }
-
-    // Jika benar Owner, izinkan lewat
-    next();
-};
-
-// 3. Middleware dinamis untuk memvalidasi beberapa role sekaligus
-const hasRoles = (roles: string[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const userRole = req.user?.role;
-
-        if (!userRole || !roles.includes(userRole)) {
+export const hasRoles = (roles: string[]) => {
+    return (req: AuthRequest, res: Response, next: NextFunction) => {
+        if (!req.user || !req.user.role) {
             return res.status(403).json({
-                status: 'error',
-                message: 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengakses halaman ini.'
+                success: false,
+                status_code: 403,
+                error_code: "FORBIDDEN",
+                message: "Akses Ditolak. Hak akses tidak ditemukan."
+            });
+        }
+
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                status_code: 403,
+                error_code: "FORBIDDEN",
+                message: "Akses Ditolak. Anda tidak memiliki izin untuk tindakan ini."
             });
         }
 
@@ -74,8 +62,12 @@ const hasRoles = (roles: string[]) => {
     };
 };
 
-export {
-    verifyToken,
-    isOwner,
-    hasRoles
+export const isOwner = (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user || req.user.role !== 'OWNER') {
+        return res.status(403).json({
+            status: "error",
+            message: "Akses Ditolak. Hanya Owner yang dapat mengakses resource ini."
+        });
+    }
+    next();
 };
