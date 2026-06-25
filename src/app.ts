@@ -16,6 +16,7 @@ import dashboardRoutes from './routes/dashboardRoutes';
 import financeRoutes from './routes/financeRoutes';
 import auditRoutes from './routes/auditRoutes';
 import employeeRoutes from './routes/employeeRoutes';
+import warrantyRoutes from './routes/warrantyRoutes';
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/finance', financeRoutes);
 app.use('/api/v1/audit-logs', auditRoutes);
 app.use('/api/v1/employees', employeeRoutes);
+app.use('/api/v1/warranty', warrantyRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

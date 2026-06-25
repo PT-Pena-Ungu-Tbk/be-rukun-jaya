@@ -58,7 +58,24 @@ const isOwner = (req: Request, res: Response, next: NextFunction) => {
     next();
 };
 
+// 3. Middleware dinamis untuk memvalidasi beberapa role sekaligus
+const hasRoles = (roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const userRole = req.user?.role;
+
+        if (!userRole || !roles.includes(userRole)) {
+            return res.status(403).json({
+                status: 'error',
+                message: 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengakses halaman ini.'
+            });
+        }
+
+        next();
+    };
+};
+
 export {
     verifyToken,
-    isOwner
+    isOwner,
+    hasRoles
 };
