@@ -3,7 +3,7 @@
   "info": {
     "title": "API Sistem Kasir Toko Bangunan Rukun Jaya",
     "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk Toko Bangunan Rukun Jaya.",
-    "version": "1.0.0"
+    "version": "1.2.0"
   },
   "servers": [
     {
@@ -245,6 +245,17 @@
         "responses": { "201": { "description": "Transaksi sukses" } }
       }
     },
+    "/transactions/export/excel": {
+      "get": {
+        "summary": "Export Transaksi ke Excel",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "start_date", "in": "query", "schema": { "type": "string", "example": "2026-06-01" } },
+          { "name": "end_date", "in": "query", "schema": { "type": "string", "example": "2026-06-30" } }
+        ],
+        "responses": { "200": { "description": "File Excel terunduh" } }
+      }
+    },
     "/transactions/return": {
       "post": {
         "summary": "Retur Barang Cacat (Garansi Toko)",
@@ -267,15 +278,37 @@
         "responses": { "200": { "description": "Retur berhasil" } }
       }
     },
-    "/reports/financial": {
+    "/finance/summary": {
       "get": {
-        "summary": "Laporan Keuangan",
+        "summary": "Ringkasan Laporan Keuangan",
         "security": [{ "BearerAuth": [] }],
         "parameters": [
-          { "name": "start_date", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-06-01" } },
-          { "name": "end_date", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-06-30" } }
+          { "name": "period", "in": "query", "schema": { "type": "string", "enum": ["this_month", "last_month", "custom"] } },
+          { "name": "date_from", "in": "query", "schema": { "type": "string", "example": "2026-06-01" } },
+          { "name": "date_to", "in": "query", "schema": { "type": "string", "example": "2026-06-30" } }
         ],
-        "responses": { "200": { "description": "Data Laporan" } }
+        "responses": { "200": { "description": "Data Ringkasan Keuangan" } }
+      }
+    },
+    "/finance/export/pdf": {
+      "get": {
+        "summary": "Export Laporan Keuangan ke PDF",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "date_from", "in": "query", "schema": { "type": "string", "example": "2026-06-01" } },
+          { "name": "date_to", "in": "query", "schema": { "type": "string", "example": "2026-06-30" } }
+        ],
+        "responses": { "200": { "description": "File PDF terunduh" } }
+      }
+    },
+    "/dashboard/overview": {
+      "get": {
+        "summary": "Dashboard Overview (Agregasi Data)",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "date", "in": "query", "schema": { "type": "string", "example": "2026-06-24" } }
+        ],
+        "responses": { "200": { "description": "Data Dashboard Overview" } }
       }
     },
     "/audit-logs": {
@@ -283,6 +316,13 @@
         "summary": "Log Audit",
         "security": [{ "BearerAuth": [] }],
         "responses": { "200": { "description": "Daftar Audit Log" } }
+      }
+    },
+    "/audit-logs/export/excel": {
+      "get": {
+        "summary": "Export Audit Logs ke Excel",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "File Excel terunduh" } }
       }
     }
   }
