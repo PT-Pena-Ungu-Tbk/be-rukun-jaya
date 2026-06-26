@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://be-rukun-jaya-production.up.railway.app/api/v1",
-      "description": "Production Server (Railway)"
-    },
-    {
       "url": "http://localhost:5000/api/v1",
       "description": "Development Server Lokal"
+    },
+    {
+      "url": "https://be-rukun-jaya-production.up.railway.app/api/v1",
+      "description": "Production Server (Railway)"
     }
   ],
   "components": {
@@ -26,6 +26,32 @@
     }
   },
   "paths": {
+    "/auth/refresh": {
+      "post": {
+        "summary": "Refresh Access Token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refresh_token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Token diperbarui" } }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "Logout Berhasil" } }
+      }
+    },
     "/auth/login": {
       "post": {
         "summary": "Autentikasi Pengguna",
@@ -35,10 +61,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "password"],
+                "required": ["email_or_username", "password"],
                 "properties": {
-                  "email": { "type": "string", "example": "owner@toko-rukunjaya.com" },
-                  "password": { "type": "string", "example": "password_rahasia" }
+                  "email_or_username": { "type": "string", "example": "owner@toko-rukunjaya.com" },
+                  "password": { "type": "string", "example": "password_rahasia" },
+                  "remember_me": { "type": "boolean", "example": true }
                 }
               }
             }
@@ -88,7 +115,25 @@
         }
       }
     },
+    "/employees/{staff_id}/toggle-access": {
+      "patch": {
+        "summary": "Toggle Akses Karyawan",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          { "name": "staff_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": { "200": { "description": "Akses diubah" } }
+      }
+    },
     "/employees/{id}": {
+      "get": {
+        "summary": "Ambil Detail Karyawan",
+        "security": [{"BearerAuth": []}],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": { "200": { "description": "Data karyawan" } }
+      },
       "put": {
         "summary": "Update Data Karyawan",
         "security": [{"BearerAuth": []}],
@@ -170,6 +215,35 @@
         "responses": { "201": { "description": "Produk berhasil ditambah" } }
       }
     },
+    "/products/{id}": {
+      "get": {
+        "summary": "Ambil Detail Produk",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": { "200": { "description": "Detail produk" } }
+      }
+    },
+    "/products/bulk-update/upload": {
+      "post": {
+        "summary": "Upload Excel Bulk Update",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "File terupload dan stok diupdate" } }
+      }
+    },
     "/products/bulk-update": {
       "put": {
         "summary": "Bulk Update Stok Barang",
@@ -199,6 +273,62 @@
         "responses": { "200": { "description": "Update massal sukses" } }
       }
     },
+    "/members/vip/export": {
+      "get": {
+        "summary": "Export Data VIP Member ke Excel",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "File Excel terunduh" } }
+      }
+    },
+    "/members/vip": {
+      "get": {
+        "summary": "Ambil Daftar VIP Member",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "Daftar VIP Member" } }
+      },
+      "post": {
+        "summary": "Registrasi VIP Member Baru",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone_number": { "type": "string" },
+                  "name": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "VIP Member ditambahkan" } }
+      }
+    },
+    "/members/vip/{member_id}/redeem": {
+      "post": {
+        "summary": "Redeem Poin VIP Member",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "member_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "points_to_redeem": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Poin berhasil ditukar" } }
+      }
+    },
     "/members/verify": {
       "get": {
         "summary": "Verifikasi Status Member VIP",
@@ -212,7 +342,7 @@
         }
       }
     },
-    "/transactions/checkout": {
+    "/transactions": {
       "post": {
         "summary": "Finalisasi Transaksi Penjualan (POS)",
         "security": [{ "BearerAuth": [] }],
@@ -316,6 +446,59 @@
         "summary": "Log Audit",
         "security": [{ "BearerAuth": [] }],
         "responses": { "200": { "description": "Daftar Audit Log" } }
+      }
+    },
+    "/warranty/lookup": {
+      "get": {
+        "summary": "Cari Transaksi untuk Garansi",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "invoice_no", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Data transaksi" } }
+      }
+    },
+    "/warranty/claims": {
+      "post": {
+        "summary": "Buat Klaim Garansi",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "invoice_no": { "type": "string" },
+                  "product_id": { "type": "string", "format": "uuid" },
+                  "qty": { "type": "integer" },
+                  "reason": { "type": "string", "enum": ["CACAT_PABRIK", "SALAH_KIRIM", "KUALITAS_TIDAK_SESUAI", "LAINNYA"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Klaim dibuat" } }
+      }
+    },
+    "/transactions/{transaction_id}": {
+      "get": {
+        "summary": "Ambil Detail Transaksi",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "transaction_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": { "200": { "description": "Detail transaksi" } }
+      }
+    },
+    "/audit-logs/{id}": {
+      "get": {
+        "summary": "Ambil Detail Log Audit",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": { "200": { "description": "Detail log audit" } }
       }
     },
     "/audit-logs/export/excel": {

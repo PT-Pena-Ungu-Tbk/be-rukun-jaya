@@ -19,7 +19,7 @@ const login = async (req: Request, res: Response) => {
                 success: false,
                 status_code: 400,
                 error_code: "INVALID_REQUEST",
-                message: "email_or_username dan password wajib diisi."
+                message: "Email atau Username dan Password wajib diisi."
             });
         }
 
