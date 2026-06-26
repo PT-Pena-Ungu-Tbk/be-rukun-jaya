@@ -320,7 +320,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "points_to_redeem": { "type": "integer" }
+                  "poin_ditukar": { "type": "integer" },
+                  "jenis_penukaran": { "type": "string" },
+                  "transaction_id": { "type": "string", "format": "uuid" }
                 }
               }
             }
