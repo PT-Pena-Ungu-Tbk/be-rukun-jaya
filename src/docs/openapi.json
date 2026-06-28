@@ -46,7 +46,41 @@
         },
         "responses": {
           "200": {
-            "description": "Token diperbarui"
+            "description": "Token diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token diperbarui"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -61,7 +95,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Logout Berhasil"
+            "description": "Logout Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Logout Berhasil"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -99,10 +167,74 @@
         },
         "responses": {
           "200": {
-            "description": "Login Berhasil"
+            "description": "Login Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login Berhasil"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -117,13 +249,107 @@
         ],
         "responses": {
           "200": {
-            "description": "Daftar karyawan berhasil diambil"
+            "description": "Daftar karyawan berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar karyawan berhasil diambil"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Tidak memiliki otorisasi"
+            "description": "Tidak memiliki otorisasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak memiliki otorisasi"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Role CASHIER ditolak akses"
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -172,16 +398,140 @@
         },
         "responses": {
           "201": {
-            "description": "Karyawan berhasil ditambahkan"
+            "description": "Karyawan berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Karyawan berhasil ditambahkan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Anda tidak memiliki akses untuk menambahkan karyawan"
+            "description": "Anda tidak memiliki akses untuk menambahkan karyawan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Anda tidak memiliki akses untuk menambahkan karyawan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Role CASHIER ditolak akses"
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "409": {
-            "description": "Email sudah terdaftar"
+            "description": "Email sudah terdaftar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 409
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email sudah terdaftar"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -207,7 +557,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Akses diubah"
+            "description": "Akses diubah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Akses diubah"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -233,7 +617,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Data karyawan"
+            "description": "Data karyawan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data karyawan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -287,16 +705,140 @@
         },
         "responses": {
           "200": {
-            "description": "Data karyawan berhasil diubah"
+            "description": "Data karyawan berhasil diubah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data karyawan berhasil diubah"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Tidak memiliki otorisasi"
+            "description": "Tidak memiliki otorisasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak memiliki otorisasi"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Role CASHIER ditolak akses"
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Data tidak ditemukan"
+            "description": "Data tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -320,16 +862,140 @@
         ],
         "responses": {
           "200": {
-            "description": "Karyawan berhasil dihapus"
+            "description": "Karyawan berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Karyawan berhasil dihapus"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Tidak memiliki otorisasi"
+            "description": "Tidak memiliki otorisasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak memiliki otorisasi"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "403": {
-            "description": "Role CASHIER ditolak akses"
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Data tidak ditemukan"
+            "description": "Data tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -360,7 +1026,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Daftar produk ditarik"
+            "description": "Daftar produk ditarik",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar produk ditarik"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -421,7 +1121,41 @@
         },
         "responses": {
           "201": {
-            "description": "Produk berhasil ditambah"
+            "description": "Produk berhasil ditambah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produk berhasil ditambah"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -447,7 +1181,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Detail produk"
+            "description": "Detail produk",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Detail produk"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -477,7 +1245,41 @@
         },
         "responses": {
           "200": {
-            "description": "File terupload dan stok diupdate"
+            "description": "File terupload dan stok diupdate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File terupload dan stok diupdate"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -519,7 +1321,41 @@
         },
         "responses": {
           "200": {
-            "description": "Update massal sukses"
+            "description": "Update massal sukses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Update massal sukses"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -534,7 +1370,41 @@
         ],
         "responses": {
           "200": {
-            "description": "File Excel terunduh"
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File Excel terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -549,7 +1419,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Daftar VIP Member"
+            "description": "Daftar VIP Member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar VIP Member"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -580,7 +1484,41 @@
         },
         "responses": {
           "201": {
-            "description": "VIP Member ditambahkan"
+            "description": "VIP Member ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "VIP Member ditambahkan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -628,7 +1566,41 @@
         },
         "responses": {
           "200": {
-            "description": "Poin berhasil ditukar"
+            "description": "Poin berhasil ditukar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Poin berhasil ditukar"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -653,10 +1625,74 @@
         ],
         "responses": {
           "200": {
-            "description": "Member ditemukan"
+            "description": "Member ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Member ditemukan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Member tidak ditemukan"
+            "description": "Member tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Member tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -715,7 +1751,41 @@
         },
         "responses": {
           "201": {
-            "description": "Transaksi sukses"
+            "description": "Transaksi sukses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Transaksi sukses"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -748,7 +1818,41 @@
         ],
         "responses": {
           "200": {
-            "description": "File Excel terunduh"
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File Excel terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -793,7 +1897,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Data Ringkasan Keuangan"
+            "description": "Data Ringkasan Keuangan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data Ringkasan Keuangan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -826,7 +1964,41 @@
         ],
         "responses": {
           "200": {
-            "description": "File PDF terunduh"
+            "description": "File PDF terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File PDF terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -851,7 +2023,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Data Dashboard Overview"
+            "description": "Data Dashboard Overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data Dashboard Overview"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -866,7 +2072,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Daftar Audit Log"
+            "description": "Daftar Audit Log",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar Audit Log"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -890,7 +2130,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Data transaksi"
+            "description": "Data transaksi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data transaksi"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -936,7 +2210,41 @@
         },
         "responses": {
           "201": {
-            "description": "Klaim dibuat"
+            "description": "Klaim dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Klaim dibuat"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -962,7 +2270,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Detail transaksi"
+            "description": "Detail transaksi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Detail transaksi"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -988,7 +2330,41 @@
         ],
         "responses": {
           "200": {
-            "description": "Detail log audit"
+            "description": "Detail log audit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Detail log audit"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1003,9 +2379,111 @@
         ],
         "responses": {
           "200": {
-            "description": "File Excel terunduh"
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File Excel terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
+      }
+    },
+    "/pos/products": {
+      "get": {
+        "summary": "Pencarian Produk Khusus Kasir (POS)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "low_stock",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar produk ditarik",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar produk ditarik"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "POS"
+        ]
       }
     }
   }
