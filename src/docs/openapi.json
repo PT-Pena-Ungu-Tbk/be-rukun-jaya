@@ -82,7 +82,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
       }
     },
     "/auth/logout": {
@@ -131,7 +134,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
       }
     },
     "/auth/login": {
@@ -236,7 +242,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
       }
     },
     "/staff": {
@@ -351,7 +360,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       },
       "post": {
         "summary": "Tambah Karyawan",
@@ -533,7 +545,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       }
     },
     "/staff/{staff_id}/toggle-access": {
@@ -593,7 +608,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       }
     },
     "/staff/{id}": {
@@ -653,7 +671,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       },
       "put": {
         "summary": "Update Data Karyawan",
@@ -840,7 +861,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       },
       "delete": {
         "summary": "Hapus Karyawan",
@@ -997,7 +1021,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       }
     },
     "/inventory": {
@@ -1062,7 +1089,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       },
       "post": {
         "summary": "Tambah Master Data Produk",
@@ -1157,7 +1187,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
     "/inventory/{id}": {
@@ -1217,7 +1250,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
     "/inventory/bulk-update/upload": {
@@ -1281,7 +1317,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
     "/inventory/bulk-update": {
@@ -1357,7 +1396,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
     "/members/vip/export": {
@@ -1406,7 +1448,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
       }
     },
     "/members/vip": {
@@ -1455,7 +1500,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
       },
       "post": {
         "summary": "Registrasi VIP Member Baru",
@@ -1520,7 +1568,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
       }
     },
     "/members/vip/{member_id}/redeem": {
@@ -1602,7 +1653,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
       }
     },
     "/pos/validate-vip": {
@@ -1694,7 +1748,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
       }
     },
     "/pos/transactions": {
@@ -1787,7 +1844,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
       }
     },
     "/transactions/export/excel": {
@@ -1854,7 +1914,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
       }
     },
     "/finance/summary": {
@@ -1933,7 +1996,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
       }
     },
     "/finance/export/pdf": {
@@ -2000,7 +2066,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
       }
     },
     "/dashboard/overview": {
@@ -2059,7 +2128,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "8. Dashboard & Analytics"
+        ]
       }
     },
     "/audit/logs": {
@@ -2108,7 +2180,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
       }
     },
     "/warranty/lookup": {
@@ -2166,7 +2241,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "6. Warranty & Returns"
+        ]
       }
     },
     "/warranty/claims": {
@@ -2246,7 +2324,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "6. Warranty & Returns"
+        ]
       }
     },
     "/pos/transactions/{transaction_id}": {
@@ -2306,7 +2387,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
       }
     },
     "/audit/logs/{id}": {
@@ -2366,7 +2450,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
       }
     },
     "/audit/logs/export/excel": {
@@ -2415,7 +2502,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
       }
     },
     "/pos/products": {
@@ -2482,9 +2572,47 @@
           }
         },
         "tags": [
-          "POS"
+          "2. Point of Sales (POS)"
         ]
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "1. Authentication",
+      "description": "Otentikasi, login, logout, dan manajemen sesi."
+    },
+    {
+      "name": "2. Point of Sales (POS)",
+      "description": "Rute operasional mesin kasir."
+    },
+    {
+      "name": "3. Inventory Management",
+      "description": "Manajemen gudang dan produk."
+    },
+    {
+      "name": "4. Member & VIP",
+      "description": "Kelola keanggotaan dan poin loyalitas."
+    },
+    {
+      "name": "5. Finance & Transactions",
+      "description": "Riwayat transaksi utuh dan laporan keuangan."
+    },
+    {
+      "name": "6. Warranty & Returns",
+      "description": "Klaim garansi dan pengembalian barang."
+    },
+    {
+      "name": "7. Staff Management",
+      "description": "Kelola akun karyawan dan otorisasinya."
+    },
+    {
+      "name": "8. Dashboard & Analytics",
+      "description": "Statistik untuk halaman utama."
+    },
+    {
+      "name": "9. Audit & Security Logs",
+      "description": "Log aktivitas sistem dan karyawan."
+    }
+  ]
 }
