@@ -1254,6 +1254,60 @@
         "tags": [
           "3. Inventory Management"
         ]
+      },
+      "put": {
+        "summary": "Update Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produk berhasil diupdate"
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
+      },
+      "delete": {
+        "summary": "Hapus Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produk berhasil dihapus"
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
     "/inventory/bulk-update/upload": {
