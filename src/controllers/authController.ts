@@ -81,8 +81,9 @@ const login = async (req: Request, res: Response) => {
                     nama_lengkap: user.name,
                     email: user.email,
                     role: user.role,
-                    // mock permissions array
-                    permissions: ["pos.read", "pos.write"]
+                    permissions: ["pos.read", "pos.write", "inventory.read", "inventory.write", "reports.read", "accounts.manage", "audit.read"],
+                    last_login: new Date().toISOString(),
+                    avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
                 }
             }
         });

@@ -36,20 +36,34 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "refresh_token": { "type": "string" }
+                  "refresh_token": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "200": { "description": "Token diperbarui" } }
+        "responses": {
+          "200": {
+            "description": "Token diperbarui"
+          }
+        }
       }
     },
     "/auth/logout": {
       "post": {
         "summary": "Logout",
-        "security": [{ "BearerAuth": [] }],
-        "responses": { "200": { "description": "Logout Berhasil" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout Berhasil"
+          }
+        }
       }
     },
     "/auth/login": {
@@ -61,84 +75,185 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email_or_username", "password"],
+                "required": [
+                  "email_or_username",
+                  "password"
+                ],
                 "properties": {
-                  "email_or_username": { "type": "string", "example": "owner@toko-rukunjaya.com" },
-                  "password": { "type": "string", "example": "password_rahasia" },
-                  "remember_me": { "type": "boolean", "example": true }
+                  "email_or_username": {
+                    "type": "string",
+                    "example": "owner@toko-rukunjaya.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password_rahasia"
+                  },
+                  "remember_me": {
+                    "type": "boolean",
+                    "example": true
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Login Berhasil" },
-          "401": { "description": "Unauthorized" }
+          "200": {
+            "description": "Login Berhasil"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
       }
     },
-    "/employees": {
+    "/staff": {
       "get": {
         "summary": "Ambil Daftar Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
-          "200": { "description": "Daftar karyawan berhasil diambil" },
-          "401": { "description": "Tidak memiliki otorisasi" },
-          "403": { "description": "Role CASHIER ditolak akses" }
+          "200": {
+            "description": "Daftar karyawan berhasil diambil"
+          },
+          "401": {
+            "description": "Tidak memiliki otorisasi"
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses"
+          }
         }
       },
       "post": {
         "summary": "Tambah Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name", "email", "password", "role"],
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "role"
+                ],
                 "properties": {
-                  "name": { "type": "string", "example": "Budi Santoso" },
-                  "email": { "type": "string", "example": "[EMAIL_ADDRESS]" },
-                  "password": { "type": "string", "example": "password123" },
-                  "role": {"type": "string", "enum": ["CASHIER"]}
+                  "name": {
+                    "type": "string",
+                    "example": "Budi Santoso"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "[EMAIL_ADDRESS]"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "CASHIER"
+                    ]
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Karyawan berhasil ditambahkan" },
-          "401": { "description": "Anda tidak memiliki akses untuk menambahkan karyawan" },
-          "403": { "description": "Role CASHIER ditolak akses" },
-          "409": { "description": "Email sudah terdaftar" }
+          "201": {
+            "description": "Karyawan berhasil ditambahkan"
+          },
+          "401": {
+            "description": "Anda tidak memiliki akses untuk menambahkan karyawan"
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses"
+          },
+          "409": {
+            "description": "Email sudah terdaftar"
+          }
         }
       }
     },
-    "/employees/{staff_id}/toggle-access": {
+    "/staff/{staff_id}/toggle-access": {
       "patch": {
         "summary": "Toggle Akses Karyawan",
-        "security": [{"BearerAuth": []}],
-        "parameters": [
-          { "name": "staff_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Akses diubah" } }
+        "parameters": [
+          {
+            "name": "staff_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Akses diubah"
+          }
+        }
       }
     },
-    "/employees/{id}": {
+    "/staff/{id}": {
       "get": {
         "summary": "Ambil Detail Karyawan",
-        "security": [{"BearerAuth": []}],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Data karyawan" } }
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data karyawan"
+          }
+        }
       },
       "put": {
         "summary": "Update Data Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -146,51 +261,116 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "example": "Budi Santoso Edit" },
-                  "email": { "type": "string", "example": "budi.edit@example.com" },
-                  "password": { "type": "string", "example": "newpassword123" },
-                  "role": { "type": "string", "enum": ["CASHIER", "OWNER"] }
+                  "name": {
+                    "type": "string",
+                    "example": "Budi Santoso Edit"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "budi.edit@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "newpassword123"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "CASHIER",
+                      "OWNER"
+                    ]
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Data karyawan berhasil diubah" },
-          "401": { "description": "Tidak memiliki otorisasi" },
-          "403": { "description": "Role CASHIER ditolak akses" },
-          "404": { "description": "Data tidak ditemukan" }
+          "200": {
+            "description": "Data karyawan berhasil diubah"
+          },
+          "401": {
+            "description": "Tidak memiliki otorisasi"
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses"
+          },
+          "404": {
+            "description": "Data tidak ditemukan"
+          }
         }
       },
       "delete": {
         "summary": "Hapus Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Karyawan berhasil dihapus" },
-          "401": { "description": "Tidak memiliki otorisasi" },
-          "403": { "description": "Role CASHIER ditolak akses" },
-          "404": { "description": "Data tidak ditemukan" }
+          "200": {
+            "description": "Karyawan berhasil dihapus"
+          },
+          "401": {
+            "description": "Tidak memiliki otorisasi"
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses"
+          },
+          "404": {
+            "description": "Data tidak ditemukan"
+          }
         }
       }
     },
-    "/products": {
+    "/inventory": {
       "get": {
         "summary": "Ambil Daftar Produk",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "search", "in": "query", "schema": { "type": "string" } },
-          { "name": "low_stock", "in": "query", "schema": { "type": "boolean" } }
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "low_stock",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Daftar produk ditarik" }
+          "200": {
+            "description": "Daftar produk ditarik"
+          }
         }
       },
       "post": {
         "summary": "Tambah Master Data Produk",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -198,56 +378,118 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "sku_code": { "type": "string", "example": "PIP-WV-AW12" },
-                  "name": { "type": "string", "example": "Pipa Wavin AW 1/2 inch" },
-                  "category_id": { "type": "string", "format": "uuid" },
-                  "supplier_id": { "type": "string", "format": "uuid" },
-                  "buy_price": { "type": "number", "example": 28000 },
-                  "sell_price": { "type": "number", "example": 32000 },
-                  "current_stock": { "type": "integer", "example": 120 },
-                  "min_stock": { "type": "integer", "example": 50 },
-                  "rack_location": { "type": "string", "example": "R-C3-12" }
+                  "sku_code": {
+                    "type": "string",
+                    "example": "PIP-WV-AW12"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Pipa Wavin AW 1/2 inch"
+                  },
+                  "category_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "supplier_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "buy_price": {
+                    "type": "number",
+                    "example": 28000
+                  },
+                  "sell_price": {
+                    "type": "number",
+                    "example": 32000
+                  },
+                  "current_stock": {
+                    "type": "integer",
+                    "example": 120
+                  },
+                  "min_stock": {
+                    "type": "integer",
+                    "example": 50
+                  },
+                  "rack_location": {
+                    "type": "string",
+                    "example": "R-C3-12"
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "201": { "description": "Produk berhasil ditambah" } }
+        "responses": {
+          "201": {
+            "description": "Produk berhasil ditambah"
+          }
+        }
       }
     },
-    "/products/{id}": {
+    "/inventory/{id}": {
       "get": {
         "summary": "Ambil Detail Produk",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Detail produk" } }
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail produk"
+          }
+        }
       }
     },
-    "/products/bulk-update/upload": {
+    "/inventory/bulk-update/upload": {
       "post": {
         "summary": "Upload Excel Bulk Update",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "file": { "type": "string", "format": "binary" }
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "200": { "description": "File terupload dan stok diupdate" } }
+        "responses": {
+          "200": {
+            "description": "File terupload dan stok diupdate"
+          }
+        }
       }
     },
-    "/products/bulk-update": {
+    "/inventory/bulk-update": {
       "put": {
         "summary": "Bulk Update Stok Barang",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -260,8 +502,13 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string", "format": "uuid" },
-                        "new_stock": { "type": "integer" }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "new_stock": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -270,25 +517,49 @@
             }
           }
         },
-        "responses": { "200": { "description": "Update massal sukses" } }
+        "responses": {
+          "200": {
+            "description": "Update massal sukses"
+          }
+        }
       }
     },
     "/members/vip/export": {
       "get": {
         "summary": "Export Data VIP Member ke Excel",
-        "security": [{ "BearerAuth": [] }],
-        "responses": { "200": { "description": "File Excel terunduh" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh"
+          }
+        }
       }
     },
     "/members/vip": {
       "get": {
         "summary": "Ambil Daftar VIP Member",
-        "security": [{ "BearerAuth": [] }],
-        "responses": { "200": { "description": "Daftar VIP Member" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar VIP Member"
+          }
+        }
       },
       "post": {
         "summary": "Registrasi VIP Member Baru",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -296,22 +567,42 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "phone_number": { "type": "string" },
-                  "name": { "type": "string" }
+                  "phone_number": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "201": { "description": "VIP Member ditambahkan" } }
+        "responses": {
+          "201": {
+            "description": "VIP Member ditambahkan"
+          }
+        }
       }
     },
     "/members/vip/{member_id}/redeem": {
       "post": {
         "summary": "Redeem Poin VIP Member",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "member_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
@@ -320,34 +611,64 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "poin_ditukar": { "type": "integer" },
-                  "jenis_penukaran": { "type": "string" },
-                  "transaction_id": { "type": "string", "format": "uuid" }
+                  "poin_ditukar": {
+                    "type": "integer"
+                  },
+                  "jenis_penukaran": {
+                    "type": "string"
+                  },
+                  "transaction_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "200": { "description": "Poin berhasil ditukar" } }
-      }
-    },
-    "/members/verify": {
-      "get": {
-        "summary": "Verifikasi Status Member VIP",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "phone", "in": "query", "required": true, "schema": { "type": "string" } }
-        ],
         "responses": {
-          "200": { "description": "Member ditemukan" },
-          "404": { "description": "Member tidak ditemukan" }
+          "200": {
+            "description": "Poin berhasil ditukar"
+          }
         }
       }
     },
-    "/transactions": {
+    "/pos/validate-vip": {
+      "post": {
+        "summary": "Verifikasi Status Member VIP",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member ditemukan"
+          },
+          "404": {
+            "description": "Member tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/pos/transactions": {
       "post": {
         "summary": "Finalisasi Transaksi Penjualan (POS)",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -355,17 +676,35 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "member_id": { "type": "string", "nullable": true },
-                  "discount_type": { "type": "string", "enum": ["NOMINAL", "PERCENTAGE"] },
-                  "discount_value": { "type": "number" },
-                  "cash_paid": { "type": "number" },
+                  "member_id": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "discount_type": {
+                    "type": "string",
+                    "enum": [
+                      "NOMINAL",
+                      "PERCENTAGE"
+                    ]
+                  },
+                  "discount_value": {
+                    "type": "number"
+                  },
+                  "cash_paid": {
+                    "type": "number"
+                  },
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
-                        "product_id": { "type": "string", "format": "uuid" },
-                        "quantity": { "type": "integer" }
+                        "product_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "quantity": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -374,96 +713,196 @@
             }
           }
         },
-        "responses": { "201": { "description": "Transaksi sukses" } }
+        "responses": {
+          "201": {
+            "description": "Transaksi sukses"
+          }
+        }
       }
     },
     "/transactions/export/excel": {
       "get": {
         "summary": "Export Transaksi ke Excel",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "start_date", "in": "query", "schema": { "type": "string", "example": "2026-06-01" } },
-          { "name": "end_date", "in": "query", "schema": { "type": "string", "example": "2026-06-30" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "File Excel terunduh" } }
-      }
-    },
-    "/transactions/return": {
-      "post": {
-        "summary": "Retur Barang Cacat (Garansi Toko)",
-        "security": [{ "BearerAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "transaction_id": { "type": "string", "format": "uuid" },
-                  "product_id": { "type": "string", "format": "uuid" },
-                  "quantity_returned": { "type": "integer" }
-                }
-              }
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
             }
           }
-        },
-        "responses": { "200": { "description": "Retur berhasil" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh"
+          }
+        }
       }
     },
     "/finance/summary": {
       "get": {
         "summary": "Ringkasan Laporan Keuangan",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "period", "in": "query", "schema": { "type": "string", "enum": ["this_month", "last_month", "custom"] } },
-          { "name": "date_from", "in": "query", "schema": { "type": "string", "example": "2026-06-01" } },
-          { "name": "date_to", "in": "query", "schema": { "type": "string", "example": "2026-06-30" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Data Ringkasan Keuangan" } }
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "this_month",
+                "last_month",
+                "custom"
+              ]
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data Ringkasan Keuangan"
+          }
+        }
       }
     },
     "/finance/export/pdf": {
       "get": {
         "summary": "Export Laporan Keuangan ke PDF",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "date_from", "in": "query", "schema": { "type": "string", "example": "2026-06-01" } },
-          { "name": "date_to", "in": "query", "schema": { "type": "string", "example": "2026-06-30" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "File PDF terunduh" } }
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File PDF terunduh"
+          }
+        }
       }
     },
     "/dashboard/overview": {
       "get": {
         "summary": "Dashboard Overview (Agregasi Data)",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "date", "in": "query", "schema": { "type": "string", "example": "2026-06-24" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Data Dashboard Overview" } }
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-24"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data Dashboard Overview"
+          }
+        }
       }
     },
-    "/audit-logs": {
+    "/audit/logs": {
       "get": {
         "summary": "Log Audit",
-        "security": [{ "BearerAuth": [] }],
-        "responses": { "200": { "description": "Daftar Audit Log" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar Audit Log"
+          }
+        }
       }
     },
     "/warranty/lookup": {
       "get": {
         "summary": "Cari Transaksi untuk Garansi",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "invoice_no", "in": "query", "schema": { "type": "string" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Data transaksi" } }
+        "parameters": [
+          {
+            "name": "invoice_no",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data transaksi"
+          }
+        }
       }
     },
     "/warranty/claims": {
       "post": {
         "summary": "Buat Klaim Garansi",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -471,43 +910,102 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "invoice_no": { "type": "string" },
-                  "product_id": { "type": "string", "format": "uuid" },
-                  "qty": { "type": "integer" },
-                  "reason": { "type": "string", "enum": ["CACAT_PABRIK", "SALAH_KIRIM", "KUALITAS_TIDAK_SESUAI", "LAINNYA"] }
+                  "invoice_no": {
+                    "type": "string"
+                  },
+                  "product_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "qty": {
+                    "type": "integer"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "CACAT_PABRIK",
+                      "SALAH_KIRIM",
+                      "KUALITAS_TIDAK_SESUAI",
+                      "LAINNYA"
+                    ]
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "201": { "description": "Klaim dibuat" } }
+        "responses": {
+          "201": {
+            "description": "Klaim dibuat"
+          }
+        }
       }
     },
-    "/transactions/{transaction_id}": {
+    "/pos/transactions/{transaction_id}": {
       "get": {
         "summary": "Ambil Detail Transaksi",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "transaction_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Detail transaksi" } }
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail transaksi"
+          }
+        }
       }
     },
-    "/audit-logs/{id}": {
+    "/audit/logs/{id}": {
       "get": {
         "summary": "Ambil Detail Log Audit",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Detail log audit" } }
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail log audit"
+          }
+        }
       }
     },
-    "/audit-logs/export/excel": {
+    "/audit/logs/export/excel": {
       "get": {
         "summary": "Export Audit Logs ke Excel",
-        "security": [{ "BearerAuth": [] }],
-        "responses": { "200": { "description": "File Excel terunduh" } }
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh"
+          }
+        }
       }
     }
   }
