@@ -3,100 +3,95 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prismaClient';
 import { AppError } from '../utils/AppError';
 import { isValidUUID } from '../utils/validator';
+import * as xlsx from 'xlsx';
 
 // 1. LOGIKA CHECKOUT TRANSAKSI
 const checkout = async (req: Request, res: Response) => {
-    // Menerima data dari request Frontend
-    const { items, member_id, discount_type, discount_value, cash_paid } = req.body;
-    const userId = req.user.id; // Diambil dari token JWT
+    const { items, payment_method, jumlah_bayar, vip_phone, diskon_persen, diskon_nominal, payment_reference, nama_pelanggan } = req.body;
+    const userId = req.user.id;
 
     try {
-        if (member_id && !isValidUUID(member_id)) {
-            throw new AppError("ID Member tidak valid.");
-        }
-
         if (!items || !Array.isArray(items) || items.length === 0) {
-            throw new AppError("Daftar barang (items) tidak boleh kosong.");
+            throw new AppError("Daftar barang (items) tidak boleh kosong.", 400);
         }
 
-        // Menggunakan Interactive Transaction agar jika ada 1 proses gagal, semuanya otomatis dibatalkan (rollback)
+        let member = null;
+        if (vip_phone) {
+            member = await prisma.member.findUnique({ where: { phone_number: vip_phone } });
+        }
+
         const result = await prisma.$transaction(async (tx: any) => {
             let subtotal = 0;
             const orderDetails = [];
 
-            // Looping untuk memvalidasi dan memotong stok setiap barang yang dibeli
             for (const item of items) {
                 if (!isValidUUID(item.product_id)) {
-                    throw new AppError(`ID Produk tidak valid pada salah satu item.`);
+                    throw new AppError(`ID Produk tidak valid pada salah satu item.`, 400);
                 }
                 const product = await tx.product.findUnique({
                     where: { id: item.product_id }
                 });
 
                 if (!product) {
-                    throw new AppError(`Produk dengan ID ${item.product_id} tidak ditemukan.`);
+                    throw new AppError(`Produk dengan ID ${item.product_id} tidak ditemukan.`, 404);
                 }
 
-                // Validasi ketat: Stok tidak boleh sampai minus
-                if (product.current_stock < item.quantity) {
-                    throw new AppError(`Stok produk '${product.name}' tidak mencukupi. Sisa stok: ${product.current_stock}`);
+                if (product.current_stock < item.qty) {
+                    throw new AppError(`Stok produk '${product.name}' tidak mencukupi. Sisa stok: ${product.current_stock}`, 409);
                 }
 
-                // Kurangi stok aktif (current_stock)
                 await tx.product.update({
                     where: { id: product.id },
-                    data: { current_stock: product.current_stock - item.quantity }
+                    data: { current_stock: product.current_stock - item.qty }
                 });
 
-                // Kalkulasi harga (menggunakan parseFloat untuk presisi tipe Decimal di database)
-                const itemSubtotal = parseFloat(product.sell_price) * item.quantity;
+                const itemSubtotal = parseFloat(product.sell_price) * item.qty;
                 subtotal += itemSubtotal;
 
                 orderDetails.push({
                     product_id: product.id,
-                    quantity: item.quantity,
+                    quantity: item.qty,
                     unit_price: product.sell_price,
                     subtotal: itemSubtotal
                 });
             }
 
-            // Hitung Diskon VIP (jika ada)
             let discountAmount = 0;
-            if (member_id) {
-                if (discount_type === 'PERCENTAGE') {
-                    discountAmount = subtotal * (discount_value / 100);
-                } else if (discount_type === 'NOMINAL') {
-                    discountAmount = discount_value;
-                }
+            if (diskon_persen) {
+                discountAmount = subtotal * (diskon_persen / 100);
+            } else if (diskon_nominal) {
+                discountAmount = diskon_nominal;
             }
 
             const subtotalAfterDiscount = subtotal - discountAmount;
-            const taxAmount = subtotalAfterDiscount * 0.11; // PPN 11% Jika terdaftar dalam usaha yang dikenai pajak
+            const taxAmount = subtotalAfterDiscount * 0.11;
             const grandTotal = subtotalAfterDiscount + taxAmount;
             
-            if (cash_paid < grandTotal) {
-                throw new AppError(`Pembayaran kurang. Total tagihan: ${grandTotal}`);
+            if (payment_method === 'CASH' && jumlah_bayar < grandTotal) {
+                throw new AppError(`Pembayaran kurang. Total tagihan: ${grandTotal}`, 402);
             }
-            const changeAmount = cash_paid - grandTotal;
+            
+            const cashPaid = payment_method === 'CASH' ? jumlah_bayar : grandTotal;
+            const changeAmount = cashPaid - grandTotal;
             const invoiceNo = `INV-${Date.now()}`;
 
-            // Catat Header Transaksi
             const transaction = await tx.transaction.create({
                 data: {
                     invoice_no: invoiceNo,
                     cashier_id: userId,
-                    member_id: member_id || null,
+                    member_id: member?.id || null,
+                    payment_method: payment_method || 'CASH',
+                    customer_name: nama_pelanggan || null,
                     subtotal: subtotal,
-                    discount_type: discount_type || 'NOMINAL',
-                    discount_value: discount_value || 0,
+                    discount_type: diskon_persen ? 'PERCENTAGE' : 'NOMINAL',
+                    discount_value: diskon_persen || diskon_nominal || 0,
                     tax_amount: taxAmount,
                     grand_total: grandTotal,
-                    cash_paid: cash_paid,
+                    cash_paid: cashPaid,
                     change_amount: changeAmount
                 }
             });
 
-            // Catat Detail Item Transaksi
             const detailsData = orderDetails.map(detail => ({
                 transaction_id: transaction.id,
                 product_id: detail.product_id,
@@ -109,41 +104,123 @@ const checkout = async (req: Request, res: Response) => {
                 data: detailsData
             });
 
-            return { transaction, detailsData };
+            const fetchedDetails = await tx.transactionDetail.findMany({
+                where: { transaction_id: transaction.id },
+                include: { product: true }
+            });
+
+            return { transaction, fetchedDetails, member };
         });
 
-        // Mengembalikan sesuai dengan dokumentasi API
         return res.status(201).json({
-            status: "success",
-            message: "Transaksi berhasil disimpan",
+            success: true,
             data: {
-                id: result.transaction.id,
-                invoice_no: result.transaction.invoice_no,
+                transaction_id: result.transaction.invoice_no,
+                status: "SUCCESS",
                 subtotal: result.transaction.subtotal,
-                discount_amount: (result.transaction.discount_type === 'PERCENTAGE' 
-                                    ? (parseFloat(result.transaction.subtotal) * (parseFloat(result.transaction.discount_value) / 100)) 
-                                    : parseFloat(result.transaction.discount_value)).toString(),
-                tax_amount: result.transaction.tax_amount,
+                diskon: result.transaction.discount_value,
+                ppn_11_persen: result.transaction.tax_amount,
                 grand_total: result.transaction.grand_total,
-                cash_paid: result.transaction.cash_paid,
-                change_amount: result.transaction.change_amount,
-                created_at: result.transaction.created_at
+                jumlah_bayar: result.transaction.cash_paid,
+                kembalian: result.transaction.change_amount,
+                vip_member: result.member ? { id: result.member.id, name: result.member.name } : null,
+                kasir_id: result.transaction.cashier_id,
+                created_at: result.transaction.created_at,
+                struk_url: `https://cdn.tokorukunjaya.id/struk/${result.transaction.invoice_no}.pdf`,
+                items: result.fetchedDetails.map((d: any) => ({
+                    product_id: d.product_id,
+                    nama: d.product.name,
+                    qty: d.quantity,
+                    harga_satuan: d.unit_price,
+                    subtotal: d.subtotal
+                }))
             }
         });
 
     } catch (error: any) {
         console.error("Checkout Error:", error);
-        
         if (error instanceof AppError) {
-            return res.status(error.statusCode).json({
-                status: "error",
+            return res.status(error.statusCode || 400).json({
+                success: false,
+                status_code: error.statusCode || 400,
+                error_code: error.statusCode === 404 ? "PRODUCT_NOT_FOUND" : error.statusCode === 409 ? "INSUFFICIENT_STOCK" : error.statusCode === 402 ? "INSUFFICIENT_PAYMENT" : "INVALID_REQUEST",
                 message: error.message
             });
         }
-
         return res.status(500).json({
-            status: "error",
-            message: "Terjadi kesalahan internal saat memproses transaksi checkout."
+            success: false,
+            status_code: 500,
+            error_code: "TRANSACTION_FAILED",
+            message: "Transaksi gagal diproses di server."
+        });
+    }
+};
+
+const getTransactionDetails = async (req: Request, res: Response) => {
+    const transaction_id = req.params.transaction_id as string;
+
+    try {
+        const transaction: any = await prisma.transaction.findFirst({
+            where: isValidUUID(transaction_id) ? {
+                OR: [
+                    { id: transaction_id },
+                    { invoice_no: transaction_id }
+                ]
+            } : {
+                invoice_no: transaction_id
+            },
+            include: {
+                details: {
+                    include: { product: true }
+                },
+                member: true,
+                cashier: true
+            }
+        });
+
+        if (!transaction) {
+            return res.status(404).json({
+                success: false,
+                status_code: 404,
+                error_code: "TRANSACTION_NOT_FOUND",
+                message: "Transaksi dengan ID tersebut tidak ditemukan"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                transaction_id: transaction.invoice_no,
+                status: "LUNAS",
+                created_at: transaction.created_at,
+                informasi_pelanggan: {
+                    nama: transaction.customer_name || transaction.member?.name || "-",
+                    nomor_hp: transaction.member?.phone_number || "-"
+                },
+                metode_pembayaran: {
+                    tipe: transaction.payment_method || "CASH"
+                },
+                items: transaction.details.map((d: any) => ({
+                    nama: d.product.name,
+                    sku: d.product.sku_code,
+                    qty: d.quantity,
+                    harga_satuan: d.unit_price,
+                    total_harga: d.subtotal
+                })),
+                subtotal: transaction.subtotal,
+                diskon_member: transaction.discount_value,
+                ppn_11_persen: transaction.tax_amount,
+                grand_total: transaction.grand_total,
+                pdf_url: `https://cdn.tokorukunjaya.id/faktur/${transaction.invoice_no}.pdf`,
+                struk_url: `https://cdn.tokorukunjaya.id/struk/${transaction.invoice_no}.pdf`
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            status_code: 500,
+            error_code: "INTERNAL_SERVER_ERROR",
+            message: "Kesalahan internal"
         });
     }
 };
@@ -182,6 +259,7 @@ const returnItem = async (req: Request, res: Response) => {
                     current_stock: defectiveProduct.current_stock - quantity_returned
                 }
             });
+            
 
             // Wajib mencatat ke Audit Log karena memodifikasi data sensitif
             const auditLog = await tx.auditLog.create({
@@ -224,7 +302,86 @@ const returnItem = async (req: Request, res: Response) => {
     }
 };
 
+//3. LOGIKA EKSPOR TRANSAKSI (EXCEL)
+const exportTransactionsExcel = async (req: Request, res: Response) => {
+    try {
+        const { startDate, endDate, status } = req.query as any;
+        const where: any= {};
+
+        //Filter Status
+        if (status && status !== 'all'){
+            where.status = status;
+        }
+
+        //Filter Rentang Tanggal
+        if (startDate || endDate){
+            where.created_at = {};
+            if (startDate) {
+                const start = new Date(startDate);
+                start.setHours(0,0,0,0);
+                where.created_at.gte = start;
+            }
+            if (endDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                where.created_at.lte = end;
+            }
+        }
+
+        const transaction = await prisma.transaction.findMany({
+            where,
+            orderBy: { created_at: 'desc'},
+            include: {
+                details: {
+                    include: {
+                        product: true
+                    }
+                },
+                member: true
+            }
+        })
+        
+        // Format data untuk sheet Excel
+        const excelData = transaction.map((t: any) => ({
+            "ID Transaksi": t.invoice_no,
+            "Tanggal": t.created_at.toISOString().split('T')[0],
+            "Waktu": t.created_at.toISOString().split('T')[1].substring(0, 8),
+            "ID Member": t.member_id || '-',
+            "Kasir ID": t.cashier_id,
+            "Subtotal (IDR)": t.subtotal,
+            "Diskon (IDR)": t.discount_value,
+            "Pajak (IDR)": t.tax_amount,
+            "Grand Total (IDR)": t.grand_total,
+            "Metode Pembayaran": t.payment_method || 'CASH',
+            "Status": t.status || 'SUCCESS'
+        }));
+
+        // Generate Excel Buffer
+        const worksheet = xlsx.utils.json_to_sheet(excelData);
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, "Riwayat Transaksi");
+        const excelBuffer = xlsx.write(workbook, { bookType: "xlsx", type: "buffer" });
+
+        // Set Headers dan Kirim File
+        const fileName = `Export_Transaksi_${Date.now()}.xlsx`;
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        
+        return res.send(excelBuffer);
+    }
+    catch (error: any) {
+        console.error("Checkout Error:", error);
+        
+        return res.status(500).json({
+            status: "error",
+            message: "Terjadi kesalahan internal saat memproses transaksi checkout."
+        });
+    }
+};
+
 export { 
     checkout,
-    returnItem
+    returnItem,
+    exportTransactionsExcel,
+    getTransactionDetails
  };

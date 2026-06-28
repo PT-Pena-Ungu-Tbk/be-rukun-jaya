@@ -7,18 +7,22 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { apiReference } from '@scalar/express-api-reference';
 import openApiSpec from './docs/openapi.json';
+import { responseStandardizer } from './middlewares/responseStandardizer';
 
 import authRoutes from './routes/authRoutes';
 import transactionRoutes from './routes/transactionRoutes';
 import memberRoutes from './routes/memberRoutes';
 import productRoutes from './routes/productRoutes';
-import reportRoutes from './routes/reportRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
+import financeRoutes from './routes/financeRoutes';
 import auditRoutes from './routes/auditRoutes';
 import employeeRoutes from './routes/employeeRoutes';
+import warrantyRoutes from './routes/warrantyRoutes';
 
 const app = express();
 
 app.use(express.json());
+app.use(responseStandardizer);
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
@@ -34,8 +38,8 @@ app.use(helmet({
 }));
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 menit
-  max: 100, // Batas maksimal 100 permintaan per windowMs per IP
+  windowMs: 1 * 60 * 1000, // 1000 request/menit 
+  max: 300, // Batas maksimal  300 request/menit per user permintaan per windowMs per IP
   message: "Terlalu banyak permintaan dari IP ini, silakan coba lagi nanti."
 });
 
@@ -45,7 +49,7 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
     message: 'Welcome to Rukun Jaya POS & Inventory API',
-    version: '1.1.0',
+    version: '1.2.0',
     documentation: '/docs',
     timestamp: new Date().toISOString()
   });
@@ -58,13 +62,18 @@ app.use('/docs', apiReference({
   },
 }));
 
+import posRoutes from './routes/posRoutes';
+
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/pos', posRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/members', memberRoutes);
-app.use('/api/v1/products', productRoutes);
-app.use('/api/v1/reports', reportRoutes);
-app.use('/api/v1/audit-logs', auditRoutes);
-app.use('/api/v1/employees', employeeRoutes);
+app.use('/api/v1/inventory', productRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/finance', financeRoutes);
+app.use('/api/v1/audit/logs', auditRoutes);
+app.use('/api/v1/staff', employeeRoutes);
+app.use('/api/v1/warranty', warrantyRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

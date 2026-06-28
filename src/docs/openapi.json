@@ -3,16 +3,16 @@
   "info": {
     "title": "API Sistem Kasir Toko Bangunan Rukun Jaya",
     "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk Toko Bangunan Rukun Jaya.",
-    "version": "1.0.0"
+    "version": "1.2.0"
   },
   "servers": [
     {
-      "url": "https://be-rukun-jaya-production.up.railway.app/api/v1",
-      "description": "Production Server (Railway)"
-    },
-    {
       "url": "http://localhost:5000/api/v1",
       "description": "Development Server Lokal"
+    },
+    {
+      "url": "https://be-rukun-jaya-production.up.railway.app/api/v1",
+      "description": "Production Server (Railway)"
     }
   ],
   "components": {
@@ -26,6 +26,120 @@
     }
   },
   "paths": {
+    "/auth/refresh": {
+      "post": {
+        "summary": "Refresh Access Token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token diperbarui"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Logout Berhasil"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "summary": "Autentikasi Pengguna",
@@ -35,65 +149,550 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "password"],
+                "required": [
+                  "email_or_username",
+                  "password"
+                ],
                 "properties": {
-                  "email": { "type": "string", "example": "owner@toko-rukunjaya.com" },
-                  "password": { "type": "string", "example": "password_rahasia" }
+                  "email_or_username": {
+                    "type": "string",
+                    "example": "owner@toko-rukunjaya.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password_rahasia"
+                  },
+                  "remember_me": {
+                    "type": "boolean",
+                    "example": true
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Login Berhasil" },
-          "401": { "description": "Unauthorized" }
-        }
+          "200": {
+            "description": "Login Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login Berhasil"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
       }
     },
-    "/employees": {
+    "/staff": {
       "get": {
         "summary": "Ambil Daftar Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "responses": {
-          "200": { "description": "Daftar karyawan berhasil diambil" },
-          "401": { "description": "Tidak memiliki otorisasi" },
-          "403": { "description": "Role CASHIER ditolak akses" }
-        }
+          "200": {
+            "description": "Daftar karyawan berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar karyawan berhasil diambil"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki otorisasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak memiliki otorisasi"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       },
       "post": {
         "summary": "Tambah Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name", "email", "password", "role"],
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "role"
+                ],
                 "properties": {
-                  "name": { "type": "string", "example": "Budi Santoso" },
-                  "email": { "type": "string", "example": "[EMAIL_ADDRESS]" },
-                  "password": { "type": "string", "example": "password123" },
-                  "role": {"type": "string", "enum": ["CASHIER"]}
+                  "name": {
+                    "type": "string",
+                    "example": "Budi Santoso"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "[EMAIL_ADDRESS]"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "CASHIER"
+                    ]
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "201": { "description": "Karyawan berhasil ditambahkan" },
-          "401": { "description": "Anda tidak memiliki akses untuk menambahkan karyawan" },
-          "403": { "description": "Role CASHIER ditolak akses" },
-          "409": { "description": "Email sudah terdaftar" }
-        }
+          "201": {
+            "description": "Karyawan berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Karyawan berhasil ditambahkan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Anda tidak memiliki akses untuk menambahkan karyawan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Anda tidak memiliki akses untuk menambahkan karyawan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email sudah terdaftar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 409
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email sudah terdaftar"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       }
     },
-    "/employees/{id}": {
+    "/staff/{staff_id}/toggle-access": {
+      "patch": {
+        "summary": "Toggle Akses Karyawan",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "staff_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Akses diubah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Akses diubah"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
+      }
+    },
+    "/staff/{id}": {
+      "get": {
+        "summary": "Ambil Detail Karyawan",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data karyawan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data karyawan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
+      },
       "put": {
         "summary": "Update Data Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -101,51 +700,407 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "name": { "type": "string", "example": "Budi Santoso Edit" },
-                  "email": { "type": "string", "example": "budi.edit@example.com" },
-                  "password": { "type": "string", "example": "newpassword123" },
-                  "role": { "type": "string", "enum": ["CASHIER", "OWNER"] }
+                  "name": {
+                    "type": "string",
+                    "example": "Budi Santoso Edit"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "budi.edit@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "newpassword123"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "CASHIER",
+                      "OWNER"
+                    ]
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Data karyawan berhasil diubah" },
-          "401": { "description": "Tidak memiliki otorisasi" },
-          "403": { "description": "Role CASHIER ditolak akses" },
-          "404": { "description": "Data tidak ditemukan" }
-        }
+          "200": {
+            "description": "Data karyawan berhasil diubah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data karyawan berhasil diubah"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki otorisasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak memiliki otorisasi"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       },
       "delete": {
         "summary": "Hapus Karyawan",
-        "security": [{"BearerAuth": []}],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Karyawan berhasil dihapus" },
-          "401": { "description": "Tidak memiliki otorisasi" },
-          "403": { "description": "Role CASHIER ditolak akses" },
-          "404": { "description": "Data tidak ditemukan" }
-        }
+          "200": {
+            "description": "Karyawan berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Karyawan berhasil dihapus"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Tidak memiliki otorisasi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Tidak memiliki otorisasi"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role CASHIER ditolak akses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 403
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Role CASHIER ditolak akses"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "7. Staff Management"
+        ]
       }
     },
-    "/products": {
+    "/inventory": {
       "get": {
         "summary": "Ambil Daftar Produk",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
-          { "name": "search", "in": "query", "schema": { "type": "string" } },
-          { "name": "low_stock", "in": "query", "schema": { "type": "boolean" } }
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "low_stock",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Daftar produk ditarik" }
-        }
+          "200": {
+            "description": "Daftar produk ditarik",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar produk ditarik"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       },
       "post": {
         "summary": "Tambah Master Data Produk",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -153,27 +1108,229 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "sku_code": { "type": "string", "example": "PIP-WV-AW12" },
-                  "name": { "type": "string", "example": "Pipa Wavin AW 1/2 inch" },
-                  "category_id": { "type": "string", "format": "uuid" },
-                  "supplier_id": { "type": "string", "format": "uuid" },
-                  "buy_price": { "type": "number", "example": 28000 },
-                  "sell_price": { "type": "number", "example": 32000 },
-                  "current_stock": { "type": "integer", "example": 120 },
-                  "min_stock": { "type": "integer", "example": 50 },
-                  "rack_location": { "type": "string", "example": "R-C3-12" }
+                  "sku_code": {
+                    "type": "string",
+                    "example": "PIP-WV-AW12"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Pipa Wavin AW 1/2 inch"
+                  },
+                  "category_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "supplier_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "buy_price": {
+                    "type": "number",
+                    "example": 28000
+                  },
+                  "sell_price": {
+                    "type": "number",
+                    "example": 32000
+                  },
+                  "current_stock": {
+                    "type": "integer",
+                    "example": 120
+                  },
+                  "min_stock": {
+                    "type": "integer",
+                    "example": 50
+                  },
+                  "rack_location": {
+                    "type": "string",
+                    "example": "R-C3-12"
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "201": { "description": "Produk berhasil ditambah" } }
+        "responses": {
+          "201": {
+            "description": "Produk berhasil ditambah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produk berhasil ditambah"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
-    "/products/bulk-update": {
+    "/inventory/{id}": {
+      "get": {
+        "summary": "Ambil Detail Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail produk",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Detail produk"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
+      }
+    },
+    "/inventory/bulk-update/upload": {
+      "post": {
+        "summary": "Upload Excel Bulk Update",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File terupload dan stok diupdate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File terupload dan stok diupdate"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
+      }
+    },
+    "/inventory/bulk-update": {
       "put": {
         "summary": "Bulk Update Stok Barang",
-        "security": [{ "BearerAuth": [] }],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -186,8 +1343,13 @@
                     "items": {
                       "type": "object",
                       "properties": {
-                        "id": { "type": "string", "format": "uuid" },
-                        "new_stock": { "type": "integer" }
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "new_stock": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -196,26 +1358,160 @@
             }
           }
         },
-        "responses": { "200": { "description": "Update massal sukses" } }
+        "responses": {
+          "200": {
+            "description": "Update massal sukses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Update massal sukses"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory Management"
+        ]
       }
     },
-    "/members/verify": {
+    "/members/vip/export": {
       "get": {
-        "summary": "Verifikasi Status Member VIP",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "phone", "in": "query", "required": true, "schema": { "type": "string" } }
+        "summary": "Export Data VIP Member ke Excel",
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
         "responses": {
-          "200": { "description": "Member ditemukan" },
-          "404": { "description": "Member tidak ditemukan" }
-        }
+          "200": {
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File Excel terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
       }
     },
-    "/transactions/checkout": {
+    "/members/vip": {
+      "get": {
+        "summary": "Ambil Daftar VIP Member",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar VIP Member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar VIP Member"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      },
       "post": {
-        "summary": "Finalisasi Transaksi Penjualan (POS)",
-        "security": [{ "BearerAuth": [] }],
+        "summary": "Registrasi VIP Member Baru",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -223,17 +1519,285 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "member_id": { "type": "string", "nullable": true },
-                  "discount_type": { "type": "string", "enum": ["NOMINAL", "PERCENTAGE"] },
-                  "discount_value": { "type": "number" },
-                  "cash_paid": { "type": "number" },
+                  "phone_number": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "VIP Member ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "VIP Member ditambahkan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      }
+    },
+    "/members/vip/{member_id}/redeem": {
+      "post": {
+        "summary": "Redeem Poin VIP Member",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "poin_ditukar": {
+                    "type": "integer"
+                  },
+                  "jenis_penukaran": {
+                    "type": "string"
+                  },
+                  "transaction_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Poin berhasil ditukar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Poin berhasil ditukar"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      }
+    },
+    "/pos/validate-vip": {
+      "post": {
+        "summary": "Verifikasi Status Member VIP",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Member ditemukan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Member tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Member tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
+      }
+    },
+    "/pos/transactions": {
+      "post": {
+        "summary": "Finalisasi Transaksi Penjualan (POS)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "member_id": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "discount_type": {
+                    "type": "string",
+                    "enum": [
+                      "NOMINAL",
+                      "PERCENTAGE"
+                    ]
+                  },
+                  "discount_value": {
+                    "type": "number"
+                  },
+                  "cash_paid": {
+                    "type": "number"
+                  },
                   "items": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
-                        "product_id": { "type": "string", "format": "uuid" },
-                        "quantity": { "type": "integer" }
+                        "product_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "quantity": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -242,13 +1806,455 @@
             }
           }
         },
-        "responses": { "201": { "description": "Transaksi sukses" } }
+        "responses": {
+          "201": {
+            "description": "Transaksi sukses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Transaksi sukses"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
       }
     },
-    "/transactions/return": {
+    "/transactions/export/excel": {
+      "get": {
+        "summary": "Export Transaksi ke Excel",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File Excel terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
+      }
+    },
+    "/finance/summary": {
+      "get": {
+        "summary": "Ringkasan Laporan Keuangan",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "this_month",
+                "last_month",
+                "custom"
+              ]
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data Ringkasan Keuangan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data Ringkasan Keuangan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
+      }
+    },
+    "/finance/export/pdf": {
+      "get": {
+        "summary": "Export Laporan Keuangan ke PDF",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File PDF terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File PDF terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
+      }
+    },
+    "/dashboard/overview": {
+      "get": {
+        "summary": "Dashboard Overview (Agregasi Data)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-24"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data Dashboard Overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data Dashboard Overview"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "8. Dashboard & Analytics"
+        ]
+      }
+    },
+    "/audit/logs": {
+      "get": {
+        "summary": "Log Audit",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar Audit Log",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar Audit Log"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
+      }
+    },
+    "/warranty/lookup": {
+      "get": {
+        "summary": "Cari Transaksi untuk Garansi",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "invoice_no",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data transaksi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data transaksi"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "6. Warranty & Returns"
+        ]
+      }
+    },
+    "/warranty/claims": {
       "post": {
-        "summary": "Retur Barang Cacat (Garansi Toko)",
-        "security": [{ "BearerAuth": [] }],
+        "summary": "Buat Klaim Garansi",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -256,34 +2262,357 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "transaction_id": { "type": "string", "format": "uuid" },
-                  "product_id": { "type": "string", "format": "uuid" },
-                  "quantity_returned": { "type": "integer" }
+                  "invoice_no": {
+                    "type": "string"
+                  },
+                  "product_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "qty": {
+                    "type": "integer"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "CACAT_PABRIK",
+                      "SALAH_KIRIM",
+                      "KUALITAS_TIDAK_SESUAI",
+                      "LAINNYA"
+                    ]
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "200": { "description": "Retur berhasil" } }
+        "responses": {
+          "201": {
+            "description": "Klaim dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Klaim dibuat"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "6. Warranty & Returns"
+        ]
       }
     },
-    "/reports/financial": {
+    "/pos/transactions/{transaction_id}": {
       "get": {
-        "summary": "Laporan Keuangan",
-        "security": [{ "BearerAuth": [] }],
-        "parameters": [
-          { "name": "start_date", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-06-01" } },
-          { "name": "end_date", "in": "query", "required": true, "schema": { "type": "string", "example": "2026-06-30" } }
+        "summary": "Ambil Detail Transaksi",
+        "security": [
+          {
+            "BearerAuth": []
+          }
         ],
-        "responses": { "200": { "description": "Data Laporan" } }
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail transaksi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Detail transaksi"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
       }
     },
-    "/audit-logs": {
+    "/audit/logs/{id}": {
       "get": {
-        "summary": "Log Audit",
-        "security": [{ "BearerAuth": [] }],
-        "responses": { "200": { "description": "Daftar Audit Log" } }
+        "summary": "Ambil Detail Log Audit",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail log audit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Detail log audit"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
+      }
+    },
+    "/audit/logs/export/excel": {
+      "get": {
+        "summary": "Export Audit Logs ke Excel",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "File Excel terunduh"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
+      }
+    },
+    "/pos/products": {
+      "get": {
+        "summary": "Pencarian Produk Khusus Kasir (POS)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "low_stock",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar produk ditarik",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Daftar produk ditarik"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Data hasil request"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "1. Authentication",
+      "description": "Otentikasi, login, logout, dan manajemen sesi."
+    },
+    {
+      "name": "2. Point of Sales (POS)",
+      "description": "Rute operasional mesin kasir."
+    },
+    {
+      "name": "3. Inventory Management",
+      "description": "Manajemen gudang dan produk."
+    },
+    {
+      "name": "4. Member & VIP",
+      "description": "Kelola keanggotaan dan poin loyalitas."
+    },
+    {
+      "name": "5. Finance & Transactions",
+      "description": "Riwayat transaksi utuh dan laporan keuangan."
+    },
+    {
+      "name": "6. Warranty & Returns",
+      "description": "Klaim garansi dan pengembalian barang."
+    },
+    {
+      "name": "7. Staff Management",
+      "description": "Kelola akun karyawan dan otorisasinya."
+    },
+    {
+      "name": "8. Dashboard & Analytics",
+      "description": "Statistik untuk halaman utama."
+    },
+    {
+      "name": "9. Audit & Security Logs",
+      "description": "Log aktivitas sistem dan karyawan."
+    }
+  ]
 }
