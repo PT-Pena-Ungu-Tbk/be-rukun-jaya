@@ -41,7 +41,7 @@ const getFinancialSummary = async (req: Request, res: Response) => {
 
         const getStats = async (dStart: Date, dEnd: Date) => {
             const txs = await prisma.transaction.findMany({
-                where: { created_at: { gte: dStart, lte: dEnd }, status: 'SUCCESS' },
+                where: { created_at: { gte: dStart, lte: dEnd } },
                 include: { details: { include: { product: true } } }
             });
             let omzet = 0;
@@ -93,7 +93,7 @@ const exportFinancialPDF = async (req: Request, res: Response) => {
         end.setHours(23, 59, 59, 999);
 
         const txs = await prisma.transaction.findMany({
-            where: { created_at: { gte: start, lte: end }, status: 'SUCCESS' },
+            where: { created_at: { gte: start, lte: end } },
             include: { details: { include: { product: true } } },
             orderBy: { created_at: 'asc' }
         });
