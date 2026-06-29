@@ -23,6 +23,36 @@
         "bearerFormat": "JWT",
         "description": "Masukkan token JWT"
       }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "status_code": {
+            "type": "integer",
+            "example": 400
+          },
+          "error_code": {
+            "type": "string",
+            "example": "BAD_REQUEST"
+          },
+          "message": {
+            "type": "string",
+            "example": "Pesan error yang informatif"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "request_id": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "paths": {
@@ -81,6 +111,26 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -130,6 +180,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -209,6 +289,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized",
             "content": {
@@ -238,6 +328,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -359,6 +459,16 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -442,6 +552,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -544,6 +664,16 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -607,6 +737,56 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -667,6 +847,56 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -762,6 +992,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Tidak memiliki otorisasi",
             "content": {
@@ -857,6 +1097,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -922,6 +1172,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Tidak memiliki otorisasi",
             "content": {
@@ -1017,6 +1277,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1085,6 +1355,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1186,6 +1486,46 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1249,6 +1589,56 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1276,6 +1666,56 @@
         "responses": {
           "200": {
             "description": "Produk berhasil diupdate"
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1303,6 +1743,56 @@
         "responses": {
           "200": {
             "description": "Produk berhasil dihapus"
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1367,6 +1857,46 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1449,6 +1979,46 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1501,6 +2071,36 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1550,6 +2150,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1618,6 +2248,46 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1706,6 +2376,56 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1769,6 +2489,26 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Member tidak ditemukan",
             "content": {
@@ -1798,6 +2538,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1927,12 +2677,32 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "402": {
             "description": "Payment Required (Uang pembayaran kurang dari total tagihan)",
             "content": {
               "application/json": {
                 "schema": {
                   "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2036,6 +2806,36 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2118,6 +2918,36 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2188,6 +3018,36 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2250,6 +3110,36 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2299,6 +3189,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2360,6 +3280,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2446,6 +3396,46 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2516,6 +3506,26 @@
               "application/json": {
                 "schema": {
                   "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2602,6 +3612,56 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -2651,6 +3711,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2719,6 +3809,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
