@@ -97,7 +97,7 @@ const getDashboardOverview = async (req: Request, res: Response) => {
         const topProductsGroups = await prisma.transactionDetail.groupBy({
             by: ['product_id'],
             _sum: { quantity: true, subtotal: true },
-            where: { transaction: { created_at: { gte: thirtyDaysAgo }, status: 'SUCCESS' } },
+            where: { transaction: { created_at: { gte: thirtyDaysAgo } } },
             orderBy: { _sum: { quantity: 'desc' } },
             take: 5
         });
@@ -150,7 +150,7 @@ const getDashboardOverview = async (req: Request, res: Response) => {
             dEnd.setHours(23, 59, 59, 999);
             
             const dayTrans = await prisma.transaction.aggregate({
-                where: { created_at: { gte: dStart, lte: dEnd }, status: 'SUCCESS' },
+                where: { created_at: { gte: dStart, lte: dEnd } },
                 _sum: { grand_total: true }
             });
             const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
