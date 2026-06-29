@@ -100,23 +100,27 @@ docker run -d -p 5000:5000 --env-file .env --name rukun-jaya-backend be-rukun-ja
 Saat server berjalan, Anda dapat mengakses visualisasi dokumentasi API lengkap, payload schema, parameter, dan melakukan test endpoint secara interaktif melalui:
 👉 **[http://localhost:5000/docs](http://localhost:5000/docs)**
 
-### Endpoint Utama yang Tersedia:
+### Endpoint Utama yang Tersedia (v1.2.0):
 * **Autentikasi (`/api/v1/auth`)**:
   - `POST /login` - Login pengguna untuk mendapatkan JWT token.
-* **Manajemen Karyawan (`/api/v1/employees`)** *(Khusus Owner)*:
+* **Manajemen Karyawan (`/api/v1/staff`)** *(Khusus Owner)*:
   - `GET /` - Dapatkan semua karyawan.
   - `POST /` - Tambahkan karyawan baru.
   - `PUT /:id` - Edit data karyawan (termasuk reset password/role).
   - `DELETE /:id` - Hapus data karyawan.
-* **Manajemen Produk (`/api/v1/products`)**:
+* **Manajemen Gudang (`/api/v1/inventory`)**:
   - `GET /` - List produk dengan pencarian dan filter stok minimum (*low-stock*).
+  - `POST /` - Tambah barang baru ke inventaris.
   - `PUT /bulk-update` - Update stok massal.
-* **Transaksi POS (`/api/v1/transactions`)**:
-  - `POST /checkout` - Transaksi kasir (potong stok, perhitungan diskon member, PPN 11%).
-  - `POST /return` - Perubahan status barang cacat (klaim garansi & log audit).
-* **Laporan Finansial (`/api/v1/reports`)**:
-  - `GET /financial` - Agregasi total pemasukan dan volume transaksi.
-* **Audit Logs (`/api/v1/audit-logs`)**:
+  - `DELETE /:id` - Hapus barang.
+* **Transaksi POS (`/api/v1/pos/transactions`)**:
+  - `POST /` - Checkout kasir (parameter: `items` dengan `qty`, `payment_method`, dll).
+  - `GET /:transaction_id` - Detail struk transaksi.
+* **Klaim Garansi & Retur (`/api/v1/warranty/claims`)**:
+  - `POST /` - Proses barang cacat dan catat ke log audit.
+* **Laporan Finansial (`/api/v1/finance`)**:
+  - `GET /summary` - Agregasi total pemasukan dan volume transaksi.
+* **Audit Logs (`/api/v1/audit/logs`)**:
   - `GET /` - Log aktivitas audit sistem.
 
 ---
