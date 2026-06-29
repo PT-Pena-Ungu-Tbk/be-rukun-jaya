@@ -101,22 +101,22 @@ export const lookupWarranty = async (req: Request, res: Response) => {
 
 // 2. KONFIRMASI RETUR BARANG (POST /warranty/claims)
 export const createWarrantyClaim = async (req: Request, res: Response) => {
-    const { invoice_id, item_kode, alasan_retur, qty_diretur, deskripsi_kondisi } = req.body;
+    const { invoice_no, product_id, qty, reason, description } = req.body;
     const userId = req.user.id; // Dari token JWT
 
     try {
         // Validasi field input
-        if (!invoice_id || !item_kode || !alasan_retur || qty_diretur === undefined) {
+        if (!invoice_no || !product_id || !reason || qty === undefined) {
             return res.status(400).json({
                 success: false,
                 status: 'error',
-                message: 'Field invoice_id, item_kode, alasan_retur, dan qty_diretur wajib diisi.'
+                message: 'Field invoice_no, product_id, reason, dan qty wajib diisi.'
             });
         }
 
         // Validasi alasan retur
         const validReasons = Object.values(ReturnReason) as string[];
-        if (!validReasons.includes(alasan_retur)) {
+        if (!validReasons.includes(reason)) {
             return res.status(400).json({
                 success: false,
                 status: 'error',
@@ -124,12 +124,12 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
             });
         }
 
-        // Validasi qty_diretur
-        if (typeof qty_diretur !== 'number' || qty_diretur <= 0) {
+        // Validasi qty
+        if (typeof qty !== 'number' || qty <= 0) {
             return res.status(400).json({
                 success: false,
                 status: 'error',
-                message: 'Jumlah yang diretur (qty_diretur) harus berupa angka positif.'
+                message: 'Jumlah yang diretur (qty) harus berupa angka positif.'
             });
         }
 
@@ -137,7 +137,7 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
         const result = await prisma.$transaction(async (tx) => {
             // 1. Cari nota transaksi asal
             const transaction = await tx.transaction.findUnique({
-                where: { invoice_no: invoice_id }
+                where: { invoice_no: invoice_no }
             });
 
             if (!transaction) {
@@ -154,9 +154,9 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
                 throw new AppError('Masa garansi nota transaksi ini telah kedaluwarsa.', 410);
             }
 
-            // 3. Cari produk berdasarkan item_kode
+            // 3. Cari produk berdasarkan product_id
             const product = await tx.product.findUnique({
-                where: { sku_code: item_kode }
+                where: { id: product_id }
             });
 
             if (!product) {
@@ -178,7 +178,7 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
             // 5. Hitung kuantitas yang sudah diretur sebelumnya untuk produk ini
             const existingClaims = await tx.warrantyClaim.findMany({
                 where: {
-                    invoice_id: invoice_id,
+                    invoice_id: invoice_no,
                     product_id: product.id
                 }
             });
@@ -186,12 +186,12 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
 
             // Validasi qty
             const qty_beli = detail.quantity;
-            if (qty_diretur > (qty_beli - qtyAlreadyReturned)) {
+            if (qty > (qty_beli - qtyAlreadyReturned)) {
                 throw new AppError('Jumlah yang diretur melebihi jumlah pembelian yang tersisa.', 400);
             }
 
             // 6. Cek stok barang pengganti di gudang
-            if (product.current_stock < qty_diretur) {
+            if (product.current_stock < qty) {
                 throw new AppError('Stok barang pengganti tidak mencukupi di gudang.', 422);
             }
 
@@ -199,22 +199,22 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
             await tx.product.update({
                 where: { id: product.id },
                 data: {
-                    current_stock: product.current_stock - qty_diretur,
-                    defective_stock: product.defective_stock + qty_diretur
+                    current_stock: product.current_stock - qty,
+                    defective_stock: product.defective_stock + qty
                 }
             });
 
             // 8. Hitung estimasi nilai retur
-            const estimasi_nilai_retur = qty_diretur * Math.round(parseFloat(detail.unit_price.toString()));
+            const estimasi_nilai_retur = qty * Math.round(parseFloat(detail.unit_price.toString()));
 
             // 9. Buat data klaim garansi
             const claim = await tx.warrantyClaim.create({
                 data: {
-                    invoice_id: invoice_id,
+                    invoice_id: invoice_no,
                     product_id: product.id,
-                    alasan_retur: alasan_retur as ReturnReason,
-                    qty_diretur: qty_diretur,
-                    deskripsi_kondisi: deskripsi_kondisi || null,
+                    alasan_retur: reason as ReturnReason,
+                    qty_diretur: qty,
+                    deskripsi_kondisi: description || null,
                     status: 'APPROVED',
                     estimasi_nilai_retur: estimasi_nilai_retur,
                     stok_berkurang: true
@@ -229,10 +229,10 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
                     table_name: 'warranty_claims',
                     record_id: claim.id,
                     changes_payload: {
-                        message: `Retur garansi barang ${product.name} (SKU: ${product.sku_code}) sejumlah ${qty_diretur}`,
+                        message: `Retur garansi barang ${product.name} (SKU: ${product.sku_code}) sejumlah ${qty}`,
                         claim_id: claim.id,
-                        invoice_id: invoice_id,
-                        qty_diretur: qty_diretur
+                        invoice_id: invoice_no,
+                        qty_diretur: qty
                     }
                 }
             });
