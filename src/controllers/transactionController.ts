@@ -379,9 +379,102 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
     }
 };
 
+// 4. DAFTAR RIWAYAT TRANSAKSI (PAGINATION, FILTER, SEARCH)
+const getTransactionHistory = async (req: Request, res: Response) => {
+    try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+
+        const { startDate, endDate, search } = req.query;
+
+        const where: any = {};
+
+        // Filter Rentang Tanggal
+        if (startDate || endDate) {
+            where.created_at = {};
+            if (startDate) {
+                const start = new Date(startDate as string);
+                start.setHours(0, 0, 0, 0);
+                where.created_at.gte = start;
+            }
+            if (endDate) {
+                const end = new Date(endDate as string);
+                end.setHours(23, 59, 59, 999);
+                where.created_at.lte = end;
+            }
+        }
+
+        // Pencarian berdasarkan invoice atau nama pelanggan
+        if (search) {
+            where.OR = [
+                { invoice_no: { contains: search as string, mode: 'insensitive' } },
+                { customer_name: { contains: search as string, mode: 'insensitive' } },
+                { 
+                    member: {
+                        name: { contains: search as string, mode: 'insensitive' }
+                    }
+                }
+            ];
+        }
+
+        const [transactions, total] = await Promise.all([
+            prisma.transaction.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { created_at: 'desc' },
+                include: {
+                    cashier: { select: { id: true, name: true } },
+                    member: { select: { id: true, name: true, phone_number: true } },
+                    details: true
+                }
+            }),
+            prisma.transaction.count({ where })
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        const formattedTransactions = transactions.map((t: any) => {
+            const totalItem = t.details ? t.details.reduce((sum: number, d: any) => sum + d.quantity, 0) : 0;
+            return {
+                id: t.id,
+                invoice_no: t.invoice_no,
+                tanggal: t.created_at,
+                pelanggan: t.customer_name || t.member?.name || "-",
+                kasir: t.cashier?.name || "-",
+                metode_pembayaran: t.payment_method || 'CASH',
+                total_item: totalItem,
+                grand_total: t.grand_total,
+                status: 'SUCCESS'
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: formattedTransactions,
+            pagination: {
+                total_data: total,
+                total_pages: totalPages,
+                current_page: page,
+                limit
+            }
+        });
+
+    } catch (error: any) {
+        console.error("Get Transaction History Error:", error);
+        return res.status(500).json({
+            success: false,
+            status_code: 500,
+            message: "Terjadi kesalahan internal saat mengambil daftar transaksi."
+        });
+    }
+};
+
 export { 
     checkout,
     returnItem,
     exportTransactionsExcel,
-    getTransactionDetails
+    getTransactionDetails,
+    getTransactionHistory
  };
