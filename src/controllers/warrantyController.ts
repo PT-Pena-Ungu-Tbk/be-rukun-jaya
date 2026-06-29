@@ -5,20 +5,21 @@ import { ReturnReason } from '@prisma/client';
 
 // 1. CARI NOTA TRANSAKSI UNTUK RETUR (GET /warranty/lookup)
 export const lookupWarranty = async (req: Request, res: Response) => {
-    const { invoice_id } = req.query;
+    const { invoice_no, invoice_id } = req.query;
+    const finalInvoiceNo = invoice_no || invoice_id;
 
     try {
-        if (!invoice_id || typeof invoice_id !== 'string') {
+        if (!finalInvoiceNo || typeof finalInvoiceNo !== 'string') {
             return res.status(400).json({
                 success: false,
                 status: 'error',
-                message: 'Parameter invoice_id wajib diisi.'
+                message: 'Parameter invoice_no wajib diisi.'
             });
         }
 
         // Cari transaksi berdasarkan invoice_no
         const transaction = await prisma.transaction.findUnique({
-            where: { invoice_no: invoice_id },
+            where: { invoice_no: finalInvoiceNo as string },
             include: {
                 details: {
                     include: {
@@ -54,7 +55,7 @@ export const lookupWarranty = async (req: Request, res: Response) => {
 
         // Ambil data klaim garansi yang sudah pernah dibuat untuk invoice ini
         const existingClaims = await prisma.warrantyClaim.findMany({
-            where: { invoice_id: invoice_id }
+            where: { invoice_id: finalInvoiceNo as string }
         });
 
         // Map items untuk detail barang
