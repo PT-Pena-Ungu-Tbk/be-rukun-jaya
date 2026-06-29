@@ -1823,23 +1823,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "member_id": {
-                    "type": "string",
-                    "nullable": true
-                  },
-                  "discount_type": {
-                    "type": "string",
-                    "enum": [
-                      "NOMINAL",
-                      "PERCENTAGE"
-                    ]
-                  },
-                  "discount_value": {
-                    "type": "number"
-                  },
-                  "cash_paid": {
-                    "type": "number"
-                  },
                   "items": {
                     "type": "array",
                     "items": {
@@ -1849,13 +1832,49 @@
                           "type": "string",
                           "format": "uuid"
                         },
-                        "quantity": {
+                        "qty": {
                           "type": "integer"
                         }
-                      }
+                      },
+                      "required": [
+                        "product_id",
+                        "qty"
+                      ]
                     }
+                  },
+                  "payment_method": {
+                    "type": "string",
+                    "enum": [
+                      "CASH",
+                      "QRIS",
+                      "DEBIT",
+                      "TRANSFER"
+                    ]
+                  },
+                  "jumlah_bayar": {
+                    "type": "number"
+                  },
+                  "vip_phone": {
+                    "type": "string"
+                  },
+                  "diskon_persen": {
+                    "type": "number"
+                  },
+                  "diskon_nominal": {
+                    "type": "number"
+                  },
+                  "payment_reference": {
+                    "type": "string"
+                  },
+                  "nama_pelanggan": {
+                    "type": "string"
                   }
-                }
+                },
+                "required": [
+                  "items",
+                  "payment_method",
+                  "jumlah_bayar"
+                ]
               }
             }
           }
@@ -1894,6 +1913,56 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Format body salah atau list barang kosong)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required (Uang pembayaran kurang dari total tagihan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Barang atau Member tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (Stok produk tidak mencukupi)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2437,6 +2506,36 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Format UUID tidak valid)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Transaksi tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
                 }
               }
             }
