@@ -18,6 +18,7 @@ import financeRoutes from './routes/financeRoutes';
 import auditRoutes from './routes/auditRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import warrantyRoutes from './routes/warrantyRoutes';
+import supplierRoutes from './routes/supplierRoutes';
 import categoryRoutes from './routes/categoryRoutes';
 
 const app = express();
@@ -75,6 +76,7 @@ app.use('/api/v1/finance', financeRoutes);
 app.use('/api/v1/audit/logs', auditRoutes);
 app.use('/api/v1/staff', employeeRoutes);
 app.use('/api/v1/warranty', warrantyRoutes);
+app.use('/api/suppliers', supplierRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 
 const PORT = process.env.PORT;
