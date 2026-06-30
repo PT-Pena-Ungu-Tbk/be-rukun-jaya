@@ -67,11 +67,11 @@ const checkout = async (req: Request, res: Response) => {
             const subtotalAfterDiscount = subtotal - discountAmount;
             const taxAmount = subtotalAfterDiscount * 0.11;
             const grandTotal = subtotalAfterDiscount + taxAmount;
-            
+
             if (payment_method === 'CASH' && jumlah_bayar < grandTotal) {
                 throw new AppError(`Pembayaran kurang. Total tagihan: ${grandTotal}`, 402);
             }
-            
+
             const cashPaid = payment_method === 'CASH' ? jumlah_bayar : grandTotal;
             const changeAmount = cashPaid - grandTotal;
             const invoiceNo = `INV-${Date.now()}`;
@@ -255,12 +255,12 @@ const returnItem = async (req: Request, res: Response) => {
             // Tambahkan kuantitas ke defective_stock dan kurangi current_stock 
             await tx.product.update({
                 where: { id: product_id },
-                data: { 
+                data: {
                     defective_stock: defectiveProduct.defective_stock + quantity_returned,
                     current_stock: defectiveProduct.current_stock - quantity_returned
                 }
             });
-            
+
 
             // Wajib mencatat ke Audit Log karena memodifikasi data sensitif
             const auditLog = await tx.auditLog.create({
@@ -288,7 +288,7 @@ const returnItem = async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error("Return Error:", error);
-        
+
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
                 status: "error",
@@ -307,19 +307,19 @@ const returnItem = async (req: Request, res: Response) => {
 const exportTransactionsExcel = async (req: Request, res: Response) => {
     try {
         const { startDate, endDate, status } = req.query as any;
-        const where: any= {};
+        const where: any = {};
 
         //Filter Status
-        if (status && status !== 'all'){
+        if (status && status !== 'all') {
             where.status = status;
         }
 
         //Filter Rentang Tanggal
-        if (startDate || endDate){
+        if (startDate || endDate) {
             where.created_at = {};
             if (startDate) {
                 const start = new Date(startDate);
-                start.setHours(0,0,0,0);
+                start.setHours(0, 0, 0, 0);
                 where.created_at.gte = start;
             }
             if (endDate) {
@@ -331,7 +331,7 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
 
         const transaction = await prisma.transaction.findMany({
             where,
-            orderBy: { created_at: 'desc'},
+            orderBy: { created_at: 'desc' },
             include: {
                 details: {
                     include: {
@@ -341,7 +341,7 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
                 member: true
             }
         })
-        
+
         // Format data untuk sheet Excel
         const excelData = transaction.map((t: any) => ({
             "ID Transaksi": t.invoice_no,
@@ -367,12 +367,12 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
         const fileName = `Export_Transaksi_${Date.now()}.xlsx`;
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        
+
         return res.send(excelBuffer);
     }
     catch (error: any) {
         console.error("Checkout Error:", error);
-        
+
         return res.status(500).json({
             status: "error",
             message: "Terjadi kesalahan internal saat memproses transaksi checkout."
@@ -380,81 +380,102 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
     }
 };
 
-const printReceipt = async (req: Request, res: Response) => {
+// 4. DAFTAR RIWAYAT TRANSAKSI (PAGINATION, FILTER, SEARCH)
+const getTransactionHistory = async (req: Request, res: Response) => {
     try {
-        const transaction_id = req.params.transaction_id as string;
-        const tx = await prisma.transaction.findUnique({
-            where: { invoice_no: transaction_id },
-            include: { details: { include: { product: true } }, cashier: true, member: true }
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+
+        const { startDate, endDate, search } = req.query;
+
+        const where: any = {};
+
+        // Filter Rentang Tanggal
+        if (startDate || endDate) {
+            where.created_at = {};
+            if (startDate) {
+                const start = new Date(startDate as string);
+                start.setHours(0, 0, 0, 0);
+                where.created_at.gte = start;
+            }
+            if (endDate) {
+                const end = new Date(endDate as string);
+                end.setHours(23, 59, 59, 999);
+                where.created_at.lte = end;
+            }
+        }
+
+        // Pencarian berdasarkan invoice atau nama pelanggan
+        if (search) {
+            where.OR = [
+                { invoice_no: { contains: search as string, mode: 'insensitive' } },
+                { customer_name: { contains: search as string, mode: 'insensitive' } },
+                {
+                    member: {
+                        name: { contains: search as string, mode: 'insensitive' }
+                    }
+                }
+            ];
+        }
+
+        const [transactions, total] = await Promise.all([
+            prisma.transaction.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { created_at: 'desc' },
+                include: {
+                    cashier: { select: { id: true, name: true } },
+                    member: { select: { id: true, name: true, phone_number: true } },
+                    details: true
+                }
+            }),
+            prisma.transaction.count({ where })
+        ]);
+
+        const totalPages = Math.ceil(total / limit);
+
+        const formattedTransactions = transactions.map((t: any) => {
+            const totalItem = t.details ? t.details.reduce((sum: number, d: any) => sum + d.quantity, 0) : 0;
+            return {
+                id: t.id,
+                invoice_no: t.invoice_no,
+                tanggal: t.created_at,
+                pelanggan: t.customer_name || t.member?.name || "-",
+                kasir: t.cashier?.name || "-",
+                metode_pembayaran: t.payment_method || 'CASH',
+                total_item: totalItem,
+                grand_total: t.grand_total,
+                status: 'SUCCESS'
+            };
         });
 
-        if (!tx) {
-            return res.status(404).json({ success: false, message: "Transaksi tidak ditemukan." });
-        }
+        return res.status(200).json({
+            success: true,
+            data: formattedTransactions,
+            pagination: {
+                total_data: total,
+                total_pages: totalPages,
+                current_page: page,
+                limit
+            }
+        });
 
-        const doc = new PDFDocument({ margin: 20, size: [226, 400] }); // Struk kasir thermal ukuran kecil
-        
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="struk_${tx.invoice_no}.pdf"`);
-        
-        doc.pipe(res);
-
-        // Header
-        doc.fontSize(12).text('TOKO RUKUN JAYA', { align: 'center' });
-        doc.fontSize(8).text('Jl. Raya Bangunan No.123', { align: 'center' });
-        doc.moveDown();
-        
-        doc.text(`Invoice: ${tx.invoice_no}`);
-        doc.text(`Tanggal: ${tx.created_at.toLocaleString('id-ID')}`);
-        doc.text(`Kasir  : ${tx.cashier.name}`);
-        if (tx.member) {
-            doc.text(`Member : ${tx.member.name}`);
-        }
-        doc.moveDown();
-        
-        // Garis putus-putus
-        doc.moveTo(20, doc.y).lineTo(206, doc.y).stroke();
-        doc.moveDown();
-
-        // Items
-        for (const item of tx.details) {
-            const productName = item.product ? item.product.name : 'Item Umum';
-            doc.text(`${productName}`, { align: 'left' });
-            doc.text(`${item.quantity} x ${Number(item.unit_price).toLocaleString('id-ID')} = ${Number(item.subtotal).toLocaleString('id-ID')}`, { align: 'right' });
-        }
-
-        doc.moveDown();
-        doc.moveTo(20, doc.y).lineTo(206, doc.y).stroke();
-        doc.moveDown();
-
-        // Totals
-        doc.text(`Subtotal : Rp ${Number(tx.subtotal).toLocaleString('id-ID')}`, { align: 'right' });
-        if (Number(tx.discount_value) > 0) {
-            doc.text(`Diskon   : Rp ${Number(tx.discount_value).toLocaleString('id-ID')}`, { align: 'right' });
-        }
-        if (Number(tx.tax_amount) > 0) {
-            doc.text(`Pajak    : Rp ${Number(tx.tax_amount).toLocaleString('id-ID')}`, { align: 'right' });
-        }
-        
-        doc.fontSize(10).text(`Total    : Rp ${Number(tx.grand_total).toLocaleString('id-ID')}`, { align: 'right' });
-        doc.fontSize(8).text(`Tunai    : Rp ${Number(tx.cash_paid).toLocaleString('id-ID')}`, { align: 'right' });
-        doc.text(`Kembali  : Rp ${Number(tx.change_amount).toLocaleString('id-ID')}`, { align: 'right' });
-        
-        doc.moveDown(2);
-        doc.text('Terima Kasih!', { align: 'center' });
-        doc.text('Barang yang sudah dibeli tidak dapat ditukar.', { align: 'center' });
-
-        doc.end();
-    } catch (error) {
-        console.error("Print Receipt Error:", error);
-        return res.status(500).json({ success: false, message: "Terjadi kesalahan saat mencetak struk." });
+    } catch (error: any) {
+        console.error("Get Transaction History Error:", error);
+        return res.status(500).json({
+            success: false,
+            status_code: 500,
+            message: "Terjadi kesalahan internal saat mengambil daftar transaksi."
+        });
     }
 };
 
-export { 
+export {
     checkout,
     returnItem,
     exportTransactionsExcel,
     getTransactionDetails,
-    printReceipt
- };
+    getTransactionHistory
+};
