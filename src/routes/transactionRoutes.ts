@@ -1,10 +1,13 @@
 import express from 'express';
 const router = express.Router();
-import { exportTransactionsExcel, getTransactionHistory } from '../controllers/transactionController';
+import { exportTransactionsExcel, getTransactionHistory, returnItem } from '../controllers/transactionController';
 import { verifyToken, hasRoles } from '../middlewares/authMiddleware';
 
 // Daftar Transaksi JSON (dengan Pagination, Filter, Search)
 router.get('/', verifyToken, hasRoles(['MANAGER', 'OWNER', 'CASHIER']), getTransactionHistory);
+
+// Retur Transaksi
+router.post('/return', verifyToken, hasRoles(['MANAGER', 'OWNER', 'CASHIER']), returnItem);
 
 // Overview dan Export
 router.get('/export/excel', verifyToken, hasRoles(['MANAGER', 'OWNER']), exportTransactionsExcel);

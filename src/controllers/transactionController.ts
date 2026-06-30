@@ -521,9 +521,90 @@ const getAllTransactions = async (req: Request, res: Response) => {
     }
 };
 
+// 6. CETAK STRUK PDF
+const printReceipt = async (req: Request, res: Response) => {
+    try {
+        const transaction_id = req.params.transaction_id as string;
+        const tx = await prisma.transaction.findFirst({
+            where: isValidUUID(transaction_id) ? {
+                OR: [
+                    { id: transaction_id },
+                    { invoice_no: transaction_id }
+                ]
+            } : {
+                invoice_no: transaction_id
+            },
+            include: { details: { include: { product: true } }, cashier: true, member: true }
+        });
+
+        if (!tx) {
+            return res.status(404).json({ success: false, message: "Transaksi tidak ditemukan." });
+        }
+
+        const doc = new PDFDocument({ margin: 20, size: [226, 400] }); // Struk kasir thermal ukuran kecil
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="struk_${tx.invoice_no}.pdf"`);
+        
+        doc.pipe(res);
+
+        // Header
+        doc.fontSize(12).text('TOKO BANGUNAN RUKUN JAYA', { align: 'center' });
+        doc.fontSize(8).text('Jl. KH. Ahmad Dahlan No.123, Krapyak Kulon, Kec. Kaliwates, Kab. Jember, Jawa Timur', { align: 'center' });
+        doc.moveDown();
+        
+        doc.text(`Invoice: ${tx.invoice_no}`);
+        doc.text(`Tanggal: ${tx.created_at.toLocaleString('id-ID')}`);
+        doc.text(`Kasir  : ${tx.cashier?.name || 'Kasir / Admin'}`);
+        if (tx.member) {
+            doc.text(`Member : ${tx.member.name}`);
+        }
+        doc.moveDown();
+        
+        // Garis putus-putus
+        doc.moveTo(20, doc.y).lineTo(206, doc.y).stroke();
+        doc.moveDown();
+
+        // Items
+        for (const item of tx.details) {
+            const productName = item.product ? item.product.name : 'Item Umum';
+            doc.text(`${productName}`, { align: 'left' });
+            doc.text(`${item.quantity} x ${Number(item.unit_price).toLocaleString('id-ID')} = ${Number(item.subtotal).toLocaleString('id-ID')}`, { align: 'right' });
+        }
+
+        doc.moveDown();
+        doc.moveTo(20, doc.y).lineTo(206, doc.y).stroke();
+        doc.moveDown();
+
+        // Totals
+        doc.text(`Subtotal : Rp ${Number(tx.subtotal).toLocaleString('id-ID')}`, { align: 'right' });
+        if (Number(tx.discount_value) > 0) {
+            doc.text(`Diskon   : Rp ${Number(tx.discount_value).toLocaleString('id-ID')}`, { align: 'right' });
+        }
+        if (Number(tx.tax_amount) > 0) {
+            doc.text(`Pajak    : Rp ${Number(tx.tax_amount).toLocaleString('id-ID')}`, { align: 'right' });
+        }
+        
+        doc.fontSize(10).text(`Total    : Rp ${Number(tx.grand_total).toLocaleString('id-ID')}`, { align: 'right' });
+        doc.fontSize(8).text(`Tunai    : Rp ${Number(tx.cash_paid).toLocaleString('id-ID')}`, { align: 'right' });
+        doc.text(`Kembali  : Rp ${Number(tx.change_amount).toLocaleString('id-ID')}`, { align: 'right' });
+        
+        doc.moveDown(2);
+        doc.text('Terima Kasih!', { align: 'center' });
+        doc.text('Barang yang sudah dibeli tidak dapat ditukar.', { align: 'center' });
+
+        doc.end();
+    } catch (error) {
+        console.error("Print Receipt Error:", error);
+        return res.status(500).json({ success: false, message: "Terjadi kesalahan saat mencetak struk." });
+    }
+};
+
+
 export {
     checkout,
     returnItem,
+    printReceipt,
     exportTransactionsExcel,
     getTransactionDetails,
     getTransactionHistory,
