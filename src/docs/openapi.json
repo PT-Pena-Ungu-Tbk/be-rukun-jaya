@@ -3991,7 +3991,7 @@
     "/pos/transactions/{transaction_id}/receipt": {
       "get": {
         "summary": "Cetak Struk Transaksi",
-        "description": "Mengembalikan file PDF struk kasir termal.",
+        "description": "Mencetak struk kasir berformat PDF (Thermal). Parameter transaction_id pada URL sangat fleksibel: Anda bisa menggunakan ID database (UUID) maupun Nomor Invoice (contoh: INV-12345).",
         "security": [
           {
             "BearerAuth": []
@@ -4280,6 +4280,96 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/transactions/return": {
+      "post": {
+        "summary": "Retur Barang (Klaim Garansi/Cacat)",
+        "description": "Memproses retur barang cacat pabrik. Kuantitas barang cacat akan dimasukkan ke dalam defective_stock, dan barang pengganti baru akan dipotong otomatis dari current_stock.",
+        "tags": [
+          "4. Transactions"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "transaction_id",
+                  "product_id",
+                  "quantity_returned"
+                ],
+                "properties": {
+                  "transaction_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID Transaksi (berupa UUID, bukan nomor invoice)"
+                  },
+                  "product_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "ID Produk cacat yang ingin diretur"
+                  },
+                  "quantity_returned": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "Jumlah barang yang dikembalikan"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Retur berhasil diproses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Proses klaim garansi berhasil diproses."
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "audit_log_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/schemas/ErrorResponse"
           }
         }
       }
