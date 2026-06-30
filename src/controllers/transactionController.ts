@@ -66,11 +66,11 @@ const checkout = async (req: Request, res: Response) => {
             const subtotalAfterDiscount = subtotal - discountAmount;
             const taxAmount = subtotalAfterDiscount * 0.11;
             const grandTotal = subtotalAfterDiscount + taxAmount;
-            
+
             if (payment_method === 'CASH' && jumlah_bayar < grandTotal) {
                 throw new AppError(`Pembayaran kurang. Total tagihan: ${grandTotal}`, 402);
             }
-            
+
             const cashPaid = payment_method === 'CASH' ? jumlah_bayar : grandTotal;
             const changeAmount = cashPaid - grandTotal;
             const invoiceNo = `INV-${Date.now()}`;
@@ -254,12 +254,12 @@ const returnItem = async (req: Request, res: Response) => {
             // Tambahkan kuantitas ke defective_stock dan kurangi current_stock 
             await tx.product.update({
                 where: { id: product_id },
-                data: { 
+                data: {
                     defective_stock: defectiveProduct.defective_stock + quantity_returned,
                     current_stock: defectiveProduct.current_stock - quantity_returned
                 }
             });
-            
+
 
             // Wajib mencatat ke Audit Log karena memodifikasi data sensitif
             const auditLog = await tx.auditLog.create({
@@ -287,7 +287,7 @@ const returnItem = async (req: Request, res: Response) => {
 
     } catch (error: any) {
         console.error("Return Error:", error);
-        
+
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({
                 status: "error",
@@ -306,19 +306,19 @@ const returnItem = async (req: Request, res: Response) => {
 const exportTransactionsExcel = async (req: Request, res: Response) => {
     try {
         const { startDate, endDate, status } = req.query as any;
-        const where: any= {};
+        const where: any = {};
 
         //Filter Status
-        if (status && status !== 'all'){
+        if (status && status !== 'all') {
             where.status = status;
         }
 
         //Filter Rentang Tanggal
-        if (startDate || endDate){
+        if (startDate || endDate) {
             where.created_at = {};
             if (startDate) {
                 const start = new Date(startDate);
-                start.setHours(0,0,0,0);
+                start.setHours(0, 0, 0, 0);
                 where.created_at.gte = start;
             }
             if (endDate) {
@@ -330,7 +330,7 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
 
         const transaction = await prisma.transaction.findMany({
             where,
-            orderBy: { created_at: 'desc'},
+            orderBy: { created_at: 'desc' },
             include: {
                 details: {
                     include: {
@@ -340,7 +340,7 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
                 member: true
             }
         })
-        
+
         // Format data untuk sheet Excel
         const excelData = transaction.map((t: any) => ({
             "ID Transaksi": t.invoice_no,
@@ -366,12 +366,12 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
         const fileName = `Export_Transaksi_${Date.now()}.xlsx`;
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        
+
         return res.send(excelBuffer);
     }
     catch (error: any) {
         console.error("Checkout Error:", error);
-        
+
         return res.status(500).json({
             status: "error",
             message: "Terjadi kesalahan internal saat memproses transaksi checkout."
@@ -410,7 +410,7 @@ const getTransactionHistory = async (req: Request, res: Response) => {
             where.OR = [
                 { invoice_no: { contains: search as string, mode: 'insensitive' } },
                 { customer_name: { contains: search as string, mode: 'insensitive' } },
-                { 
+                {
                     member: {
                         name: { contains: search as string, mode: 'insensitive' }
                     }
@@ -471,10 +471,10 @@ const getTransactionHistory = async (req: Request, res: Response) => {
     }
 };
 
-export { 
+export {
     checkout,
     returnItem,
     exportTransactionsExcel,
     getTransactionDetails,
     getTransactionHistory
- };
+};

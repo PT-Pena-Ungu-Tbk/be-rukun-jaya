@@ -8,5 +8,3 @@ router.get('/', verifyToken, hasRoles(['MANAGER', 'OWNER', 'CASHIER']), getTrans
 
 // Overview dan Export
 router.get('/export/excel', verifyToken, hasRoles(['MANAGER', 'OWNER']), exportTransactionsExcel);
-
-export default router;
