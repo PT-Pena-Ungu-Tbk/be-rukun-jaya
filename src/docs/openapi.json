@@ -1359,6 +1359,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
@@ -1665,7 +1675,38 @@
         ],
         "responses": {
           "200": {
-            "description": "Produk berhasil diupdate"
+            "description": "Produk berhasil diupdate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produk berhasil diperbarui"
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "request_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request (Input tidak valid atau parameter kurang)",
@@ -1742,7 +1783,35 @@
         ],
         "responses": {
           "200": {
-            "description": "Produk berhasil dihapus"
+            "description": "Produk berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produk berhasil dihapus"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "request_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request (Input tidak valid atau parameter kurang)",
@@ -2489,6 +2558,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
@@ -2807,6 +2886,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
@@ -2919,6 +3008,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
@@ -3019,6 +3118,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
@@ -3107,6 +3216,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -3280,6 +3399,16 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -3813,6 +3942,16 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
@@ -3846,6 +3985,63 @@
         },
         "tags": [
           "2. Point of Sales (POS)"
+        ]
+      }
+    },
+    "/pos/transactions/{transaction_id}/receipt": {
+      "get": {
+        "summary": "Cetak Struk Transaksi",
+        "description": "Mengembalikan file PDF struk kasir termal.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File PDF Struk Kasir",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaksi tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Point of Sale (POS)"
         ]
       }
     }
