@@ -18,7 +18,8 @@ import financeRoutes from './routes/financeRoutes';
 import auditRoutes from './routes/auditRoutes';
 import employeeRoutes from './routes/employeeRoutes';
 import warrantyRoutes from './routes/warrantyRoutes';
-import categoryRoutes from './routes/categoryRoutes';
+import supplierRoutes from './routes/supplierRoutes';
+import allTransactionsRoutes from './routes/allTransactionsRoutes';
 
 const app = express();
 
@@ -50,7 +51,7 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
     message: 'Welcome to Rukun Jaya POS & Inventory API',
-    version: '1.2.0',
+    version: '1.2.5',
     documentation: '/docs',
     timestamp: new Date().toISOString()
   });
@@ -75,7 +76,8 @@ app.use('/api/v1/finance', financeRoutes);
 app.use('/api/v1/audit/logs', auditRoutes);
 app.use('/api/v1/staff', employeeRoutes);
 app.use('/api/v1/warranty', warrantyRoutes);
-app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/suppliers', supplierRoutes);
+app.use('/api/v1/transactions-all', allTransactionsRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
