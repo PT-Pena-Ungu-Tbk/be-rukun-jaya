@@ -4,6 +4,7 @@ import prisma from '../utils/prismaClient';
 import { AppError } from '../utils/AppError';
 import { isValidUUID } from '../utils/validator';
 import * as xlsx from 'xlsx';
+import PDFDocument from 'pdfkit';
 
 // 1. LOGIKA CHECKOUT TRANSAKSI
 const checkout = async (req: Request, res: Response) => {
@@ -126,7 +127,7 @@ const checkout = async (req: Request, res: Response) => {
                 vip_member: result.member ? { id: result.member.id, name: result.member.name } : null,
                 kasir_id: result.transaction.cashier_id,
                 created_at: result.transaction.created_at,
-                struk_url: `https://cdn.tokorukunjaya.id/struk/${result.transaction.invoice_no}.pdf`,
+                struk_url: `${req.protocol}://${req.get('host')}/api/v1/pos/transactions/${result.transaction.invoice_no}/receipt`,
                 items: result.fetchedDetails.map((d: any) => ({
                     product_id: d.product_id,
                     nama: d.product.name,
