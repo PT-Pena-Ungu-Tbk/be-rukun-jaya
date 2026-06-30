@@ -4373,6 +4373,215 @@
           }
         }
       }
+    },
+    "/suppliers": {
+      "get": {
+        "summary": "Ambil Daftar Supplier",
+        "description": "Mengambil seluruh data supplier dari database yang diperlukan untuk ditampilkan pada saat menambah data inventori/barang.",
+        "tags": [
+          "3. Inventory Management"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data supplier berhasil diambil.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data supplier berhasil diambil."
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "1"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "PT. Makanan Ringan Jasjos"
+                          },
+                          "contact_info": {
+                            "type": "string",
+                            "example": "08123456789"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server gagal mengambil data supplier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Server gagal mengambil data supplier."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/members/verify": {
+      "get": {
+        "summary": "Verifikasi Nomor Pelanggan VIP",
+        "description": "Memverifikasi apakah nomor telepon terdaftar sebagai member VIP (menggunakan Query Parameter).",
+        "tags": [
+          "6. Member / Pelanggan"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nomor telepon pelanggan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "member_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Pak Eko"
+                        },
+                        "phone_number": {
+                          "type": "string",
+                          "example": "08123456789"
+                        },
+                        "total_points": {
+                          "type": "integer",
+                          "example": 120
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "summary": "Ambil Daftar Kategori",
+        "description": "Mengambil seluruh master data Kategori barang yang tersedia di inventory.",
+        "tags": [
+          "3. Inventory Management"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data kategori",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Data kategori berhasil diambil."
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Pipa & Aksesoris"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Kategori untuk pipa"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
     }
   },
   "tags": [
