@@ -120,9 +120,10 @@ export const getVipMembers = async (req: Request, res: Response) => {
 
 export const createVipMember = async (req: Request, res: Response) => {
     try {
-        const { nama, phone_number, level = 'Bronze', poin_awal = 0 } = req.body;
+        const { name, nama, phone_number, level = 'Bronze', poin_awal = 0 } = req.body;
+        const memberName = name || nama;
 
-        if (!nama || !phone_number) {
+        if (!memberName || !phone_number) {
             return res.status(400).json({ status: 'error', message: 'Nama dan nomor HP wajib diisi' });
         }
 
@@ -133,7 +134,7 @@ export const createVipMember = async (req: Request, res: Response) => {
 
         const newMember = await prisma.member.create({
             data: {
-                name: nama,
+                name: memberName,
                 phone_number,
                 level,
                 poin: Number(poin_awal)
