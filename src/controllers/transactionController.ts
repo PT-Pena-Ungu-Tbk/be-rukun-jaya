@@ -471,10 +471,60 @@ const getTransactionHistory = async (req: Request, res: Response) => {
     }
 };
 
+// 5. GET ALL TRANSACTIONS (RAW, WITH RELATIONS)
+const getAllTransactions = async (req: Request, res: Response) => {
+    try {
+        const transactions = await prisma.transaction.findMany({
+            include: {
+                cashier: { select: { name: true } },
+                member: { select: { name: true } },
+                details: {
+                    include: {
+                        product: { select: { name: true } }
+                    }
+                }
+            }
+        });
+
+        const formattedData = transactions.map((t: any) => ({
+            id: t.id,
+            invoice_no: t.invoice_no,
+            cashier_name: t.cashier?.name || null,
+            member_name: t.member?.name || null,
+            subtotal: t.subtotal,
+            discount_type: t.discount_type === 'NOMINAL' ? 'nominal' : 'percentage',
+            discount_value: t.discount_value,
+            tax_amount: t.tax_amount,
+            grand_total: t.grand_total,
+            cash_paid: t.cash_paid,
+            change_amount: t.change_amount,
+            created_at: t.created_at,
+            items: t.details.map((d: any) => ({
+                product_name: d.product?.name || "Unknown Product",
+                quantity: d.quantity,
+                unit_price: d.unit_price
+            }))
+        }));
+
+        return res.status(200).json({
+            success: true,
+            message: "Transactions history retrieved successfully",
+            data: formattedData
+        });
+    } catch (error) {
+        console.error("Get All Transactions Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server gagal mengambil data transaksi."
+        });
+    }
+};
+
 export {
     checkout,
     returnItem,
     exportTransactionsExcel,
     getTransactionDetails,
-    getTransactionHistory
+    getTransactionHistory,
+    getAllTransactions
 };
