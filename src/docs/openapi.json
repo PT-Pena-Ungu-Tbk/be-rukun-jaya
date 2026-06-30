@@ -4041,7 +4041,7 @@
           }
         },
         "tags": [
-          "4. Point of Sale (POS)"
+          "2. Point of Sales (POS)"
         ]
       }
     },
@@ -4050,7 +4050,7 @@
         "summary": "Riwayat Transaksi (Pagination & Filter)",
         "description": "Mengambil daftar riwayat transaksi dengan fitur pagination, rentang tanggal, dan pencarian nama/invoice.",
         "tags": [
-          "4. Transactions"
+          "5. Finance & Transactions"
         ],
         "security": [
           {
@@ -4188,7 +4188,7 @@
         "summary": "Semua Data Transaksi (Raw)",
         "description": "Mengambil semua data transaksi secara keseluruhan tanpa batasan pagination (untuk keperluan export/analisis).",
         "tags": [
-          "4. Transactions"
+          "5. Finance & Transactions"
         ],
         "security": [
           {
@@ -4289,7 +4289,7 @@
         "summary": "Retur Barang (Klaim Garansi/Cacat)",
         "description": "Memproses retur barang cacat pabrik. Kuantitas barang cacat akan dimasukkan ke dalam defective_stock, dan barang pengganti baru akan dipotong otomatis dari current_stock.",
         "tags": [
-          "4. Transactions"
+          "5. Finance & Transactions"
         ],
         "security": [
           {
