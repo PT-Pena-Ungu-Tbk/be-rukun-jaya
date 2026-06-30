@@ -51,7 +51,7 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'success',
     message: 'Welcome to Rukun Jaya POS & Inventory API',
-    version: '1.2.0',
+    version: '1.2.5',
     documentation: '/docs',
     timestamp: new Date().toISOString()
   });
@@ -77,7 +77,7 @@ app.use('/api/v1/audit/logs', auditRoutes);
 app.use('/api/v1/staff', employeeRoutes);
 app.use('/api/v1/warranty', warrantyRoutes);
 app.use('/api/suppliers', supplierRoutes);
-app.use('/api/transactions', allTransactionsRoutes);
+app.use('/api/v1/transactions-all', allTransactionsRoutes);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

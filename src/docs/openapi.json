@@ -3,7 +3,7 @@
   "info": {
     "title": "API Sistem Kasir Toko Bangunan Rukun Jaya",
     "description": "Dokumentasi interaktif POS & Ekosistem Manajemen Inventaris untuk Toko Bangunan Rukun Jaya.",
-    "version": "1.2.0"
+    "version": "1.2.5"
   },
   "servers": [
     {
@@ -4043,6 +4043,245 @@
         "tags": [
           "4. Point of Sale (POS)"
         ]
+      }
+    },
+    "/transactions": {
+      "get": {
+        "summary": "Riwayat Transaksi (Pagination & Filter)",
+        "description": "Mengambil daftar riwayat transaksi dengan fitur pagination, rentang tanggal, dan pencarian nama/invoice.",
+        "tags": [
+          "4. Transactions"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Halaman saat ini"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Jumlah data per halaman"
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter dari tanggal (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Filter sampai tanggal (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cari berdasarkan nomor invoice atau nama pelanggan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mengambil data riwayat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "invoice_no": {
+                            "type": "string"
+                          },
+                          "tanggal": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "pelanggan": {
+                            "type": "string"
+                          },
+                          "kasir": {
+                            "type": "string"
+                          },
+                          "metode_pembayaran": {
+                            "type": "string"
+                          },
+                          "total_item": {
+                            "type": "integer"
+                          },
+                          "grand_total": {
+                            "type": "number"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total_data": {
+                          "type": "integer"
+                        },
+                        "total_pages": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/transactions-all": {
+      "get": {
+        "500": {
+          "$ref": "#/components/schemas/ErrorResponse"
+        },
+        "summary": "Semua Data Transaksi (Raw)",
+        "description": "Mengambil semua data transaksi secara keseluruhan tanpa batasan pagination (untuk keperluan export/analisis).",
+        "tags": [
+          "4. Transactions"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil mengambil semua data transaksi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Transactions history retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "invoice_no": {
+                            "type": "string"
+                          },
+                          "cashier_name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "member_name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "subtotal": {
+                            "type": "number"
+                          },
+                          "discount_type": {
+                            "type": "string"
+                          },
+                          "discount_value": {
+                            "type": "number"
+                          },
+                          "tax_amount": {
+                            "type": "number"
+                          },
+                          "grand_total": {
+                            "type": "number"
+                          },
+                          "cash_paid": {
+                            "type": "number"
+                          },
+                          "change_amount": {
+                            "type": "number"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "product_name": {
+                                  "type": "string"
+                                },
+                                "quantity": {
+                                  "type": "integer"
+                                },
+                                "unit_price": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
