@@ -6,7 +6,8 @@ import * as xlsx from 'xlsx';
 const verifyMember = async (req: Request, res: Response) => {
     try {
         // Mengambil nomor HP dari body JSON (POST) atau query parameter (GET) sebagai fallback
-        const phone = (req.body.phone || req.query.phone) as string;
+        // Gunakan optional chaining (?.) karena pada request GET murni, req.body bisa bernilai undefined
+        const phone = (req.body?.phone || req.query?.phone) as string;
 
         // Validasi input
         if (!phone) {
