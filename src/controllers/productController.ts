@@ -26,6 +26,34 @@ const createProduct = async (req: Request, res: Response) => {
       });
     }
 
+    const skuRegex = /^[A-Z0-9]+-[A-Z0-9]+-\d+$/;
+    if (!skuRegex.test(sku_code)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Format sku_code tidak valid. Wajib berformat seperti CAT-VGL-01 (huruf kapital/angka dipisahkan strip, diakhiri nomor).',
+      });
+    }
+
+    if (name.length < 3) {
+      return res.status(400).json({ status: 'error', message: 'Nama produk minimal 3 karakter.' });
+    }
+
+    if (Number(buy_price) < 0 || Number(sell_price) < 0) {
+      return res.status(400).json({ status: 'error', message: 'Harga beli dan harga jual tidak boleh negatif.' });
+    }
+
+    if (Number(sell_price) < Number(buy_price)) {
+      return res.status(400).json({ status: 'error', message: 'Harga jual tidak boleh lebih kecil dari harga beli.' });
+    }
+
+    if (!Number.isInteger(Number(current_stock)) || Number(current_stock) < 0) {
+      return res.status(400).json({ status: 'error', message: 'Stok saat ini harus berupa angka bulat (integer) dan tidak boleh negatif.' });
+    }
+
+    if (!Number.isInteger(Number(min_stock)) || Number(min_stock) < 0) {
+      return res.status(400).json({ status: 'error', message: 'Stok minimum harus berupa angka bulat (integer) dan tidak boleh negatif.' });
+    }
+
     if (!isValidUUID(category_id) || !isValidUUID(supplier_id)) {
       return res.status(400).json({
         status: 'error',
@@ -163,6 +191,36 @@ const updateProduct = async (req: Request, res: Response) => {
     const safeUpdates: Record<string, unknown> = {};
     for (const key of ALLOWED_FIELDS) {
       if (key in updates) safeUpdates[key] = updates[key];
+    }
+
+    if (safeUpdates.sku_code) {
+      const skuRegex = /^[A-Z0-9]+-[A-Z0-9]+-\d+$/;
+      if (!skuRegex.test(safeUpdates.sku_code as string)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Format sku_code tidak valid. Wajib berformat seperti CAT-VGL-01 (huruf kapital/angka dipisahkan strip, diakhiri nomor).',
+        });
+      }
+    }
+
+    if (safeUpdates.name !== undefined && String(safeUpdates.name).length < 3) {
+      return res.status(400).json({ status: 'error', message: 'Nama produk minimal 3 karakter.' });
+    }
+
+    if (safeUpdates.buy_price !== undefined && Number(safeUpdates.buy_price) < 0) {
+      return res.status(400).json({ status: 'error', message: 'Harga beli tidak boleh negatif.' });
+    }
+
+    if (safeUpdates.sell_price !== undefined && Number(safeUpdates.sell_price) < 0) {
+      return res.status(400).json({ status: 'error', message: 'Harga jual tidak boleh negatif.' });
+    }
+
+    if (safeUpdates.current_stock !== undefined && (!Number.isInteger(Number(safeUpdates.current_stock)) || Number(safeUpdates.current_stock) < 0)) {
+      return res.status(400).json({ status: 'error', message: 'Stok saat ini harus berupa angka bulat dan tidak boleh negatif.' });
+    }
+
+    if (safeUpdates.min_stock !== undefined && (!Number.isInteger(Number(safeUpdates.min_stock)) || Number(safeUpdates.min_stock) < 0)) {
+      return res.status(400).json({ status: 'error', message: 'Stok minimum harus berupa angka bulat dan tidak boleh negatif.' });
     }
 
     if (Object.keys(safeUpdates).length === 0) {

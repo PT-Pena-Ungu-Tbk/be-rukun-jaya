@@ -194,15 +194,15 @@
         "description": "Data produk dari inventaris.",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "sku_code": { "type": "string", "example": "SKU-PIPA-001" },
-          "name": { "type": "string", "example": "Pipa PVC 4 inch" },
+          "sku_code": { "type": "string", "description": "Harus berformat [A-Z0-9]-[A-Z0-9]-[0-9]", "pattern": "^[A-Z0-9]+-[A-Z0-9]+-\\d+$", "example": "SKU-PIPA-001" },
+          "name": { "type": "string", "description": "Nama produk minimal 3 karakter.", "minLength": 3, "example": "Pipa PVC 4 inch" },
           "category_id": { "type": "string", "format": "uuid" },
           "supplier_id": { "type": "string", "format": "uuid" },
-          "buy_price": { "type": "string", "description": "Harga beli (Decimal disimpan sebagai string).", "example": "35000" },
-          "sell_price": { "type": "string", "description": "Harga jual (Decimal disimpan sebagai string).", "example": "50000" },
-          "current_stock": { "type": "integer", "example": 120 },
+          "buy_price": { "type": "string", "description": "Harga beli (Decimal disimpan sebagai string), minimal 0.", "example": "35000" },
+          "sell_price": { "type": "string", "description": "Harga jual (Decimal disimpan sebagai string), minimal 0.", "example": "50000" },
+          "current_stock": { "type": "integer", "minimum": 0, "example": 120 },
           "defective_stock": { "type": "integer", "example": 3 },
-          "min_stock": { "type": "integer", "example": 10 },
+          "min_stock": { "type": "integer", "minimum": 0, "example": 10 },
           "rack_location": { "type": "string", "nullable": true, "example": "A-12" }
         }
       },
@@ -1729,10 +1729,14 @@
                 "properties": {
                   "sku_code": {
                     "type": "string",
+                    "description": "Harus berformat [A-Z0-9]-[A-Z0-9]-[0-9]",
+                    "pattern": "^[A-Z0-9]+-[A-Z0-9]+-\\d+$",
                     "example": "PIP-WV-AW12"
                   },
                   "name": {
                     "type": "string",
+                    "description": "Nama produk minimal 3 karakter.",
+                    "minLength": 3,
                     "example": "Pipa Wavin AW 1/2 inch"
                   },
                   "category_id": {
@@ -1745,18 +1749,22 @@
                   },
                   "buy_price": {
                     "type": "number",
+                    "minimum": 0,
                     "example": 28000
                   },
                   "sell_price": {
                     "type": "number",
+                    "minimum": 0,
                     "example": 32000
                   },
                   "current_stock": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 120
                   },
                   "min_stock": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 50
                   },
                   "rack_location": {
@@ -2408,10 +2416,16 @@
                 "type": "object",
                 "properties": {
                   "phone_number": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Nomor HP dengan format 08..., panjang 10-15 digit.",
+                    "pattern": "^08[0-9]{8,13}$",
+                    "example": "08123456789"
                   },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Nama member VIP minimal 3 karakter.",
+                    "minLength": 3,
+                    "example": "Budi Santoso"
                   }
                 }
               }

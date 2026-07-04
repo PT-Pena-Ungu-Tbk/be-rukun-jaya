@@ -128,6 +128,19 @@ export const createVipMember = async (req: Request, res: Response) => {
             return res.status(400).json({ status: 'error', message: 'Nama dan nomor HP wajib diisi' });
         }
 
+        if (String(memberName).length < 3) {
+            return res.status(400).json({ status: 'error', message: 'Nama member minimal 3 karakter.' });
+        }
+
+        const phoneRegex = /^08[0-9]{8,13}$/;
+        if (!phoneRegex.test(String(phone_number))) {
+            return res.status(400).json({ status: 'error', message: 'Format nomor HP tidak valid. Wajib diawali 08 dan terdiri dari 10-15 digit angka.' });
+        }
+
+        if (Number(poin_awal) < 0) {
+            return res.status(400).json({ status: 'error', message: 'Poin awal tidak boleh negatif.' });
+        }
+
         const existingMember = await prisma.member.findUnique({ where: { phone_number } });
         if (existingMember) {
             return res.status(409).json({ status: 'error', message: 'Nomor HP sudah terdaftar', error_code: 'PHONE_ALREADY_REGISTERED' });
