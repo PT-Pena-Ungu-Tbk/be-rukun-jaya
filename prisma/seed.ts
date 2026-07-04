@@ -38,14 +38,6 @@ async function main() {
     },
   });
 
-  const warehouseAdmin = await prisma.user.create({
-    data: {
-      name: 'Pak Gudang',
-      email: 'gudang@toko-rukunjaya.com',
-      password_hash: hashedPassword,
-      role: 'WAREHOUSE_ADMIN',
-    },
-  });
   console.log('✅ Users berhasil dibuat');
 
   const employeeCashier = await prisma.employee.create({
