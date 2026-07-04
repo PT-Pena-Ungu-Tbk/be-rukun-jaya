@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 // src/controllers/memberController.js
 import prisma from '../utils/prismaClient';
+import { Prisma } from '@prisma/client';
 import * as xlsx from 'xlsx';
 
 const verifyMember = async (req: Request, res: Response) => {
@@ -164,6 +165,14 @@ export const createVipMember = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error("Create VIP Member Error:", error);
+        
+        // Penanganan error Prisma (P2002 = Unique Constraint Failed)
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                return res.status(409).json({ status: 'error', message: 'Nomor HP sudah terdaftar, silakan gunakan nomor lain.' });
+            }
+        }
+        
         return res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal' });
     }
 };
