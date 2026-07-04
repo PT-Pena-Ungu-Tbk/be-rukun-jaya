@@ -77,7 +77,7 @@ app.use('/api/v1/finance', financeRoutes);
 app.use('/api/v1/audit/logs', auditRoutes);
 app.use('/api/v1/staff', employeeRoutes);
 app.use('/api/v1/warranty', warrantyRoutes);
-app.use('/api/suppliers', supplierRoutes);
+app.use('/api/v1/suppliers', supplierRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/transactions-all', allTransactionsRoutes);
 

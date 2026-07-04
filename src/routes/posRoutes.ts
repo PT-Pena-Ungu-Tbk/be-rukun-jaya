@@ -7,14 +7,14 @@ import { getProducts } from '../controllers/productController';
 import { verifyMember } from '../controllers/memberController';
 
 // Endpoint pencarian produk khusus untuk kasir
-router.get('/products', verifyToken, hasRoles(['OWNER', 'MANAGER', 'CASHIER']), getProducts);
+router.get('/products', verifyToken, hasRoles(['OWNER', 'CASHIER']), getProducts);
 
 // Transaksi Kasir
-router.post('/transactions', verifyToken, hasRoles(['OWNER', 'MANAGER', 'CASHIER']), checkout);
-router.get('/transactions/:transaction_id', verifyToken, hasRoles(['OWNER', 'MANAGER', 'CASHIER']), getTransactionDetails);
-router.get('/transactions/:transaction_id/receipt', verifyToken, hasRoles(['OWNER', 'MANAGER', 'CASHIER']), printReceipt);
+router.post('/transactions', verifyToken, hasRoles(['OWNER', 'CASHIER']), checkout);
+router.get('/transactions/:transaction_id', verifyToken, hasRoles(['OWNER', 'CASHIER']), getTransactionDetails);
+router.get('/transactions/:transaction_id/receipt', verifyToken, hasRoles(['OWNER', 'CASHIER']), printReceipt);
 
 // Validasi Member VIP
-router.post('/validate-vip', verifyToken, hasRoles(['OWNER', 'MANAGER', 'CASHIER']), verifyMember);
+router.post('/validate-vip', verifyToken, hasRoles(['OWNER', 'CASHIER']), verifyMember);
 
 export default router;

@@ -472,20 +472,30 @@ const getTransactionHistory = async (req: Request, res: Response) => {
     }
 };
 
-// 5. GET ALL TRANSACTIONS (RAW, WITH RELATIONS)
+// 5. GET ALL TRANSACTIONS (RAW, WITH RELATIONS) — WITH PAGINATION
 const getAllTransactions = async (req: Request, res: Response) => {
     try {
-        const transactions = await prisma.transaction.findMany({
-            include: {
-                cashier: { select: { name: true } },
-                member: { select: { name: true } },
-                details: {
-                    include: {
-                        product: { select: { name: true } }
+        const page  = Math.max(1, parseInt(String(req.query.page  ?? '1'),  10) || 1);
+        const limit = Math.min(500, Math.max(1, parseInt(String(req.query.limit ?? '100'), 10) || 100));
+        const skip  = (page - 1) * limit;
+
+        const [transactions, total] = await prisma.$transaction([
+            prisma.transaction.findMany({
+                skip,
+                take: limit,
+                orderBy: { created_at: 'desc' },
+                include: {
+                    cashier: { select: { name: true } },
+                    member:  { select: { name: true } },
+                    details: {
+                        include: {
+                            product: { select: { name: true } }
+                        }
                     }
                 }
-            }
-        });
+            }),
+            prisma.transaction.count()
+        ]);
 
         const formattedData = transactions.map((t: any) => ({
             id: t.id,
@@ -510,7 +520,13 @@ const getAllTransactions = async (req: Request, res: Response) => {
         return res.status(200).json({
             success: true,
             message: "Transactions history retrieved successfully",
-            data: formattedData
+            data: formattedData,
+            pagination: {
+                total,
+                page,
+                limit,
+                total_pages: Math.ceil(total / limit)
+            }
         });
     } catch (error) {
         console.error("Get All Transactions Error:", error);
@@ -518,6 +534,7 @@ const getAllTransactions = async (req: Request, res: Response) => {
             success: false,
             message: "Server gagal mengambil data transaksi."
         });
+
     }
 };
 

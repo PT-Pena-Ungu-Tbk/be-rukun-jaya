@@ -15,8 +15,6 @@ generator client {
 
 enum Role {
   OWNER
-  MANAGER
-  WAREHOUSE_ADMIN
   CASHIER
 }
 
