@@ -3,6 +3,7 @@ import prisma from '../utils/prismaClient';
 import bcrypt from 'bcrypt';
 import { AppError } from '../utils/AppError';
 import { isValidUUID } from '../utils/validator';
+import { Prisma } from '@prisma/client';
 
 export const getAllEmployees = async (req: Request, res: Response) => {
     try {
@@ -75,6 +76,13 @@ export const createEmployee = async (req: Request, res: Response) => {
         res.status(201).json({ status: 'success', data: newEmployee });
     } catch (error: any) {
         console.error("Create Employee Error:", error);
+        
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                return res.status(409).json({ status: 'error', message: 'Email sudah terdaftar, silakan gunakan email lain.' });
+            }
+        }
+
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
@@ -123,6 +131,16 @@ export const updateEmployee = async (req: Request, res: Response) => {
         res.status(200).json({ status: 'success', data: updatedEmployee });
     } catch (error: any) {
         console.error("Update Employee Error:", error);
+        
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2002') {
+                return res.status(409).json({ status: 'error', message: 'Email sudah digunakan oleh pengguna lain.' });
+            }
+            if (error.code === 'P2025') {
+                return res.status(404).json({ status: 'error', message: 'Karyawan tidak ditemukan.' });
+            }
+        }
+
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
@@ -151,6 +169,13 @@ export const deleteEmployee = async (req: Request, res: Response) => {
         res.status(200).json({ status: 'success', message: 'Karyawan berhasil dihapus' });
     } catch (error: any) {
         console.error("Delete Employee Error:", error);
+        
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            if (error.code === 'P2025') {
+                return res.status(404).json({ status: 'error', message: 'Karyawan tidak ditemukan.' });
+            }
+        }
+
         if (error instanceof AppError) {
             return res.status(error.statusCode).json({ status: 'error', message: error.message });
         }
