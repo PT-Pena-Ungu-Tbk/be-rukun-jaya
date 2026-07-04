@@ -27,6 +27,7 @@
     "schemas": {
       "ErrorResponse": {
         "type": "object",
+        "description": "Struktur standar untuk semua respons error dari API.",
         "properties": {
           "success": {
             "type": "boolean",
@@ -38,20 +39,637 @@
           },
           "error_code": {
             "type": "string",
-            "example": "BAD_REQUEST"
+            "example": "BAD_REQUEST",
+            "description": "Kode error mesin yang dapat digunakan untuk penanganan error programatik."
           },
           "message": {
             "type": "string",
-            "example": "Pesan error yang informatif"
+            "example": "Pesan error yang informatif untuk ditampilkan ke pengguna."
           },
           "timestamp": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2025-07-05T00:00:00.000Z"
           },
           "request_id": {
-            "type": "string"
+            "type": "string",
+            "example": "req_a1b2c3d4e5f6a7b8"
           }
         }
+      },
+      "SuccessEnvelope": {
+        "type": "object",
+        "description": "Struktur envelope standar untuk semua respons sukses.",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "status_code": { "type": "integer", "example": 200 },
+          "message": { "type": "string", "example": "Permintaan berhasil diproses." },
+          "timestamp": { "type": "string", "format": "date-time", "example": "2025-07-05T00:00:00.000Z" },
+          "request_id": { "type": "string", "example": "req_a1b2c3d4e5f6a7b8" }
+        }
+      },
+      "UserProfile": {
+        "type": "object",
+        "description": "Profil singkat pengguna yang dikembalikan setelah login. Tidak mengandung informasi sensitif.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "example": "e5a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c" },
+          "nama_lengkap": { "type": "string", "example": "Budi Santoso" },
+          "email": { "type": "string", "format": "email", "example": "budi@toko-rukunjaya.com" },
+          "role": { "type": "string", "enum": ["OWNER", "CASHIER"], "example": "OWNER" },
+          "permissions": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["pos.read", "pos.write", "inventory.read"]
+          },
+          "last_login": { "type": "string", "format": "date-time" },
+          "avatar_url": { "type": "string", "format": "uri", "example": "https://ui-avatars.com/api/?name=Budi+Santoso" }
+        }
+      },
+      "LoginResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "description": "Data token dan informasi pengguna yang login.",
+                "properties": {
+                  "access_token": {
+                    "type": "string",
+                    "description": "JWT Access Token. Gunakan sebagai Bearer token di header Authorization.",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU1YTFiMmMzIiwicm9sZSI6Ik9XTkVSIn0.signature"
+                  },
+                  "token_type": { "type": "string", "example": "Bearer" },
+                  "expires_in": {
+                    "type": "integer",
+                    "description": "Durasi berlaku access token dalam detik (86400 = 1 hari, 2592000 = 30 hari jika remember_me=true).",
+                    "example": 86400
+                  },
+                  "refresh_token": {
+                    "type": "string",
+                    "description": "Token untuk memperbarui access token. Simpan dengan aman, berlaku 30 hari.",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU1YTFiMmMzIiwidHlwZSI6InJlZnJlc2gifQ.signature"
+                  },
+                  "user": { "$ref": "#/components/schemas/UserProfile" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "RefreshTokenResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "access_token": { "type": "string", "description": "Access token baru." },
+                  "expires_in": { "type": "integer", "example": 86400 }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "EmployeeRecord": {
+        "type": "object",
+        "description": "Data karyawan. Tidak mengandung password_hash atau refresh_token.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "example": "e5a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c" },
+          "name": { "type": "string", "example": "Budi Santoso" },
+          "email": { "type": "string", "format": "email", "example": "budi@toko-rukunjaya.com" },
+          "role": { "type": "string", "enum": ["OWNER", "CASHIER"], "example": "CASHIER" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "EmployeeListResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/EmployeeRecord" }
+              }
+            }
+          }
+        ]
+      },
+      "EmployeeSingleResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": { "$ref": "#/components/schemas/EmployeeRecord" }
+            }
+          }
+        ]
+      },
+      "ToggleAccessResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "staff_id": { "type": "string", "format": "uuid" },
+                  "is_active": { "type": "boolean", "example": false },
+                  "message": { "type": "string", "example": "Akses karyawan berhasil dinonaktifkan" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ProductRecord": {
+        "type": "object",
+        "description": "Data produk dari inventaris.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "sku_code": { "type": "string", "example": "SKU-PIPA-001" },
+          "name": { "type": "string", "example": "Pipa PVC 4 inch" },
+          "category_id": { "type": "string", "format": "uuid" },
+          "supplier_id": { "type": "string", "format": "uuid" },
+          "buy_price": { "type": "string", "description": "Harga beli (Decimal disimpan sebagai string).", "example": "35000" },
+          "sell_price": { "type": "string", "description": "Harga jual (Decimal disimpan sebagai string).", "example": "50000" },
+          "current_stock": { "type": "integer", "example": 120 },
+          "defective_stock": { "type": "integer", "example": 3 },
+          "min_stock": { "type": "integer", "example": 10 },
+          "rack_location": { "type": "string", "nullable": true, "example": "A-12" }
+        }
+      },
+      "ProductListResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/ProductRecord" }
+              }
+            }
+          }
+        ]
+      },
+      "ProductSingleResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": { "$ref": "#/components/schemas/ProductRecord" }
+            }
+          }
+        ]
+      },
+      "CheckoutItem": {
+        "type": "object",
+        "properties": {
+          "product_id": { "type": "string", "format": "uuid" },
+          "nama": { "type": "string", "example": "Pipa PVC 4 inch" },
+          "qty": { "type": "integer", "example": 2 },
+          "harga_satuan": { "type": "string", "example": "50000" },
+          "subtotal": { "type": "number", "example": 100000 }
+        }
+      },
+      "CheckoutResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "description": "Detail transaksi yang baru saja selesai diproses.",
+                "properties": {
+                  "transaction_id": { "type": "string", "description": "Nomor invoice transaksi.", "example": "INV-1749081600000" },
+                  "status": { "type": "string", "example": "SUCCESS" },
+                  "subtotal": { "type": "number", "example": 200000 },
+                  "diskon": { "type": "number", "example": 20000 },
+                  "ppn_11_persen": { "type": "number", "example": 19800 },
+                  "grand_total": { "type": "number", "example": 199800 },
+                  "jumlah_bayar": { "type": "number", "example": 200000 },
+                  "kembalian": { "type": "number", "example": 200 },
+                  "kasir_id": { "type": "string", "format": "uuid" },
+                  "vip_member": {
+                    "type": "object",
+                    "nullable": true,
+                    "description": "Data member VIP jika transaksi menggunakan nomor HP VIP.",
+                    "properties": {
+                      "id": { "type": "string", "format": "uuid" },
+                      "name": { "type": "string", "example": "Siti Rahayu" }
+                    }
+                  },
+                  "created_at": { "type": "string", "format": "date-time" },
+                  "struk_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL untuk mencetak struk PDF.",
+                    "example": "https://be-rukun-jaya-production.up.railway.app/api/v1/pos/transactions/INV-1749081600000/receipt"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/CheckoutItem" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TransactionHistoryItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "invoice_no": { "type": "string", "example": "INV-1749081600000" },
+          "tanggal": { "type": "string", "format": "date-time" },
+          "pelanggan": { "type": "string", "example": "Siti Rahayu" },
+          "kasir": { "type": "string", "example": "Budi Santoso" },
+          "metode_pembayaran": { "type": "string", "enum": ["CASH", "TRANSFER", "QRIS"], "example": "CASH" },
+          "total_item": { "type": "integer", "example": 5 },
+          "grand_total": { "type": "number", "example": 199800 },
+          "status": { "type": "string", "example": "SUCCESS" }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "description": "Metadata paginasi untuk endpoint yang mengembalikan daftar data.",
+        "properties": {
+          "total_data": { "type": "integer", "example": 250 },
+          "total_pages": { "type": "integer", "example": 25 },
+          "current_page": { "type": "integer", "example": 1 },
+          "limit": { "type": "integer", "example": 10 }
+        }
+      },
+      "TransactionHistoryResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/TransactionHistoryItem" }
+              },
+              "pagination": { "$ref": "#/components/schemas/PaginationMeta" }
+            }
+          }
+        ]
+      },
+      "TransactionDetailResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "transaction_id": { "type": "string", "example": "INV-1749081600000" },
+                  "status": { "type": "string", "example": "LUNAS" },
+                  "created_at": { "type": "string", "format": "date-time" },
+                  "informasi_pelanggan": {
+                    "type": "object",
+                    "properties": {
+                      "nama": { "type": "string", "example": "Siti Rahayu" },
+                      "nomor_hp": { "type": "string", "example": "08123456789" }
+                    }
+                  },
+                  "metode_pembayaran": {
+                    "type": "object",
+                    "properties": {
+                      "tipe": { "type": "string", "enum": ["CASH", "TRANSFER", "QRIS"] }
+                    }
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nama": { "type": "string" },
+                        "sku": { "type": "string" },
+                        "qty": { "type": "integer" },
+                        "harga_satuan": { "type": "string" },
+                        "total_harga": { "type": "number" }
+                      }
+                    }
+                  },
+                  "subtotal": { "type": "number" },
+                  "diskon_member": { "type": "number" },
+                  "ppn_11_persen": { "type": "number" },
+                  "grand_total": { "type": "number" },
+                  "struk_url": { "type": "string", "format": "uri" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "MemberRecord": {
+        "type": "object",
+        "description": "Data anggota VIP. Tidak mengandung informasi finansial sensitif.",
+        "properties": {
+          "member_id": { "type": "string", "format": "uuid" },
+          "nama": { "type": "string", "example": "Siti Rahayu" },
+          "phone_number": { "type": "string", "example": "08123456789" },
+          "level": { "type": "string", "enum": ["Bronze", "Silver", "Gold"], "example": "Gold" },
+          "poin": { "type": "integer", "example": 1500 },
+          "join_date": { "type": "string", "format": "date-time" },
+          "last_transaction": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "MemberListResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "stats": {
+                "type": "object",
+                "properties": {
+                  "total_members": { "type": "integer", "example": 150 },
+                  "active_members": { "type": "integer", "example": 80 },
+                  "total_poin_issued": { "type": "integer", "example": 45000 }
+                }
+              },
+              "items": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/MemberRecord" }
+              }
+            }
+          }
+        ]
+      },
+      "WarrantyLookupResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "nota_id": { "type": "string", "example": "INV-1749081600000" },
+                  "tanggal": { "type": "string", "format": "date-time" },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "kode_item": { "type": "string", "example": "SKU-PIPA-001" },
+                        "nama_barang": { "type": "string", "example": "Pipa PVC 4 inch" },
+                        "qty_beli": { "type": "integer", "example": 3 },
+                        "qty_sudah_diretur": { "type": "integer", "example": 0 },
+                        "harga_satuan": { "type": "integer", "example": 50000 },
+                        "can_return": { "type": "boolean", "example": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "WarrantyClaimResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "claim_id": { "type": "string", "format": "uuid" },
+                  "status": { "type": "string", "example": "APPROVED" },
+                  "estimasi_nilai_retur": { "type": "number", "example": 100000 },
+                  "stok_berkurang": { "type": "boolean", "example": true },
+                  "catatan": { "type": "string", "example": "Klaim garansi berhasil diproses. Stok pengganti telah dikeluarkan." }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "AuditLogRecord": {
+        "type": "object",
+        "description": "Satu entri log aktivitas sistem.",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid", "description": "ID pengguna yang melakukan aksi." },
+          "action": { "type": "string", "example": "BULK_UPDATE_EXCEL", "description": "Tipe aktivitas yang dicatat." },
+          "table_name": { "type": "string", "nullable": true, "example": "products" },
+          "record_id": { "type": "string", "nullable": true, "description": "ID record yang diubah." },
+          "changes_payload": { "type": "object", "nullable": true, "description": "Detail perubahan dalam format JSON." },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "AuditLogListResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/AuditLogRecord" }
+              }
+            }
+          }
+        ]
+      },
+      "DashboardSummary": {
+        "type": "object",
+        "properties": {
+          "pendapatan_hari_ini": { "type": "number", "example": 5000000 },
+          "pendapatan_kemarin": { "type": "number", "example": 4500000 },
+          "persentase_perubahan_pendapatan": { "type": "number", "example": 11.1 },
+          "profit_kotor": { "type": "number", "example": 1500000 },
+          "profit_kemarin": { "type": "number", "example": 1200000 },
+          "persentase_perubahan_profit": { "type": "number", "example": 25.0 },
+          "volume_transaksi": { "type": "integer", "example": 35 },
+          "volume_transaksi_kemarin": { "type": "integer", "example": 28 },
+          "persentase_perubahan_volume": { "type": "number", "example": 25.0 },
+          "jumlah_pelanggan": { "type": "integer", "example": 12 },
+          "jumlah_pelanggan_kemarin": { "type": "integer", "example": 10 },
+          "persentase_perubahan_pelanggan": { "type": "number", "example": 20.0 }
+        }
+      },
+      "DashboardResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "summary": { "$ref": "#/components/schemas/DashboardSummary" },
+                  "peringatan_stok": {
+                    "type": "array",
+                    "description": "Maksimal 10 produk dengan stok di bawah minimum.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sku": { "type": "string", "example": "SKU-PIPA-001" },
+                        "nama": { "type": "string", "example": "Pipa PVC 4 inch" },
+                        "stok": { "type": "integer", "example": 2 },
+                        "satuan": { "type": "string", "example": "Unit" },
+                        "status": { "type": "string", "enum": ["LOW", "CRITICAL", "EMPTY"], "example": "CRITICAL" }
+                      }
+                    }
+                  },
+                  "produk_terlaris": {
+                    "type": "array",
+                    "description": "Top 5 produk terlaris dalam 30 hari terakhir.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "nama": { "type": "string", "example": "Pipa PVC 4 inch" },
+                        "unit_terjual": { "type": "integer", "example": 250 },
+                        "total_nilai": { "type": "number", "example": 12500000 }
+                      }
+                    }
+                  },
+                  "aktivitas_terbaru": {
+                    "type": "array",
+                    "description": "5 aktivitas audit terakhir.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "tipe": { "type": "string", "example": "RETURN_GARANSI" },
+                        "deskripsi": { "type": "string", "example": "Aktivitas di tabel warranty_claims" },
+                        "waktu": { "type": "string", "format": "date-time" }
+                      }
+                    }
+                  },
+                  "metode_pembayaran": {
+                    "type": "object",
+                    "properties": {
+                      "tunai": {
+                        "type": "object",
+                        "properties": {
+                          "persentase": { "type": "number", "example": 60.5 },
+                          "total": { "type": "number", "example": 3025000 }
+                        }
+                      },
+                      "transfer_bank": {
+                        "type": "object",
+                        "properties": {
+                          "persentase": { "type": "number", "example": 30.0 },
+                          "total": { "type": "number", "example": 1500000 }
+                        }
+                      },
+                      "qris": {
+                        "type": "object",
+                        "properties": {
+                          "persentase": { "type": "number", "example": 9.5 },
+                          "total": { "type": "number", "example": 475000 }
+                        }
+                      },
+                      "total_terproses": { "type": "number", "example": 5000000 }
+                    }
+                  },
+                  "daily_sales_chart": {
+                    "type": "array",
+                    "description": "Data penjualan 7 hari terakhir untuk grafik.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "hari": { "type": "string", "example": "Mon" },
+                        "nilai": { "type": "number", "example": 4500000 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "FinancialSummaryResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "total_omzet": { "type": "number", "example": 85000000 },
+                  "keuntungan_bersih": { "type": "number", "example": 25500000 },
+                  "persentase_omzet_vs_sebelumnya": { "type": "number", "example": 12.5 },
+                  "persentase_profit_vs_sebelumnya": { "type": "number", "example": 8.3 },
+                  "periode": {
+                    "type": "object",
+                    "properties": {
+                      "date_from": { "type": "string", "format": "date", "example": "2025-07-01" },
+                      "date_to": { "type": "string", "format": "date", "example": "2025-07-31" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CategoryRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "Pipa & Aksesoris" },
+          "description": { "type": "string", "nullable": true, "example": "Kategori untuk pipa dan aksesorisnya." }
+        }
+      },
+      "SupplierRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "CV. Maju Jaya" },
+          "contact_info": { "type": "string", "nullable": true, "example": "Telp: 0812-XXXX-XXXX, Email: majujaya@email.com" }
+        }
+      },
+      "BulkUpdateExcelResponse": {
+        "allOf": [
+          { "$ref": "#/components/schemas/SuccessEnvelope" },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "updated_count": { "type": "integer", "example": 45 },
+                  "failed_count": { "type": "integer", "example": 2 },
+                  "selisih_signifikan": { "type": "integer", "description": "Jumlah item dengan selisih stok > 10% dari stok lama.", "example": 3 },
+                  "audit_log_id": { "type": "string", "format": "uuid", "nullable": true },
+                  "results": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "item_id": { "type": "string" },
+                        "status": { "type": "string", "enum": ["SUCCESS", "FAILED"] },
+                        "stok_lama": { "type": "integer" },
+                        "stok_baru": { "type": "integer" },
+                        "selisih": { "type": "integer" },
+                        "message": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     }
   },
@@ -80,34 +698,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Token diperbarui"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
+                  "$ref": "#/components/schemas/RefreshTokenResponse"
                 }
               }
             }
@@ -151,36 +742,7 @@
             "description": "Logout Berhasil",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Logout Berhasil"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -257,34 +819,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Login Berhasil"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
+                  "$ref": "#/components/schemas/LoginResponse"
                 }
               }
             }
@@ -358,72 +893,20 @@
         ],
         "responses": {
           "200": {
-            "description": "Daftar karyawan berhasil diambil",
+            "description": "Daftar karyawan berhasil diambil. Hanya mengembalikan field publik (id, name, email, role, created_at). Password hash dan refresh_token tidak pernah dikembalikan.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Daftar karyawan berhasil diambil"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
+                  "$ref": "#/components/schemas/EmployeeListResponse"
                 }
               }
             }
           },
           "401": {
-            "description": "Tidak memiliki otorisasi",
+            "description": "Token tidak valid atau tidak disertakan.",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 401
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Tidak memiliki otorisasi"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           },
@@ -523,36 +1006,7 @@
             "description": "Karyawan berhasil ditambahkan",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Karyawan berhasil ditambahkan"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -705,36 +1159,7 @@
             "description": "Akses diubah",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Akses diubah"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -818,36 +1243,7 @@
             "description": "Data karyawan",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Data karyawan"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -959,36 +1355,7 @@
             "description": "Data karyawan berhasil diubah",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Data karyawan berhasil diubah"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -1139,36 +1506,7 @@
             "description": "Karyawan berhasil dihapus",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Karyawan berhasil dihapus"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -1326,36 +1664,7 @@
             "description": "Daftar produk ditarik",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Daftar produk ditarik"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -1464,36 +1773,7 @@
             "description": "Produk berhasil ditambah",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Produk berhasil ditambah"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -1567,36 +1847,7 @@
             "description": "Detail produk",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Detail produk"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -1897,36 +2148,7 @@
             "description": "File terupload dan stok diupdate",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "File terupload dan stok diupdate"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2016,36 +2238,7 @@
             "description": "Update massal sukses",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Update massal sukses"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2108,36 +2301,7 @@
             "description": "File Excel terunduh",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "File Excel terunduh"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2190,36 +2354,7 @@
             "description": "Daftar VIP Member",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Daftar VIP Member"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2288,36 +2423,7 @@
             "description": "VIP Member ditambahkan",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "VIP Member ditambahkan"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2413,36 +2519,7 @@
             "description": "Poin berhasil ditukar",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Poin berhasil ditukar"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2525,36 +2602,7 @@
             "description": "Member ditemukan",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Member ditemukan"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2713,36 +2761,7 @@
             "description": "Transaksi sukses",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Transaksi sukses"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2853,36 +2872,7 @@
             "description": "File Excel terunduh",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "File Excel terunduh"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -2975,36 +2965,7 @@
             "description": "Data Ringkasan Keuangan",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Data Ringkasan Keuangan"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3085,36 +3046,7 @@
             "description": "File PDF terunduh",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "File PDF terunduh"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3187,36 +3119,7 @@
             "description": "Data Dashboard Overview",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Data Dashboard Overview"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3279,36 +3182,7 @@
             "description": "Daftar Audit Log",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Daftar Audit Log"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3370,36 +3244,7 @@
             "description": "Data transaksi",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Data transaksi"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3493,36 +3338,7 @@
             "description": "Klaim dibuat",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 201
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Klaim dibuat"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3596,36 +3412,7 @@
             "description": "Detail transaksi",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Detail transaksi"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3709,36 +3496,7 @@
             "description": "Detail log audit",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Detail log audit"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3811,36 +3569,7 @@
             "description": "File Excel terunduh",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "File Excel terunduh"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
@@ -3909,36 +3638,7 @@
             "description": "Daftar produk ditarik",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Daftar produk ditarik"
-                    },
-                    "data": {
-                      "type": "object",
-                      "description": "Data hasil request"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/SuccessEnvelope" }
               }
             }
           },
