@@ -158,12 +158,23 @@ const updateProduct = async (req: Request, res: Response) => {
       return res.status(400).json({ status: 'error', message: 'Format supplier_id tidak valid.' });
     }
 
+    // Whitelist field yang diizinkan untuk diperbarui
+    const ALLOWED_FIELDS = ['name', 'sku_code', 'sell_price', 'buy_price', 'current_stock', 'min_stock', 'rack_location', 'category_id', 'supplier_id', 'condition', 'expiry_date', 'description'] as const;
+    const safeUpdates: Record<string, unknown> = {};
+    for (const key of ALLOWED_FIELDS) {
+      if (key in updates) safeUpdates[key] = updates[key];
+    }
+
+    if (Object.keys(safeUpdates).length === 0) {
+      return res.status(400).json({ status: 'error', message: 'Tidak ada field valid yang dikirimkan untuk diperbarui.' });
+    }
+
     const product = await prisma.product.update({
       where: { id },
       data: {
-        ...updates,
-        buy_price: updates.buy_price ? String(updates.buy_price) : undefined,
-        sell_price: updates.sell_price ? String(updates.sell_price) : undefined,
+        ...safeUpdates,
+        buy_price:  safeUpdates.buy_price  ? String(safeUpdates.buy_price)  : undefined,
+        sell_price: safeUpdates.sell_price ? String(safeUpdates.sell_price) : undefined,
       },
     });
 

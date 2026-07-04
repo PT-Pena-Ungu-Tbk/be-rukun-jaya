@@ -81,7 +81,13 @@ const login = async (req: Request, res: Response) => {
                     nama_lengkap: user.name,
                     email: user.email,
                     role: user.role,
-                    permissions: ["pos.read", "pos.write", "inventory.read", "inventory.write", "reports.read", "accounts.manage", "audit.read"],
+                    permissions: (() => {
+                        const rolePermissions: Record<string, string[]> = {
+                            OWNER: ["pos.read", "pos.write", "inventory.read", "inventory.write", "reports.read", "accounts.manage", "audit.read"],
+                            CASHIER: ["pos.read", "pos.write", "inventory.read"],
+                        };
+                        return rolePermissions[user.role] ?? ["pos.read"];
+                    })(),
                     last_login: new Date().toISOString(),
                     avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
                 }

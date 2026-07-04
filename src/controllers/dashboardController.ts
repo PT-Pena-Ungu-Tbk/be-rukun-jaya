@@ -74,19 +74,20 @@ const getDashboardOverview = async (req: Request, res: Response) => {
         };
 
         // 2. PERINGATAN STOK (Stok <= Minimum Stok)
-        // Workaround karena Prisma belum support query perbandingan field-to-field langsung di Prisma schema yang lama
-        // Kita tarik data yg mendekati, lalu filter.
-        const allProducts = await prisma.product.findMany();
-        
-        const lowStockProducts = allProducts
-            .filter(p => p.current_stock <= p.min_stock)
-            .slice(0, 10);
+        // Gunakan $queryRaw agar filter dilakukan di sisi DB, bukan di memory JS
+        const lowStockProducts: any[] = await prisma.$queryRaw`
+            SELECT id, sku_code, name, current_stock, min_stock
+            FROM products
+            WHERE current_stock <= min_stock
+            ORDER BY current_stock ASC
+            LIMIT 10
+        `;
 
-        const peringatan_stok = lowStockProducts.map(p => ({
+        const peringatan_stok = lowStockProducts.map((p: any) => ({
             sku: p.sku_code,
             nama: p.name,
-            stok: p.current_stock,
-            satuan: "Unit", // Satuan bisa ditambahkan di model jika diperlukan
+            stok: Number(p.current_stock),
+            satuan: "Unit",
             status: p.current_stock === 0 ? "EMPTY" : (p.current_stock <= (p.min_stock / 2) ? "CRITICAL" : "LOW")
         }));
 

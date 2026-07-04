@@ -4,10 +4,17 @@ import * as xlsx from 'xlsx';
 
 const getAuditLogs = async (req: Request, res: Response) => {
   try {
-    const {  userId, action, tableName, startDate, endDate, limit = 100  } = req.query as any;
-    const where: any = {};
+    const { action, tableName, startDate, endDate, limit = 100 } = req.query as any;
+    const requestingUser = (req as any).user;
 
-    if (userId) where.user_id = userId;
+    // Defense-in-depth: hanya OWNER yang boleh memfilter log milik user lain.
+    // Non-OWNER hanya bisa melihat log mereka sendiri.
+    const effectiveUserId = requestingUser?.role === 'OWNER'
+      ? (req.query.userId as string | undefined)
+      : requestingUser?.id;
+
+    const where: any = {};
+    if (effectiveUserId) where.user_id = effectiveUserId;
     if (action) where.action = action;
     if (tableName) where.table_name = tableName;
 

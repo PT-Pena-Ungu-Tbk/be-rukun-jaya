@@ -2589,7 +2589,7 @@
         ],
         "parameters": [
           {
-            "name": "phone",
+            "ph": "phone",
             "in": "query",
             "required": true,
             "schema": {
