@@ -79,9 +79,19 @@ const createProduct = async (req: Request, res: Response) => {
     return res.status(201).json({ status: 'success', data: product });
   } catch (error) {
     console.error('Create Product Error:', error);
+    
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return res.status(409).json({ status: 'error', message: 'Kode SKU sudah terdaftar, silakan gunakan kode lain.' });
+      }
+      if (error.code === 'P2003') {
+        return res.status(400).json({ status: 'error', message: 'Kategori ID atau Supplier ID tidak ditemukan di database.' });
+      }
+    }
+
     return res.status(500).json({
       status: 'error',
-      message: 'Terjadi kesalahan saat menambahkan produk.',
+      message: 'Terjadi kesalahan internal saat menambahkan produk.',
     });
   }
 };
@@ -239,9 +249,22 @@ const updateProduct = async (req: Request, res: Response) => {
     return res.status(200).json({ status: 'success', data: product });
   } catch (error) {
     console.error('Update Product Error:', error);
-    return res.status(400).json({
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2002') {
+        return res.status(409).json({ status: 'error', message: 'Kode SKU sudah digunakan oleh produk lain.' });
+      }
+      if (error.code === 'P2003') {
+        return res.status(400).json({ status: 'error', message: 'Kategori ID atau Supplier ID tidak ditemukan di database.' });
+      }
+      if (error.code === 'P2025') {
+        return res.status(404).json({ status: 'error', message: 'Produk tidak ditemukan.' });
+      }
+    }
+
+    return res.status(500).json({
       status: 'error',
-      message: 'Gagal memperbarui produk. Periksa kembali data dan ID produk.',
+      message: 'Gagal memperbarui produk. Terjadi kesalahan internal pada sistem.',
     });
   }
 };
@@ -258,9 +281,16 @@ const deleteProduct = async (req: Request, res: Response) => {
     return res.status(200).json({ status: 'success', message: 'Produk berhasil dihapus.' });
   } catch (error) {
     console.error('Delete Product Error:', error);
-    return res.status(400).json({
+    
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        return res.status(404).json({ status: 'error', message: 'Produk tidak ditemukan.' });
+      }
+    }
+
+    return res.status(500).json({
       status: 'error',
-      message: 'Gagal menghapus produk. Periksa kembali ID produk.',
+      message: 'Gagal menghapus produk. Terjadi kesalahan internal sistem.',
     });
   }
 };
@@ -300,9 +330,16 @@ const bulkUpdateProducts = async (req: Request, res: Response) => {
     return res.status(200).json({ status: 'success', message: 'Pembaruan kuantitas stok massal berhasil diproses serentak di database.' });
   } catch (error) {
     console.error('Bulk Update Products Error:', error);
-    return res.status(400).json({
+    
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        return res.status(404).json({ status: 'error', message: 'Satu atau lebih ID produk dalam daftar tidak ditemukan di database.' });
+      }
+    }
+
+    return res.status(500).json({
       status: 'error',
-      message: 'Gagal melakukan bulk update produk. Pastikan semua item valid.',
+      message: 'Gagal melakukan bulk update produk. Terjadi kesalahan internal sistem.',
     });
   }
 };
