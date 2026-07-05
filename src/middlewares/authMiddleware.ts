@@ -19,7 +19,9 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
-            status: "error",
+            success: false,
+            status_code: 401,
+            error_code: "UNAUTHORIZED",
             message: "Akses Ditolak. Token tidak disediakan atau format salah."
         });
     }
@@ -32,7 +34,9 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
         next(); 
     } catch (error) {
         return res.status(401).json({
-            status: "error",
+            success: false,
+            status_code: 401,
+            error_code: "UNAUTHORIZED",
             message: "Akses Ditolak. Token tidak valid atau sudah kedaluwarsa."
         });
     }
@@ -65,7 +69,9 @@ export const hasRoles = (roles: string[]) => {
 export const isOwner = (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user || req.user.role !== 'OWNER') {
         return res.status(403).json({
-            status: "error",
+            success: false,
+            status_code: 403,
+            error_code: "FORBIDDEN",
             message: "Akses Ditolak. Hanya Owner yang dapat mengakses resource ini."
         });
     }
