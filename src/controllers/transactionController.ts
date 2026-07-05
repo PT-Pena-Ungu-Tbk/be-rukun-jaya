@@ -226,82 +226,7 @@ const getTransactionDetails = async (req: Request, res: Response) => {
     }
 };
 
-// 2. LOGIKA RETUR BARANG CACAT
-const returnItem = async (req: Request, res: Response) => {
-    const { transaction_id, product_id, quantity_returned } = req.body;
-    const userId = req.user.id;
 
-    try {
-        if (!isValidUUID(transaction_id) || !isValidUUID(product_id)) {
-            throw new AppError("ID Transaksi atau ID Produk tidak valid.");
-        }
-
-        if (!quantity_returned || quantity_returned <= 0) {
-            throw new AppError("Kuantitas retur harus lebih besar dari 0.");
-        }
-
-        const result = await prisma.$transaction(async (tx: any) => {
-            const defectiveProduct = await tx.product.findUnique({ where: { id: product_id } });
-
-            if (!defectiveProduct) {
-                throw new AppError("Produk retur tidak valid.");
-            }
-
-            // Validasi ketersediaan stok barang pengganti (sama dengan barang yang diretur)
-            if (defectiveProduct.current_stock < quantity_returned) {
-                throw new AppError(`Stok barang pengganti '${defectiveProduct.name}' tidak mencukupi.`);
-            }
-
-            // Tambahkan kuantitas ke defective_stock dan kurangi current_stock 
-            await tx.product.update({
-                where: { id: product_id },
-                data: {
-                    defective_stock: defectiveProduct.defective_stock + quantity_returned,
-                    current_stock: defectiveProduct.current_stock - quantity_returned
-                }
-            });
-
-
-            // Wajib mencatat ke Audit Log karena memodifikasi data sensitif
-            const auditLog = await tx.auditLog.create({
-                data: {
-                    user_id: userId,
-                    action: "RETURN_GARANSI",
-                    table_name: "products",
-                    record_id: product_id,
-                    changes_payload: {
-                        message: `Retur barang cacat ${defectiveProduct.name}, diganti dengan barang baru`,
-                        quantity_returned: quantity_returned,
-                        transaction_id: transaction_id
-                    }
-                }
-            });
-
-            return { message: "Proses klaim garansi berhasil diproses.", auditLog };
-        });
-
-        return res.status(200).json({
-            status: "success",
-            message: "Proses retur garansi barang berhasil dicatat. Stok pengganti telah dikeluarkan.",
-            data: result
-        });
-
-    } catch (error: any) {
-        console.error("Return Error:", error);
-
-        if (error instanceof AppError) {
-            return res.status(error.statusCode).json({
-                status: "error",
-                message: error.message
-            });
-        }
-
-        return res.status(500).json({
-            status: "error",
-            message: "Terjadi kesalahan internal saat memproses retur garansi barang."
-        });
-    }
-};
 
 //3. LOGIKA EKSPOR TRANSAKSI (EXCEL)
 const exportTransactionsExcel = async (req: Request, res: Response) => {
@@ -620,7 +545,6 @@ const printReceipt = async (req: Request, res: Response) => {
 
 export {
     checkout,
-    returnItem,
     printReceipt,
     exportTransactionsExcel,
     getTransactionDetails,

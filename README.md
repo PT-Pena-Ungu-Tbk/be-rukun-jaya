@@ -102,7 +102,7 @@ Saat server berjalan, Anda dapat mengakses visualisasi dokumentasi API lengkap, 
 
 ### Endpoint Utama yang Tersedia (v1.2.0):
 * **Autentikasi (`/api/v1/auth`)**:
-  - `POST /login` - Login pengguna untuk mendapatkan JWT token.
+  - `POST /login` - Login pengguna dengan payload `email_or_username` dan `password` untuk mendapatkan JWT token.
 * **Manajemen Karyawan (`/api/v1/staff`)** *(Khusus Owner)*:
   - `GET /` - Dapatkan semua karyawan.
   - `POST /` - Tambahkan karyawan baru.
