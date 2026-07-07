@@ -117,11 +117,27 @@ const getDashboardOverview = async (req: Request, res: Response) => {
             orderBy: { created_at: 'desc' },
             take: 5
         });
-        const aktivitas_terbaru = recentAudits.map(a => ({
-            tipe: a.action,
-            deskripsi: `Aktivitas di tabel ${a.table_name || 'Sistem'}`,
-            waktu: a.created_at
-        }));
+        const aktivitas_terbaru = recentAudits.map(a => {
+            const payload = a.changes_payload as any;
+            let deskripsi = `Aktivitas di sistem (${a.action})`;
+
+            if (payload && payload.message) {
+                deskripsi = payload.message;
+            } else {
+                if (a.action === 'CREATE_TRANSACTION') deskripsi = `Penjualan baru oleh kasir`;
+                else if (a.action === 'RETURN_GARANSI') deskripsi = `Pengambilan/klaim garansi barang`;
+                else if (a.action === 'CREATE_PRODUCT') deskripsi = `Penambahan produk baru dari supplier`;
+                else if (a.action === 'UPDATE_PRODUCT') deskripsi = `Perubahan data stok/produk`;
+                else if (a.action === 'BULK_UPDATE_EXCEL') deskripsi = `Penambahan stok produk massal`;
+                else deskripsi = `Perubahan data pada ${a.table_name || 'sistem'}`;
+            }
+
+            return {
+                tipe: a.action,
+                deskripsi,
+                waktu: a.created_at
+            };
+        });
 
         // 5. METODE PEMBAYARAN
         let total_terproses = 0;

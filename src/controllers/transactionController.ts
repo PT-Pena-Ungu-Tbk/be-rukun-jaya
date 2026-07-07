@@ -608,6 +608,7 @@ const printReceipt = async (req: Request, res: Response) => {
         
         doc.moveDown(2);
         doc.text('Terima Kasih!', { align: 'center' });
+        doc.text('Garansi hanya berlaku dengan struk asli!', { align: 'center' });
         doc.text('Barang yang sudah dibeli tidak dapat ditukar.', { align: 'center' });
 
         doc.end();
