@@ -445,8 +445,6 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
        
        const user_id = (req as any).user?.id || 'SYSTEM';
        
-       // Log audit ONLY if User model has this ID, but wait, AuditLog user_id might refer to a strict UUID in DB.
-       // It's safe to just create the AuditLog if we have a valid UUID.
        if (isValidUUID(user_id)) {
            const auditLog = await prisma.auditLog.create({
               data: {
