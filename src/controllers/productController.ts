@@ -110,13 +110,15 @@ const getProducts = async (req: Request, res: Response) => {
 
     if (low_stock === 'true') {
       const products = await prisma.$queryRaw`
-        SELECT *
-        FROM products
-        WHERE current_stock <= min_stock
-        ${categoryId ? Prisma.sql`AND category_id = ${categoryId}::uuid` : Prisma.empty}
-        ${supplierId ? Prisma.sql`AND supplier_id = ${supplierId}::uuid` : Prisma.empty}
-        ${search ? Prisma.sql`AND (name ILIKE ${'%' + search + '%'} OR sku_code ILIKE ${'%' + search + '%'})` : Prisma.empty}
-        ORDER BY name ASC
+        SELECT p.*, c.name as category, s.name as supplier
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN suppliers s ON p.supplier_id = s.id
+        WHERE p.current_stock <= p.min_stock
+        ${categoryId ? Prisma.sql`AND p.category_id = ${categoryId}::uuid` : Prisma.empty}
+        ${supplierId ? Prisma.sql`AND p.supplier_id = ${supplierId}::uuid` : Prisma.empty}
+        ${search ? Prisma.sql`AND (p.name ILIKE ${'%' + search + '%'} OR p.sku_code ILIKE ${'%' + search + '%'})` : Prisma.empty}
+        ORDER BY p.name ASC
         LIMIT ${Number(limit)}
         OFFSET ${(Number(page) - 1) * Number(limit)}
       `;
@@ -133,12 +135,22 @@ const getProducts = async (req: Request, res: Response) => {
     if (categoryId) filters.category_id = categoryId;
     if (supplierId) filters.supplier_id = supplierId;
 
-    const products = await prisma.product.findMany({
+    const rawProducts = await prisma.product.findMany({
       where: filters,
       orderBy: { name: 'asc' },
       skip: (Number(page) - 1) * Number(limit),
       take: Number(limit),
+      include: {
+        category: true,
+        supplier: true
+      }
     });
+
+    const products = rawProducts.map((p: any) => ({
+      ...p,
+      category: p.category?.name || 'Tidak Ada',
+      supplier: p.supplier?.name || 'Tidak Ada'
+    }));
 
     return res.status(200).json({ status: 'success', data: products });
   } catch (error) {
@@ -158,9 +170,18 @@ const getProductById = async (req: Request, res: Response) => {
       return res.status(400).json({ status: 'error', message: 'Format ID produk tidak valid.' });
     }
 
-    const product = await prisma.product.findUnique({
+    const product: any = await prisma.product.findUnique({
       where: { id },
+      include: {
+        category: true,
+        supplier: true
+      }
     });
+
+    if (product) {
+       product.category = product.category?.name || 'Tidak Ada';
+       product.supplier = product.supplier?.name || 'Tidak Ada';
+    }
 
     if (!product) {
       return res.status(404).json({

@@ -170,7 +170,7 @@ const getDashboardOverview = async (req: Request, res: Response) => {
                 where: { created_at: { gte: dStart, lte: dEnd } },
                 _sum: { grand_total: true }
             });
-            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            const days = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
             dailySalesChart.push({
                 hari: days[dStart.getDay()],
                 nilai: Number(dayTrans._sum.grand_total || 0)
