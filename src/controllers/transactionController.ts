@@ -274,10 +274,10 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
             "Waktu": t.created_at.toISOString().split('T')[1].substring(0, 8),
             "ID Member": t.member_id || '-',
             "Kasir ID": t.cashier_id,
-            "Subtotal (IDR)": t.subtotal,
-            "Diskon (IDR)": t.discount_value,
-            "Pajak (IDR)": t.tax_amount,
-            "Grand Total (IDR)": t.grand_total,
+            "Subtotal (IDR)": Number(t.subtotal),
+            "Diskon (IDR)": Number(t.discount_value),
+            "Pajak (IDR)": Number(t.tax_amount),
+            "Grand Total (IDR)": Number(t.grand_total),
             "Metode Pembayaran": t.payment_method || 'CASH',
             "Status": t.status || 'SUCCESS'
         }));
