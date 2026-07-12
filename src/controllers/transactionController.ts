@@ -275,7 +275,7 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
             "ID Member": t.member_id || '-',
             "Kasir ID": t.cashier_id,
             "Subtotal (IDR)": Number(t.subtotal),
-            "Diskon (IDR)": Number(t.discount_value),
+            "Diskon (IDR)": t.discount_type === 'PERCENTAGE' ? (Number(t.subtotal) * (Number(t.discount_value) / 100)) : Number(t.discount_value),
             "Pajak (IDR)": Number(t.tax_amount),
             "Grand Total (IDR)": Number(t.grand_total),
             "Metode Pembayaran": t.payment_method || 'CASH',
@@ -521,7 +521,9 @@ const printReceipt = async (req: Request, res: Response) => {
         // Totals
         doc.text(`Subtotal : Rp ${Number(tx.subtotal).toLocaleString('id-ID')}`, { align: 'right' });
         if (Number(tx.discount_value) > 0) {
-            doc.text(`Diskon   : Rp ${Number(tx.discount_value).toLocaleString('id-ID')}`, { align: 'right' });
+            const actualDiscount = tx.discount_type === 'PERCENTAGE' ? (Number(tx.subtotal) * (Number(tx.discount_value) / 100)) : Number(tx.discount_value);
+            const discountLabel = tx.discount_type === 'PERCENTAGE' ? `Diskon (${tx.discount_value}%)` : `Diskon   `;
+            doc.text(`${discountLabel} : Rp -${actualDiscount.toLocaleString('id-ID')}`, { align: 'right' });
         }
         if (Number(tx.tax_amount) > 0) {
             doc.text(`Pajak    : Rp ${Number(tx.tax_amount).toLocaleString('id-ID')}`, { align: 'right' });
@@ -533,8 +535,8 @@ const printReceipt = async (req: Request, res: Response) => {
         
         doc.moveDown(2);
         doc.text('Terima Kasih!', { align: 'center' });
-        doc.text('Garansi hanya berlaku dengan struk asli!', { align: 'center' });
-        doc.text('Barang yang sudah dibeli tidak dapat ditukar.', { align: 'center' });
+        doc.text('Garansi/Retur maksimal 30 hari dari tanggal pembelian.', { align: 'center' });
+        doc.text('Wajib membawa struk asli ini saat klaim garansi.', { align: 'center' });
 
         doc.end();
     } catch (error) {
