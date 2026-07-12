@@ -1269,64 +1269,9 @@
     }
   },
   "paths": {
-    "/auth/refresh": {
-      "post": {
-        "summary": "Refresh Access Token",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "refresh_token": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Token diperbarui",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RefreshTokenResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "1. Authentication"
-        ]
-      }
-    },
-    "/auth/logout": {
-      "post": {
-        "summary": "Logout",
+    "/audit/logs": {
+      "get": {
+        "summary": "Log Audit",
         "security": [
           {
             "BearerAuth": []
@@ -1334,7 +1279,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Logout Berhasil",
+            "description": "Daftar Audit Log",
             "content": {
               "application/json": {
                 "schema": {
@@ -1375,7 +1320,148 @@
           }
         },
         "tags": [
-          "1. Authentication"
+          "9. Audit & Security Logs"
+        ]
+      }
+    },
+    "/audit/logs/export/excel": {
+      "get": {
+        "summary": "Export Audit Logs ke Excel",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
+        ]
+      }
+    },
+    "/audit/logs/{id}": {
+      "get": {
+        "summary": "Ambil Detail Log Audit",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail log audit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "9. Audit & Security Logs"
         ]
       }
     },
@@ -1477,6 +1563,2406 @@
         },
         "tags": [
           "1. Authentication"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout Berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Refresh Access Token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refresh_token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "1. Authentication"
+        ]
+      }
+    },
+    "/categories": {
+      "get": {
+        "summary": "Get All Categories",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Category",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/{id}": {
+      "put": {
+        "summary": "Update Category",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Category Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Category",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/overview": {
+      "get": {
+        "summary": "Dashboard Overview (Agregasi Data)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-24"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data Dashboard Overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "8. Dashboard & Analytics"
+        ]
+      }
+    },
+    "/finance/export/pdf": {
+      "get": {
+        "summary": "Export Laporan Keuangan ke PDF",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File PDF terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
+      }
+    },
+    "/finance/summary": {
+      "get": {
+        "summary": "Ringkasan Laporan Keuangan",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "this_month",
+                "last_month",
+                "custom"
+              ]
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data Ringkasan Keuangan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
+      }
+    },
+    "/inventory": {
+      "get": {
+        "summary": "Ambil Daftar Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "low_stock",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar produk ditarik",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      },
+      "post": {
+        "summary": "Tambah Master Data Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sku_code": {
+                    "type": "string",
+                    "description": "Harus berformat [A-Z0-9]-[A-Z0-9]-[0-9]",
+                    "pattern": "^[A-Z0-9]+-[A-Z0-9]+-\\d+$",
+                    "example": "PIP-WV-AW12"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Nama produk minimal 3 karakter.",
+                    "minLength": 3,
+                    "example": "Pipa Wavin AW 1/2 inch"
+                  },
+                  "category_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "supplier_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "buy_price": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 28000
+                  },
+                  "sell_price": {
+                    "type": "number",
+                    "minimum": 0,
+                    "example": 32000
+                  },
+                  "current_stock": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 120
+                  },
+                  "min_stock": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 50
+                  },
+                  "rack_location": {
+                    "type": "string",
+                    "example": "R-C3-12"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Produk berhasil ditambah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      }
+    },
+    "/inventory/bulk-update": {
+      "put": {
+        "summary": "Bulk Update Stok Barang",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "updates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "new_stock": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update massal sukses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      }
+    },
+    "/inventory/bulk-update/upload": {
+      "post": {
+        "summary": "Upload Excel Bulk Update",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File terupload dan stok diupdate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      }
+    },
+    "/inventory/{id}": {
+      "get": {
+        "summary": "Ambil Detail Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail produk",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      },
+      "put": {
+        "summary": "Update Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produk berhasil diupdate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produk berhasil diperbarui"
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "request_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      },
+      "delete": {
+        "summary": "Hapus Produk",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produk berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Produk berhasil dihapus"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "request_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
+        ]
+      }
+    },
+    "/members/verify": {
+      "get": {
+        "summary": "Verifikasi Nomor Pelanggan VIP",
+        "description": "Memverifikasi apakah nomor telepon terdaftar sebagai member VIP (menggunakan Query Parameter).",
+        "tags": [
+          "4. Member & VIP"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nomor telepon pelanggan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "member_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Pak Eko"
+                        },
+                        "phone_number": {
+                          "type": "string",
+                          "example": "08123456789"
+                        },
+                        "total_points": {
+                          "type": "integer",
+                          "example": 120
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          },
+          "500": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
+    },
+    "/members/vip": {
+      "get": {
+        "summary": "Ambil Daftar VIP Member",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar VIP Member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      },
+      "post": {
+        "summary": "Registrasi VIP Member Baru",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone_number": {
+                    "type": "string",
+                    "description": "Nomor HP dengan format 08..., panjang 10-15 digit.",
+                    "pattern": "^08[0-9]{8,13}$",
+                    "example": "08123456789"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Nama member VIP minimal 3 karakter.",
+                    "minLength": 3,
+                    "example": "Budi Santoso"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "VIP Member ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      }
+    },
+    "/members/vip/export": {
+      "get": {
+        "summary": "Export Data VIP Member ke Excel",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      }
+    },
+    "/members/vip/{id}": {
+      "put": {
+        "tags": [
+          "4. Member & VIP"
+        ],
+        "summary": "Update VIP Member",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string"
+                  },
+                  "phone_number": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "type": "string",
+                    "enum": [
+                      "Bronze",
+                      "Silver",
+                      "Gold"
+                    ]
+                  },
+                  "poin": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (Phone number already exists)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "4. Member & VIP"
+        ],
+        "summary": "Delete VIP Member",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/members/vip/{member_id}/redeem": {
+      "post": {
+        "summary": "Redeem Poin VIP Member",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "poin_ditukar": {
+                    "type": "integer"
+                  },
+                  "jenis_penukaran": {
+                    "type": "string"
+                  },
+                  "transaction_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Poin berhasil ditukar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "4. Member & VIP"
+        ]
+      }
+    },
+    "/pos/products": {
+      "get": {
+        "summary": "Pencarian Produk Khusus Kasir (POS)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "low_stock",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar produk ditarik",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
+      }
+    },
+    "/pos/transactions": {
+      "post": {
+        "summary": "Finalisasi Transaksi Penjualan (POS)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "product_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "qty": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "product_id",
+                        "qty"
+                      ]
+                    }
+                  },
+                  "payment_method": {
+                    "type": "string",
+                    "enum": [
+                      "CASH",
+                      "QRIS",
+                      "DEBIT",
+                      "TRANSFER"
+                    ]
+                  },
+                  "jumlah_bayar": {
+                    "type": "number"
+                  },
+                  "vip_phone": {
+                    "type": "string"
+                  },
+                  "diskon_persen": {
+                    "type": "number"
+                  },
+                  "diskon_nominal": {
+                    "type": "number"
+                  },
+                  "payment_reference": {
+                    "type": "string"
+                  },
+                  "nama_pelanggan": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "items",
+                  "payment_method",
+                  "jumlah_bayar"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transaksi sukses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Format body salah atau list barang kosong)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required (Uang pembayaran kurang dari total tagihan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Barang atau Member tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (Stok produk tidak mencukupi)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
+      }
+    },
+    "/pos/transactions/{transaction_id}": {
+      "get": {
+        "summary": "Ambil Detail Transaksi",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detail transaksi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Format UUID tidak valid)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found (Transaksi tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
+      }
+    },
+    "/pos/transactions/{transaction_id}/receipt": {
+      "get": {
+        "summary": "Cetak Struk Transaksi",
+        "description": "Mencetak struk kasir berformat PDF (Thermal). Parameter transaction_id pada URL sangat fleksibel: Anda bisa menggunakan ID database (UUID) maupun Nomor Invoice (contoh: INV-12345).",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File PDF Struk Kasir",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaksi tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
+        ]
+      }
+    },
+    "/pos/validate-vip": {
+      "post": {
+        "summary": "Verifikasi Status Member VIP",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "ph": "phone",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Member tidak ditemukan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "status_code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Member tidak ditemukan"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-24T14:32:00+07:00"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "req_1234567890abcdef"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "2. Point of Sales (POS)"
         ]
       }
     },
@@ -1716,92 +4202,6 @@
                       "example": "req_1234567890abcdef"
                     }
                   }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "7. Staff Management"
-        ]
-      }
-    },
-    "/staff/{staff_id}/toggle-access": {
-      "patch": {
-        "summary": "Toggle Akses Karyawan",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "staff_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Akses diubah",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Data yang dicari tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2244,9 +4644,9 @@
         ]
       }
     },
-    "/inventory": {
-      "get": {
-        "summary": "Ambil Daftar Produk",
+    "/staff/{staff_id}/toggle-access": {
+      "patch": {
+        "summary": "Toggle Akses Karyawan",
         "security": [
           {
             "BearerAuth": []
@@ -2254,23 +4654,18 @@
         ],
         "parameters": [
           {
-            "name": "search",
-            "in": "query",
+            "name": "staff_id",
+            "in": "path",
+            "required": true,
             "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "low_stock",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
+              "type": "string",
+              "format": "uuid"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Daftar produk ditarik",
+            "description": "Akses diubah",
             "content": {
               "application/json": {
                 "schema": {
@@ -2284,7 +4679,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2309,6 +4704,16 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal Server Error (Kesalahan tak terduga pada server)",
             "content": {
@@ -2321,15 +4726,63 @@
           }
         },
         "tags": [
-          "3. Inventory Management"
+          "7. Staff Management"
         ]
-      },
-      "post": {
-        "summary": "Tambah Master Data Produk",
+      }
+    },
+    "/suppliers": {
+      "get": {
+        "summary": "Get All Suppliers",
         "security": [
           {
             "BearerAuth": []
           }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of suppliers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Supplier",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
         ],
         "requestBody": {
           "required": true,
@@ -2337,50 +4790,15 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "name"
+                ],
                 "properties": {
-                  "sku_code": {
-                    "type": "string",
-                    "description": "Harus berformat [A-Z0-9]-[A-Z0-9]-[0-9]",
-                    "pattern": "^[A-Z0-9]+-[A-Z0-9]+-\\d+$",
-                    "example": "PIP-WV-AW12"
-                  },
                   "name": {
-                    "type": "string",
-                    "description": "Nama produk minimal 3 karakter.",
-                    "minLength": 3,
-                    "example": "Pipa Wavin AW 1/2 inch"
+                    "type": "string"
                   },
-                  "category_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "supplier_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "buy_price": {
-                    "type": "number",
-                    "minimum": 0,
-                    "example": 28000
-                  },
-                  "sell_price": {
-                    "type": "number",
-                    "minimum": 0,
-                    "example": 32000
-                  },
-                  "current_stock": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 120
-                  },
-                  "min_stock": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 50
-                  },
-                  "rack_location": {
-                    "type": "string",
-                    "example": "R-C3-12"
+                  "contact_info": {
+                    "type": "string"
                   }
                 }
               }
@@ -2389,7 +4807,7 @@
         },
         "responses": {
           "201": {
-            "description": "Produk berhasil ditambah",
+            "description": "Supplier Created",
             "content": {
               "application/json": {
                 "schema": {
@@ -2399,7 +4817,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -2409,7 +4827,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -2419,7 +4837,7 @@
             }
           },
           "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "description": "Forbidden",
             "content": {
               "application/json": {
                 "schema": {
@@ -2429,7 +4847,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -2438,103 +4856,19 @@
               }
             }
           }
-        },
-        "tags": [
-          "3. Inventory Management"
-        ]
+        }
       }
     },
-    "/inventory/{id}": {
-      "get": {
-        "summary": "Ambil Detail Produk",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Detail produk",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Data yang dicari tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "3. Inventory Management"
-        ]
-      },
+    "/suppliers/{id}": {
       "put": {
-        "summary": "Update Produk",
+        "summary": "Update Supplier",
         "security": [
           {
             "BearerAuth": []
           }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
         ],
         "parameters": [
           {
@@ -2547,43 +4881,40 @@
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "Produk berhasil diupdate",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Produk berhasil diperbarui"
-                    },
-                    "data": {
-                      "type": "object"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "request_id": {
-                      "type": "string"
-                    }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "contact_info": {
+                    "type": "string"
                   }
                 }
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Supplier Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -2593,7 +4924,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -2603,17 +4934,7 @@
             }
           },
           "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Data yang dicari tidak ditemukan)",
+            "description": "Forbidden",
             "content": {
               "application/json": {
                 "schema": {
@@ -2623,7 +4944,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "description": "Internal Server Error",
             "content": {
               "application/json": {
                 "schema": {
@@ -2632,17 +4953,17 @@
               }
             }
           }
-        },
-        "tags": [
-          "3. Inventory Management"
-        ]
+        }
       },
       "delete": {
-        "summary": "Hapus Produk",
+        "summary": "Delete Supplier",
         "security": [
           {
             "BearerAuth": []
           }
+        ],
+        "tags": [
+          "3. Inventory & Suppliers"
         ],
         "parameters": [
           {
@@ -2657,118 +4978,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Produk berhasil dihapus",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Produk berhasil dihapus"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "request_id": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Data yang dicari tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "3. Inventory Management"
-        ]
-      }
-    },
-    "/inventory/bulk-update/upload": {
-      "post": {
-        "summary": "Upload Excel Bulk Update",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "File terupload dan stok diupdate",
+            "description": "Supplier Deleted",
             "content": {
               "application/json": {
                 "schema": {
@@ -2778,7 +4988,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -2788,7 +4998,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -2798,674 +5008,11 @@
             }
           },
           "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "description": "Forbidden",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "3. Inventory Management"
-        ]
-      }
-    },
-    "/inventory/bulk-update": {
-      "put": {
-        "summary": "Bulk Update Stok Barang",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "updates": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "new_stock": {
-                          "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Update massal sukses",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "3. Inventory Management"
-        ]
-      }
-    },
-    "/members/vip/export": {
-      "get": {
-        "summary": "Export Data VIP Member ke Excel",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File Excel terunduh",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "4. Member & VIP"
-        ]
-      }
-    },
-    "/members/vip": {
-      "get": {
-        "summary": "Ambil Daftar VIP Member",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Daftar VIP Member",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "4. Member & VIP"
-        ]
-      },
-      "post": {
-        "summary": "Registrasi VIP Member Baru",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "phone_number": {
-                    "type": "string",
-                    "description": "Nomor HP dengan format 08..., panjang 10-15 digit.",
-                    "pattern": "^08[0-9]{8,13}$",
-                    "example": "08123456789"
-                  },
-                  "name": {
-                    "type": "string",
-                    "description": "Nama member VIP minimal 3 karakter.",
-                    "minLength": 3,
-                    "example": "Budi Santoso"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "VIP Member ditambahkan",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "4. Member & VIP"
-        ]
-      }
-    },
-    "/members/vip/{member_id}/redeem": {
-      "post": {
-        "summary": "Redeem Poin VIP Member",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "member_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "poin_ditukar": {
-                    "type": "integer"
-                  },
-                  "jenis_penukaran": {
-                    "type": "string"
-                  },
-                  "transaction_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Poin berhasil ditukar",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Data yang dicari tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "4. Member & VIP"
-        ]
-      }
-    },
-    "/pos/validate-vip": {
-      "post": {
-        "summary": "Verifikasi Status Member VIP",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "ph": "phone",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Member ditemukan",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Member tidak ditemukan",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": false
-                    },
-                    "status_code": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Member tidak ditemukan"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "format": "date-time",
-                      "example": "2023-10-24T14:32:00+07:00"
-                    },
-                    "request_id": {
-                      "type": "string",
-                      "example": "req_1234567890abcdef"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "2. Point of Sales (POS)"
-        ]
-      }
-    },
-    "/pos/transactions": {
-      "post": {
-        "summary": "Finalisasi Transaksi Penjualan (POS)",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "items": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "product_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "qty": {
-                          "type": "integer"
-                        }
-                      },
-                      "required": [
-                        "product_id",
-                        "qty"
-                      ]
-                    }
-                  },
-                  "payment_method": {
-                    "type": "string",
-                    "enum": [
-                      "CASH",
-                      "QRIS",
-                      "DEBIT",
-                      "TRANSFER"
-                    ]
-                  },
-                  "jumlah_bayar": {
-                    "type": "number"
-                  },
-                  "vip_phone": {
-                    "type": "string"
-                  },
-                  "diskon_persen": {
-                    "type": "number"
-                  },
-                  "diskon_nominal": {
-                    "type": "number"
-                  },
-                  "payment_reference": {
-                    "type": "string"
-                  },
-                  "nama_pelanggan": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "items",
-                  "payment_method",
-                  "jumlah_bayar"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Transaksi sukses",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Format body salah atau list barang kosong)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "402": {
-            "description": "Payment Required (Uang pembayaran kurang dari total tagihan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Barang atau Member tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict (Stok produk tidak mencukupi)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -3475,941 +5022,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "2. Point of Sales (POS)"
-        ]
-      }
-    },
-    "/transactions/export/excel": {
-      "get": {
-        "summary": "Export Transaksi ke Excel",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "start_date",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-01"
-            }
-          },
-          {
-            "name": "end_date",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-30"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File Excel terunduh",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
           }
-        },
-        "tags": [
-          "5. Finance & Transactions"
-        ]
-      }
-    },
-    "/finance/summary": {
-      "get": {
-        "summary": "Ringkasan Laporan Keuangan",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "period",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "this_month",
-                "last_month",
-                "custom"
-              ]
-            }
-          },
-          {
-            "name": "date_from",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-01"
-            }
-          },
-          {
-            "name": "date_to",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-30"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Data Ringkasan Keuangan",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "5. Finance & Transactions"
-        ]
-      }
-    },
-    "/finance/export/pdf": {
-      "get": {
-        "summary": "Export Laporan Keuangan ke PDF",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "date_from",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-01"
-            }
-          },
-          {
-            "name": "date_to",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-30"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File PDF terunduh",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "5. Finance & Transactions"
-        ]
-      }
-    },
-    "/dashboard/overview": {
-      "get": {
-        "summary": "Dashboard Overview (Agregasi Data)",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "date",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "example": "2026-06-24"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Data Dashboard Overview",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "8. Dashboard & Analytics"
-        ]
-      }
-    },
-    "/audit/logs": {
-      "get": {
-        "summary": "Log Audit",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Daftar Audit Log",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "9. Audit & Security Logs"
-        ]
-      }
-    },
-    "/warranty/lookup": {
-      "get": {
-        "summary": "Cari Transaksi untuk Garansi",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "invoice_no",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Data transaksi",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "6. Warranty & Returns"
-        ]
-      }
-    },
-    "/warranty/claims": {
-      "post": {
-        "summary": "Buat Klaim Garansi",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "invoice_no": {
-                    "type": "string"
-                  },
-                  "product_id": {
-                    "type": "string",
-                    "format": "uuid"
-                  },
-                  "qty": {
-                    "type": "integer"
-                  },
-                  "reason": {
-                    "type": "string",
-                    "enum": [
-                      "CACAT_PABRIK",
-                      "SALAH_KIRIM",
-                      "KUALITAS_TIDAK_SESUAI",
-                      "LAINNYA"
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Klaim dibuat",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "6. Warranty & Returns"
-        ]
-      }
-    },
-    "/pos/transactions/{transaction_id}": {
-      "get": {
-        "summary": "Ambil Detail Transaksi",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "transaction_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Detail transaksi",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Format UUID tidak valid)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Transaksi tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "2. Point of Sales (POS)"
-        ]
-      }
-    },
-    "/audit/logs/{id}": {
-      "get": {
-        "summary": "Ambil Detail Log Audit",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Detail log audit",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found (Data yang dicari tidak ditemukan)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "9. Audit & Security Logs"
-        ]
-      }
-    },
-    "/audit/logs/export/excel": {
-      "get": {
-        "summary": "Export Audit Logs ke Excel",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File Excel terunduh",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "9. Audit & Security Logs"
-        ]
-      }
-    },
-    "/pos/products": {
-      "get": {
-        "summary": "Pencarian Produk Khusus Kasir (POS)",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "search",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "low_stock",
-            "in": "query",
-            "schema": {
-              "type": "boolean"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Daftar produk ditarik",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (Input tidak valid atau parameter kurang)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "2. Point of Sales (POS)"
-        ]
-      }
-    },
-    "/pos/transactions/{transaction_id}/receipt": {
-      "get": {
-        "summary": "Cetak Struk Transaksi",
-        "description": "Mencetak struk kasir berformat PDF (Thermal). Parameter transaction_id pada URL sangat fleksibel: Anda bisa menggunakan ID database (UUID) maupun Nomor Invoice (contoh: INV-12345).",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "transaction_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "File PDF Struk Kasir",
-            "content": {
-              "application/pdf": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Transaksi tidak ditemukan",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "2. Point of Sales (POS)"
-        ]
+        }
       }
     },
     "/transactions": {
@@ -4541,6 +5159,16 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
             "$ref": "#/components/schemas/ErrorResponse"
           }
@@ -4647,8 +5275,111 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
+      }
+    },
+    "/transactions/export/excel": {
+      "get": {
+        "summary": "Export Transaksi ke Excel",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-01"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "2026-06-30"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel terunduh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "5. Finance & Transactions"
+        ]
       }
     },
     "/transactions/return": {
@@ -4732,6 +5463,16 @@
           "400": {
             "$ref": "#/components/schemas/ErrorResponse"
           },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "$ref": "#/components/schemas/ErrorResponse"
           },
@@ -4741,59 +5482,13 @@
         }
       }
     },
-    "/suppliers": {
-      "get": {
-        "summary": "Get All Suppliers",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "4. Inventory"
-        ],
-        "responses": {
-          "200": {
-            "description": "List of suppliers",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/warranty/claims": {
       "post": {
-        "summary": "Create Supplier",
+        "summary": "Buat Klaim Garansi",
         "security": [
           {
             "BearerAuth": []
           }
-        ],
-        "tags": [
-          "4. Inventory"
         ],
         "requestBody": {
           "required": true,
@@ -4801,15 +5496,25 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name"
-                ],
                 "properties": {
-                  "name": {
+                  "invoice_no": {
                     "type": "string"
                   },
-                  "contact_info": {
-                    "type": "string"
+                  "product_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "qty": {
+                    "type": "integer"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "CACAT_PABRIK",
+                      "SALAH_KIRIM",
+                      "KUALITAS_TIDAK_SESUAI",
+                      "LAINNYA"
+                    ]
                   }
                 }
               }
@@ -4818,7 +5523,7 @@
         },
         "responses": {
           "201": {
-            "description": "Supplier Created",
+            "description": "Klaim dibuat",
             "content": {
               "application/json": {
                 "schema": {
@@ -4828,7 +5533,7 @@
             }
           },
           "400": {
-            "description": "Bad Request",
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4838,7 +5543,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized",
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4848,7 +5553,7 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4858,7 +5563,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4867,16 +5572,15 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "6. Warranty & Returns"
+        ]
       }
     },
-    "/members/verify": {
+    "/warranty/lookup": {
       "get": {
-        "summary": "Verifikasi Nomor Pelanggan VIP",
-        "description": "Memverifikasi apakah nomor telepon terdaftar sebagai member VIP (menggunakan Query Parameter).",
-        "tags": [
-          "6. Member / Pelanggan"
-        ],
+        "summary": "Cari Transaksi untuk Garansi",
         "security": [
           {
             "BearerAuth": []
@@ -4884,79 +5588,16 @@
         ],
         "parameters": [
           {
-            "name": "phone",
+            "name": "invoice_no",
             "in": "query",
-            "required": true,
             "schema": {
               "type": "string"
-            },
-            "description": "Nomor telepon pelanggan"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Member valid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "success"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "member_id": {
-                          "type": "string",
-                          "format": "uuid"
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "Pak Eko"
-                        },
-                        "phone_number": {
-                          "type": "string",
-                          "example": "08123456789"
-                        },
-                        "total_points": {
-                          "type": "integer",
-                          "example": 120
-                        }
-                      }
-                    }
-                  }
-                }
-              }
             }
-          },
-          "400": {
-            "$ref": "#/components/schemas/ErrorResponse"
-          },
-          "404": {
-            "$ref": "#/components/schemas/ErrorResponse"
-          },
-          "500": {
-            "$ref": "#/components/schemas/ErrorResponse"
           }
-        }
-      }
-    },
-    "/categories": {
-      "get": {
-        "summary": "Get All Categories",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "4. Inventory"
         ],
         "responses": {
           "200": {
-            "description": "List of categories",
+            "description": "Data transaksi",
             "content": {
               "application/json": {
                 "schema": {
@@ -4965,8 +5606,28 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request (Input tidak valid atau parameter kurang)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "401": {
-            "description": "Unauthorized",
+            "description": "Unauthorized (Token JWT tidak valid atau kedaluwarsa)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (Anda tidak memiliki hak akses/Role yang sesuai)",
             "content": {
               "application/json": {
                 "schema": {
@@ -4976,481 +5637,58 @@
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Internal Server Error (Kesalahan tak terduga pada server)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Create Category",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "4. Inventory"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  }
                 }
               }
             }
           }
         },
-        "responses": {
-          "201": {
-            "description": "Category Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/categories/{id}": {
-      "put": {
-        "summary": "Update Category",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
         "tags": [
-          "4. Inventory"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "description": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Category Updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Category",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "4. Inventory"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Category Deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/suppliers/{id}": {
-      "put": {
-        "summary": "Update Supplier",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "4. Inventory"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "contact_info": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Supplier Updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete Supplier",
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "tags": [
-          "4. Inventory"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Supplier Deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessEnvelope"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
+          "6. Warranty & Returns"
+        ]
       }
     }
   },
   "tags": [
     {
       "name": "1. Authentication",
-      "description": "Otentikasi, login, logout, dan manajemen sesi."
+      "description": "Endpoints for login and token refresh"
     },
     {
       "name": "2. Point of Sales (POS)",
-      "description": "Rute operasional mesin kasir."
+      "description": "Endpoints for cashier transactions and product lookups"
     },
     {
-      "name": "3. Inventory Management",
-      "description": "Manajemen gudang dan produk."
+      "name": "3. Inventory & Suppliers",
+      "description": "Endpoints for products, categories, and suppliers management"
     },
     {
       "name": "4. Member & VIP",
-      "description": "Kelola keanggotaan dan poin loyalitas."
+      "description": "Endpoints for VIP member management and loyalty points"
     },
     {
       "name": "5. Finance & Transactions",
-      "description": "Riwayat transaksi utuh dan laporan keuangan."
+      "description": "Endpoints for financial summaries and transaction history"
     },
     {
       "name": "6. Warranty & Returns",
-      "description": "Klaim garansi dan pengembalian barang."
+      "description": "Endpoints for product warranties and return claims"
     },
     {
       "name": "7. Staff Management",
-      "description": "Kelola akun karyawan dan otorisasinya."
+      "description": "Endpoints for employee management"
     },
     {
       "name": "8. Dashboard & Analytics",
-      "description": "Statistik untuk halaman utama."
+      "description": "Endpoints for dashboard statistics"
     },
     {
       "name": "9. Audit & Security Logs",
-      "description": "Log aktivitas sistem dan karyawan."
+      "description": "Endpoints for system audit logs"
     }
   ]
 }
