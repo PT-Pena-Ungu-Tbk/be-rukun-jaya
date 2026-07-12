@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../utils/prismaClient';
 import { AppError } from '../utils/AppError';
 import { ReturnReason } from '@prisma/client';
+import { isValidUUID } from '../utils/validator';
 
 // 1. CARI NOTA TRANSAKSI UNTUK RETUR (GET /warranty/lookup)
 export const lookupWarranty = async (req: Request, res: Response) => {
@@ -155,13 +156,15 @@ export const createWarrantyClaim = async (req: Request, res: Response) => {
                 throw new AppError('Masa garansi nota transaksi ini telah kedaluwarsa.', 410);
             }
 
-            // 3. Cari produk berdasarkan product_id
-            const product = await tx.product.findUnique({
-                where: { id: product_id }
+            // 3. Cari produk berdasarkan product_id (bisa berupa UUID atau Kode SKU)
+            const product = await tx.product.findFirst({
+                where: isValidUUID(product_id)
+                    ? { id: product_id }
+                    : { sku_code: product_id }
             });
 
             if (!product) {
-                throw new AppError('Produk tidak ditemukan.', 404);
+                throw new AppError(`Produk dengan ${isValidUUID(product_id) ? 'ID' : 'SKU'} '${product_id}' tidak ditemukan.`, 404);
             }
 
             // 4. Cari detail transaksi produk tersebut
