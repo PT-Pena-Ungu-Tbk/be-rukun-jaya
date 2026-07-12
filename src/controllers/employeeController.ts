@@ -10,6 +10,7 @@ export const getAllEmployees = async (req: Request, res: Response) => {
         const employees = await prisma.user.findMany({
             select: {
                 id: true,
+                employee_code : true,
                 name: true,
                 email: true,
                 role: true,
@@ -18,10 +19,9 @@ export const getAllEmployees = async (req: Request, res: Response) => {
             },
             orderBy: { created_at: 'asc' }
         });
-        // Generate kode karyawan berurut berdasarkan index (KRY-001, KRY-002, ...)
-        const data = employees.map((emp, idx) => ({
+        const data = employees.map((emp) => ({
             ...emp,
-            employee_code: `KRY-${String(idx + 1).padStart(3, '0')}`
+            employee_code: (emp as any).employee_code || '-'
         }));
         res.status(200).json({ status: 'success', data });
     } catch (error: any) {
@@ -73,11 +73,24 @@ export const createEmployee = async (req: Request, res: Response) => {
         if (existingUser) {
             throw new AppError('Email sudah terdaftar', 409);
         }
+        const lastEmployee = await prisma.user.findFirst({
+            orderBy: { created_at: 'desc' },
+            select: { employee_code: true }
+        });
         
+        let nextCodeStr = 'KRY-001';
+        if (lastEmployee && lastEmployee.employee_code) {
+            const match = lastEmployee.employee_code.match(/KRY-(\d+)/);
+            if (match) {
+                const nextNum = parseInt(match[1], 10) + 1;
+                nextCodeStr = `KRY-${String(nextNum).padStart(3, '0')}`;
+            }
+        }
+
         const password_hash = await bcrypt.hash(password, 10);
         const newEmployee = await prisma.user.create({
-            data: { name, email, password_hash, role },
-            select: { id: true, name: true, email: true, role: true, created_at: true }
+            data: { employee_code: nextCodeStr, name, email, password_hash, role },
+            select: { id: true, employee_code: true, name: true, email: true, role: true, created_at: true }
         });
         
         res.status(201).json({ status: 'success', data: newEmployee });

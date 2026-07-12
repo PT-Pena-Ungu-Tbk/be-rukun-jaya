@@ -96,9 +96,9 @@ export const getVipMembers = async (req: Request, res: Response) => {
             })
         ]);
 
-        const items = members.map((m, idx) => ({
+        const items = members.map((m) => ({
             member_id: m.id,
-            member_code: `MBR-${String(idx + 1).padStart(3, '0')}`,
+            member_code: m.member_code || '-',
             nama: m.name,
             phone_number: m.phone_number,
             level: m.level,
@@ -148,8 +148,23 @@ export const createVipMember = async (req: Request, res: Response) => {
             return res.status(409).json({ status: 'error', message: 'Nomor HP sudah terdaftar', error_code: 'PHONE_ALREADY_REGISTERED' });
         }
 
+        const lastMember = await prisma.member.findFirst({
+            orderBy: { created_at: 'desc' },
+            select: { member_code: true }
+        });
+        
+        let nextCodeStr = 'MBR-001';
+        if (lastMember && lastMember.member_code) {
+            const match = lastMember.member_code.match(/MBR-(\d+)/);
+            if (match) {
+                const nextNum = parseInt(match[1], 10) + 1;
+                nextCodeStr = `MBR-${String(nextNum).padStart(3, '0')}`;
+            }
+        }
+
         const newMember = await prisma.member.create({
             data: {
+                member_code: nextCodeStr,
                 name: memberName,
                 phone_number,
                 level,
@@ -159,6 +174,7 @@ export const createVipMember = async (req: Request, res: Response) => {
 
         return res.status(201).json({
             member_id: newMember.id,
+            member_code: newMember.member_code,
             nama: newMember.name,
             level: newMember.level,
             poin: newMember.poin,
