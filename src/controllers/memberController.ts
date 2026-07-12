@@ -245,7 +245,7 @@ export const exportVipMembers = async (req: Request, res: Response) => {
 
 export const updateMember = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const { nama, phone_number, level, poin } = req.body;
 
         const existing = await prisma.member.findUnique({ where: { id } });
@@ -277,7 +277,7 @@ export const updateMember = async (req: Request, res: Response) => {
 
 export const deleteMember = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
 
         const existing = await prisma.member.findUnique({ where: { id } });
         if (!existing) {
