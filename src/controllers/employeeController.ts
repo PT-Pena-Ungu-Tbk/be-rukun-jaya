@@ -13,10 +13,17 @@ export const getAllEmployees = async (req: Request, res: Response) => {
                 name: true,
                 email: true,
                 role: true,
+                is_active: true,
                 created_at: true,
-            }
+            },
+            orderBy: { created_at: 'asc' }
         });
-        res.status(200).json({ status: 'success', data: employees });
+        // Generate kode karyawan berurut berdasarkan index (KRY-001, KRY-002, ...)
+        const data = employees.map((emp, idx) => ({
+            ...emp,
+            employee_code: `KRY-${String(idx + 1).padStart(3, '0')}`
+        }));
+        res.status(200).json({ status: 'success', data });
     } catch (error: any) {
         console.error("Get All Employees Error:", error);
         res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal saat mengambil data.' });

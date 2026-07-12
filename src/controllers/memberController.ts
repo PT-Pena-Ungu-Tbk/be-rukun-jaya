@@ -96,8 +96,9 @@ export const getVipMembers = async (req: Request, res: Response) => {
             })
         ]);
 
-        const items = members.map(m => ({
+        const items = members.map((m, idx) => ({
             member_id: m.id,
+            member_code: `MBR-${String(idx + 1).padStart(3, '0')}`,
             nama: m.name,
             phone_number: m.phone_number,
             level: m.level,
@@ -239,6 +240,55 @@ export const exportVipMembers = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Export VIP Members Error:", error);
         return res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal saat mengekspor data' });
+    }
+};
+
+export const updateMember = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { nama, phone_number, level, poin } = req.body;
+
+        const existing = await prisma.member.findUnique({ where: { id } });
+        if (!existing) {
+            return res.status(404).json({ status: 'error', message: 'Member tidak ditemukan.' });
+        }
+
+        if (phone_number && phone_number !== existing.phone_number) {
+            const dup = await prisma.member.findUnique({ where: { phone_number } });
+            if (dup) return res.status(409).json({ status: 'error', message: 'Nomor HP sudah digunakan member lain.' });
+        }
+
+        const updated = await prisma.member.update({
+            where: { id },
+            data: {
+                ...(nama ? { name: nama } : {}),
+                ...(phone_number ? { phone_number } : {}),
+                ...(level ? { level } : {}),
+                ...(poin !== undefined ? { poin: Number(poin) } : {}),
+            }
+        });
+
+        return res.status(200).json({ status: 'success', data: updated });
+    } catch (error) {
+        console.error("Update Member Error:", error);
+        return res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal.' });
+    }
+};
+
+export const deleteMember = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const existing = await prisma.member.findUnique({ where: { id } });
+        if (!existing) {
+            return res.status(404).json({ status: 'error', message: 'Member tidak ditemukan.' });
+        }
+
+        await prisma.member.delete({ where: { id } });
+        return res.status(200).json({ status: 'success', message: 'Member berhasil dihapus.' });
+    } catch (error) {
+        console.error("Delete Member Error:", error);
+        return res.status(500).json({ status: 'error', message: 'Terjadi kesalahan internal.' });
     }
 };
 
