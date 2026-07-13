@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -80,8 +80,25 @@ app.use('/api/v1/warranty', warrantyRoutes);
 app.use('/api/v1/suppliers', supplierRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 
+// Global Error Handler untuk menangkap error seperti MulterError
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error('Global Error:', err);
+  
+  if (err.name === 'MulterError' || err.message?.includes('Multipart')) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Format file tidak valid atau gagal diunggah.',
+      error: err.message
+    });
+  }
 
-const PORT = process.env.PORT;
+  res.status(500).json({
+    status: 'error',
+    message: 'Terjadi kesalahan internal pada server.',
+  });
+});
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
-}); 
+});
