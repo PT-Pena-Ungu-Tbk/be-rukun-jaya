@@ -231,13 +231,8 @@ const getTransactionDetails = async (req: Request, res: Response) => {
 //3. LOGIKA EKSPOR TRANSAKSI (EXCEL)
 const exportTransactionsExcel = async (req: Request, res: Response) => {
     try {
-        const { startDate, endDate, status } = req.query as any;
+        const { startDate, endDate } = req.query as any;
         const where: any = {};
-
-        //Filter Status
-        if (status && status !== 'all') {
-            where.status = status;
-        }
 
         //Filter Rentang Tanggal
         if (startDate || endDate) {
@@ -279,7 +274,7 @@ const exportTransactionsExcel = async (req: Request, res: Response) => {
             "Pajak (IDR)": Number(t.tax_amount),
             "Grand Total (IDR)": Number(t.grand_total),
             "Metode Pembayaran": t.payment_method || 'CASH',
-            "Status": t.status || 'SUCCESS'
+            "Status": 'SUCCESS'
         }));
 
         // Generate Excel Buffer

@@ -506,7 +506,7 @@ const downloadTemplate = async (req: Request, res: Response) => {
       select: {
         id: true,
         name: true,
-        sku: true,
+        sku_code: true,
         current_stock: true,
         rack_location: true
       }
@@ -515,7 +515,7 @@ const downloadTemplate = async (req: Request, res: Response) => {
     const excelData = products.map((p) => ({
       item_id: p.id,
       nama_produk: p.name,
-      sku: p.sku || "",
+      sku: p.sku_code || "",
       stok_sistem_saat_ini: p.current_stock,
       stok_fisik_baru: p.current_stock,
       kode_rak: p.rack_location || ""
