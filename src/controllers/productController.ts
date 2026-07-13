@@ -378,14 +378,6 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
       });
     }
 
-    if (!gudang_id) {
-      return res.status(400).json({
-        status: 'error',
-        error_code: 'INVALID_REQUEST',
-        message: 'Parameter gudang_id wajib diisi.'
-      });
-    }
-
     const workbook = xlsx.read(file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
@@ -400,6 +392,17 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
     }
 
     const itemIds = data.map(d => d.item_id).filter(Boolean);
+    
+    // Validasi semua ID produk dalam array
+    for (const id of itemIds) {
+      if (!isValidUUID(id)) {
+        return res.status(400).json({
+          status: 'error',
+          message: `Format ID produk tidak valid pada salah satu item: ${id}`,
+        });
+      }
+    }
+
     const existingProducts = await prisma.product.findMany({
       where: { id: { in: itemIds } }
     });
