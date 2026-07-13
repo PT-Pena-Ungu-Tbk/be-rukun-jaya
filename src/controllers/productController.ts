@@ -500,6 +500,43 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
   }
 };
 
+const downloadTemplate = async (req: Request, res: Response) => {
+  try {
+    const products = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        sku: true,
+        current_stock: true,
+        rack_location: true
+      }
+    });
+
+    const excelData = products.map((p) => ({
+      item_id: p.id,
+      nama_produk: p.name,
+      sku: p.sku || "",
+      stok_sistem_saat_ini: p.current_stock,
+      stok_fisik_baru: p.current_stock,
+      kode_rak: p.rack_location || ""
+    }));
+
+    const worksheet = xlsx.utils.json_to_sheet(excelData);
+    const workbook = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Template Stok');
+
+    const excelBuffer = xlsx.write(workbook, { bookType: 'xlsx', type: 'buffer' });
+    const fileName = `Template_Bulk_Update_${Date.now()}.xlsx`;
+
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(excelBuffer);
+  } catch (error: any) {
+    console.error("Download Template Error:", error);
+    return res.status(500).json({ status: 'error', message: 'Gagal mengunduh template.' });
+  }
+};
+
 export { 
   createProduct,
   getProducts,
@@ -508,4 +545,5 @@ export {
   deleteProduct,
   bulkUpdateProducts,
   uploadExcelBulkUpdate,
+  downloadTemplate
  };

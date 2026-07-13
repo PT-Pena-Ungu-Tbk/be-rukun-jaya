@@ -312,7 +312,7 @@ const getTransactionHistory = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = (page - 1) * limit;
 
-        const { startDate, endDate, search } = req.query;
+        const { startDate, endDate, search, sortBy } = req.query;
 
         const where: any = {};
 
@@ -344,12 +344,17 @@ const getTransactionHistory = async (req: Request, res: Response) => {
             ];
         }
 
+        let orderBy: any = { created_at: 'desc' };
+        if (sortBy === 'oldest') orderBy = { created_at: 'asc' };
+        else if (sortBy === 'highest') orderBy = { grand_total: 'desc' };
+        else if (sortBy === 'lowest') orderBy = { grand_total: 'asc' };
+
         const [transactions, total] = await Promise.all([
             prisma.transaction.findMany({
                 where,
                 skip,
                 take: limit,
-                orderBy: { created_at: 'desc' },
+                orderBy,
                 include: {
                     cashier: { select: { id: true, name: true } },
                     member: { select: { id: true, name: true, phone_number: true } },
@@ -404,8 +409,26 @@ const getAllTransactions = async (req: Request, res: Response) => {
         const limit = Math.min(500, Math.max(1, parseInt(String(req.query.limit ?? '100'), 10) || 100));
         const skip  = (page - 1) * limit;
 
+        const { startDate, endDate } = req.query;
+        const where: any = {};
+
+        if (startDate || endDate) {
+            where.created_at = {};
+            if (startDate) {
+                const start = new Date(startDate as string);
+                start.setHours(0, 0, 0, 0);
+                where.created_at.gte = start;
+            }
+            if (endDate) {
+                const end = new Date(endDate as string);
+                end.setHours(23, 59, 59, 999);
+                where.created_at.lte = end;
+            }
+        }
+
         const [transactions, total] = await prisma.$transaction([
             prisma.transaction.findMany({
+                where,
                 skip,
                 take: limit,
                 orderBy: { created_at: 'desc' },
@@ -419,7 +442,7 @@ const getAllTransactions = async (req: Request, res: Response) => {
                     }
                 }
             }),
-            prisma.transaction.count()
+            prisma.transaction.count({ where })
         ]);
 
         const formattedData = transactions.map((t: any) => ({
