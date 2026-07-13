@@ -1376,7 +1376,8 @@
         },
         "tags": [
           "9. Audit & Security Logs"
-        ]
+        ],
+        "description": "Mengekspor log aktivitas menjadi file Excel. Parameter tanggal bersifat opsional."
       }
     },
     "/audit/logs/{id}": {
@@ -5086,6 +5087,22 @@
               "type": "string"
             },
             "description": "Cari berdasarkan nomor invoice atau nama pelanggan"
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest",
+                "highest",
+                "lowest"
+              ],
+              "example": "newest"
+            },
+            "description": "Pengurutan transaksi"
           }
         ],
         "responses": {
@@ -5296,7 +5313,31 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-07-01"
+            },
+            "description": "Filter dari tanggal (YYYY-MM-DD)"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-07-31"
+            },
+            "description": "Filter sampai tanggal (YYYY-MM-DD)"
+          }
+        ]
       }
     },
     "/transactions/export/excel": {
@@ -5649,6 +5690,36 @@
         },
         "tags": [
           "6. Warranty & Returns"
+        ]
+      }
+    },
+    "/inventory/bulk-update/template": {
+      "get": {
+        "summary": "Unduh Template Excel Bulk Update",
+        "description": "Mengunduh template excel yang berisi data produk saat ini untuk mempermudah update stok fisik.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File Excel",
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Gagal mengunduh template"
+          }
+        },
+        "tags": [
+          "3. Inventory & Suppliers"
         ]
       }
     }

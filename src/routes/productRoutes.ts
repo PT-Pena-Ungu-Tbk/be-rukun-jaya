@@ -8,7 +8,8 @@ import { createProduct,
   updateProduct,
   deleteProduct,
   bulkUpdateProducts,
-  uploadExcelBulkUpdate
+  uploadExcelBulkUpdate,
+  downloadTemplate
  } from '../controllers/productController';
 
 const upload = multer({
@@ -19,6 +20,7 @@ const upload = multer({
 router.get('/', verifyToken, getProducts);
 router.get('/:id', verifyToken, getProductById);
 router.put('/bulk-update', verifyToken, isOwner, bulkUpdateProducts);
+router.get('/bulk-update/template', verifyToken, isOwner, downloadTemplate);
 router.post('/bulk-update/upload', verifyToken, isOwner, upload.single('file'), uploadExcelBulkUpdate);
 router.post('/', verifyToken, isOwner, createProduct);
 router.put('/:id', verifyToken, isOwner, updateProduct);

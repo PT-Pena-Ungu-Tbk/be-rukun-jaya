@@ -87,44 +87,27 @@ const getAuditLogById = async (req: Request, res: Response) => {
 const exportAuditLogsExcel = async (req: Request, res: Response) => {
     try {
         const { startDate, endDate, action } = req.query as any;
+        const where: any = {};
 
-        if (!startDate || !endDate) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Parameter startDate dan endDate wajib diisi untuk ekspor.'
-            });
-        }
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
 
-        const start = new Date(startDate);
-        const end = new Date(endDate);
+            if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'Format tanggal tidak valid. Gunakan YYYY-MM-DD.'
+                });
+            }
 
-        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Format tanggal tidak valid. Gunakan YYYY-MM-DD.'
-            });
-        }
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
 
-        // Validasi maksimal 90 hari
-        const diffTime = Math.abs(end.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays > 90) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Rentang tanggal melebihi 90 hari per request.'
-            });
-        }
-
-        start.setHours(0, 0, 0, 0);
-        end.setHours(23, 59, 59, 999);
-
-        const where: any = {
-            created_at: {
+            where.created_at = {
                 gte: start,
                 lte: end
-            }
-        };
+            };
+        }
 
         if (action && action !== 'all') {
             where.action = action;
