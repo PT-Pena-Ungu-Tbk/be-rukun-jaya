@@ -456,7 +456,8 @@ const getAllTransactions = async (req: Request, res: Response) => {
             items: t.details.map((d: any) => ({
                 product_name: d.product?.name || "Unknown Product",
                 quantity: d.quantity,
-                unit_price: d.unit_price
+                unit_price: d.unit_price,
+                subtotal: d.subtotal ?? (Number(d.unit_price) * Number(d.quantity))
             }))
         }));
 
@@ -552,9 +553,9 @@ const printReceipt = async (req: Request, res: Response) => {
         doc.text(`Kembali  : Rp ${Number(tx.change_amount).toLocaleString('id-ID')}`, { align: 'right' });
         
         doc.moveDown(2);
-        doc.text('Terima Kasih!', { align: 'center' });
-        doc.text('Garansi/Retur maksimal 30 hari dari tanggal pembelian.', { align: 'center' });
-        doc.text('Wajib membawa struk asli ini saat klaim garansi.', { align: 'center' });
+        doc.text('Terima Kasih atas Kunjungan Anda!', { align: 'center' });
+        doc.text('Simpan struk ini sebagai bukti garansi & pembelian sah.', { align: 'center' });
+        doc.text('Klaim garansi/penukaran barang berlaku sesuai syarat & ketentuan toko.', { align: 'center' });
 
         doc.end();
     } catch (error) {
