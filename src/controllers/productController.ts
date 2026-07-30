@@ -391,25 +391,36 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
       });
     }
 
-    const itemIds = data.map(d => d.item_id).filter(Boolean);
-    
-    // Validasi semua ID produk dalam array
-    for (const id of itemIds) {
-      if (!isValidUUID(id)) {
-        return res.status(400).json({
-          status: 'error',
-          message: `Format ID produk tidak valid pada salah satu item: ${id}`,
-        });
-      }
-    }
+    // Extract all identifiers: SKU codes and item_ids
+    const skus = data
+      .map(d => d.sku || d.sku_code || d.kode_sku)
+      .filter(Boolean)
+      .map((s: any) => String(s).trim());
 
+    const itemIds = data
+      .map(d => d.item_id || d.id)
+      .filter(Boolean)
+      .map((id: any) => String(id).trim())
+      .filter((id: string) => isValidUUID(id));
+
+    // Fetch existing products matching SKU or ID
     const existingProducts = await prisma.product.findMany({
-      where: { id: { in: itemIds } }
+      where: {
+        OR: [
+          ...(skus.length > 0 ? [{ sku_code: { in: skus } }] : []),
+          ...(itemIds.length > 0 ? [{ id: { in: itemIds } }] : [])
+        ]
+      }
     });
 
-    const productMap = new Map();
+    const productBySku = new Map<string, any>();
+    const productById = new Map<string, any>();
+
     for (const p of existingProducts) {
-      productMap.set(p.id, p);
+      if (p.sku_code) {
+        productBySku.set(p.sku_code.trim().toUpperCase(), p);
+      }
+      productById.set(p.id, p);
     }
     
     const prismaUpdates = [];
@@ -419,20 +430,38 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
     let selisih_signifikan = 0;
 
     for (const row of data) {
-       const itemId = row.item_id;
-       const stokFisikBaru = Number(row.stok_fisik_baru);
-       const kodeRak = row.kode_rak;
+       const rowSku = row.sku || row.sku_code || row.kode_sku;
+       const itemId = row.item_id || row.id;
+       const stokFisikBaru = Number(row.stok_fisik_baru ?? row.stok_baru ?? row.current_stock);
+       const kodeRak = row.kode_rak || row.rack_location;
 
-       if (!itemId || isNaN(stokFisikBaru)) {
+       const skuKey = rowSku ? String(rowSku).trim().toUpperCase() : null;
+
+       if ((!skuKey && !itemId) || isNaN(stokFisikBaru) || stokFisikBaru < 0) {
           failed_count++;
-          results.push({ item_id: itemId || 'UNKNOWN', status: 'FAILED', message: 'Format data tidak valid' });
+          results.push({
+             sku: rowSku || 'N/A',
+             item_id: itemId || 'UNKNOWN',
+             status: 'FAILED',
+             message: 'Format data atau stok fisik baru tidak valid'
+          });
           continue;
        }
 
-       const product = productMap.get(itemId);
+       // Look up product by SKU first, then by item_id
+       let product = skuKey ? productBySku.get(skuKey) : null;
+       if (!product && itemId && isValidUUID(String(itemId))) {
+          product = productById.get(String(itemId));
+       }
+
        if (!product) {
           failed_count++;
-          results.push({ item_id: itemId, status: 'FAILED', message: 'Item tidak ditemukan' });
+          results.push({
+             sku: rowSku || 'N/A',
+             item_id: itemId || 'UNKNOWN',
+             status: 'FAILED',
+             message: skuKey ? `Produk dengan SKU '${rowSku}' tidak ditemukan di sistem.` : `Item dengan ID '${itemId}' tidak ditemukan di sistem.`
+          });
           continue;
        }
 
@@ -446,16 +475,18 @@ const uploadExcelBulkUpdate = async (req: Request, res: Response) => {
        }
 
        prismaUpdates.push(prisma.product.update({
-          where: { id: itemId },
+          where: { id: product.id },
           data: {
              current_stock: stokFisikBaru,
-             rack_location: kodeRak || product.rack_location
+             rack_location: kodeRak ? String(kodeRak).trim() : product.rack_location
           }
        }));
        
        updated_count++;
        results.push({
-          item_id: itemId,
+          sku: product.sku_code,
+          item_id: product.id,
+          nama_produk: product.name,
           status: 'SUCCESS',
           stok_lama: stokLama,
           stok_baru: stokFisikBaru,
@@ -512,19 +543,31 @@ const downloadTemplate = async (req: Request, res: Response) => {
         sku_code: true,
         current_stock: true,
         rack_location: true
-      }
+      },
+      orderBy: { sku_code: 'asc' }
     });
 
     const excelData = products.map((p) => ({
-      item_id: p.id,
-      nama_produk: p.name,
       sku: p.sku_code || "",
+      nama_produk: p.name,
       stok_sistem_saat_ini: p.current_stock,
       stok_fisik_baru: p.current_stock,
-      kode_rak: p.rack_location || ""
+      kode_rak: p.rack_location || "",
+      item_id: p.id
     }));
 
     const worksheet = xlsx.utils.json_to_sheet(excelData);
+
+    // Formating lebar kolom agar mudah dibaca pengguna
+    worksheet['!cols'] = [
+      { wch: 18 }, // sku (Kode Barang / Barcode)
+      { wch: 32 }, // nama_produk
+      { wch: 22 }, // stok_sistem_saat_ini
+      { wch: 18 }, // stok_fisik_baru
+      { wch: 15 }, // kode_rak
+      { wch: 38 }  // item_id (referensi sistem)
+    ];
+
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Template Stok');
 
