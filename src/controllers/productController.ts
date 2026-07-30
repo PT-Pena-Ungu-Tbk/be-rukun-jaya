@@ -547,7 +547,7 @@ const downloadTemplate = async (req: Request, res: Response) => {
       orderBy: { sku_code: 'asc' }
     });
 
-    const excelData = products.map((p) => ({
+    let excelData = products.map((p) => ({
       sku: p.sku_code || "",
       nama_produk: p.name,
       stok_sistem_saat_ini: p.current_stock,
@@ -555,6 +555,19 @@ const downloadTemplate = async (req: Request, res: Response) => {
       kode_rak: p.rack_location || "",
       item_id: p.id
     }));
+
+    if (excelData.length === 0) {
+      excelData = [
+        {
+          sku: "SMN-GRSK-50",
+          nama_produk: "Semen Gresik 50kg (Contoh Dummy)",
+          stok_sistem_saat_ini: 50,
+          stok_fisik_baru: 60,
+          kode_rak: "A1-01",
+          item_id: "OPTIONAL-UUID-HASH"
+        }
+      ];
+    }
 
     const worksheet = xlsx.utils.json_to_sheet(excelData);
 
