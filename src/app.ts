@@ -29,7 +29,7 @@ app.use(responseStandardizer);
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? 'https://domain-asli-frontend.com' 
+    ? 'https://rukun-jaya.vercel.app/' 
     : '*', 
   optionsSuccessStatus: 200
 }));
